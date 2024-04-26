@@ -1,0 +1,47 @@
+# Directorios de compilación y caché
+
+node_modules/
+dist/
+.cache/
+.build/
+
+# Archivos de configuración y entorno
+
+.env
+.editorconfig
+.vscode/
+
+# Archivos de logs e informes
+
+npm-debug.log
+yarn-error.log
+coverage/
+logs/
+
+# Archivos IDE
+
+*.iml
+*.suo
+*.log
+*.DS_Store
+*.tmp/*
+
+# Archivos de prueba
+
+**/*.spec.ts
+**/*.spec.tsx
+
+# Archivos de snapshot
+
+**/*.snap
+
+# Archivos de configuración global
+
+~/.vscode/extensions.json
+~/.npmrc
+~/.yarnrc
+~/.config/yarn/global/node_modules
+
+# Archivos de macOS
+
+*.DS_Store
