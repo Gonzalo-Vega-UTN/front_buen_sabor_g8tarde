@@ -1,9 +1,15 @@
-# Directorios de compilación y caché
-
+# Editor directories and files
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 node_modules/
 dist/
+dist-ssr/
 .cache/
 .build/
+*.local
 
 # Archivos de configuración y entorno
 
@@ -43,5 +49,5 @@ logs/
 ~/.config/yarn/global/node_modules
 
 # Archivos de macOS
-
+.idea
 *.DS_Store
