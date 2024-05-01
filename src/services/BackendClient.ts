@@ -1,14 +1,21 @@
-import { BackendClient } from "./InterfaceBackendClient";
+import { IBackendClient } from "./IBackendClient";
 
-export class ConcreteBackendClient<T> implements BackendClient<T> {
-    baseUrl: string;
+export abstract class BackendClient<T> implements IBackendClient<T> {
+    protected baseUrl: string;
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
     }
 
     async getAll(): Promise<T[]> {
-        const response = await fetch(`${this.baseUrl}/`);
+        const response = await fetch(this.baseUrl, {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Access-Control-Allow-Origin':'*'
+            },
+            mode: 'cors'
+        });
         const data = await response.json();
         return data as T[];
     }
