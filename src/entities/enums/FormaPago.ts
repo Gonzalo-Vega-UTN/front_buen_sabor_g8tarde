@@ -1,0 +1,4 @@
+enum FormaPago {
+    Efectivo,
+    MercadoPago
+}

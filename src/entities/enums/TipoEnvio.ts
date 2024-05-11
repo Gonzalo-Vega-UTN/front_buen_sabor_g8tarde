@@ -1,0 +1,4 @@
+enum TipoEnvio {
+    Delivery,
+    TakeAway
+}

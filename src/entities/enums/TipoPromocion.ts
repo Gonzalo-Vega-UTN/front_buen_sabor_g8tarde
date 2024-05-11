@@ -1,0 +1,4 @@
+enum TipoPromocion {
+    HappyHour,
+    Promocion
+}
