@@ -1,30 +1,24 @@
+import {BrowserRouter as Router} from "react-router-dom"
+import Header from "./components/Header/Header"
+import AppRoutes from "./routes/AppRoutes"
 import { Container } from "react-bootstrap"
-import { BrowserRouter } from "react-router-dom"
-import { AsideMenu } from "./components/pages/AsideMenu"
-import { Home } from "./components/pages/Home"
-import { AppRoutes } from "./routes/AppRoutes"
 
-function App() {
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css";
+
+
+export default function App() {
+
   return (
-    <BrowserRouter>
-
-      <div className="App">
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-md-3">
-              <AsideMenu ></AsideMenu>
-            </div>
-            <div className="col-md-9">
-              <Container>
-                <AppRoutes></AppRoutes>
-              </Container>
-            </div>
-          </div>
-        </div>
-      </div>
-    </BrowserRouter>
-
+    <>
+      <ToastContainer/>
+      <Router>
+        <Header />
+        <Container style={{ minHeight: "100vh", minWidth: "100%", padding: "0" }}>
+          <AppRoutes />
+         
+        </Container>
+      </Router>
+    </>
   )
 }
-
-export default App

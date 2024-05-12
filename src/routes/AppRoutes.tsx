@@ -1,16 +1,15 @@
-import { Routes, Route } from "react-router-dom"
-import { Home } from "../components/pages/Home"
-import { Grilla } from "../components/ui/Grilla"
-import { FormCliente } from "../components/pages/FormCliente"
+import { Routes, Route } from "react-router-dom";
+import DashboardPage from "../pages/DashboardPage";
+import RubroPage from "../pages/RubroPage";
+import ArticuloInsumoPage from "../pages/ArticulosInsumosPage";
 
-export const AppRoutes: React.FC = () => {
-    return (
-      <Routes>
-          <Route path='/' element={<Home/>}></Route>
-          <Route path='/grilla' element={<Grilla/>}></Route>
-          <Route path='/form-cliente'>
-            <Route path=":id" element={<FormCliente/>}></Route>
-          </Route>
-      </Routes>
-    )
-  }
+export default function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<DashboardPage />} />
+      <Route path="/productos" element={<DashboardPage />} />
+      <Route path="/rubros" element={<RubroPage />} />
+      <Route path="/ingredientes" element={<ArticuloInsumoPage />} />
+    </Routes>
+  );
+}
