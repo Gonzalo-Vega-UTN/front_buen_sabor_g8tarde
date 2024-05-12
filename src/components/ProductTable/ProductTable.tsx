@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Product } from "../../types/Product";
 import { ProductServices } from "../../services/ProductServices";
-import { Button, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
+import Button from "../generic/Button"
+import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
+import { CiCirclePlus } from "react-icons/ci";
 import { ModalType } from "../../types/ModalType";
 import { StateType } from "../../types/StateType";
-
-import DeleteButton from "../DeleteButton/DeleteButton";
-import EditButton from "../EditButton/EditButton";
+import { RubroType } from "../../types/RubroType";
 
 import ProductModal from "../ProductModal/ProductModal";
 
@@ -19,7 +20,7 @@ export default function ProductTable() {
       descripcion: "",
       precioVenta: 0,
       estadoArticulo: StateType.Alta,
-     
+
       tiempoEstimadoCocina: 0,
       precioCosto: 0,
       receta: "",
@@ -27,22 +28,22 @@ export default function ProductTable() {
         {
           cantidad: 0,
           articuloInsumo: {
+            id: 0,
+            denominacion: "",
+            descripcion: "",
+            precioVenta: 0,
+            estadoArticulo: StateType.Alta,
+
+            precioCompra: 0,
+            stockActual: 0,
+            stockMinimo: 0,
+            unidadMedida: {
               id: 0,
               denominacion: "",
-              descripcion: "",
-              precioVenta: 0,
-              estadoArticulo: StateType.Alta,
+              abreviatura: "",
+            },
+            url_Imagen: "",
 
-              precioCompra: 0,
-              stockActual: 0,
-              stockMinimo: 0,
-              unidadMedida: {
-                  id: 0,
-                  denominacion: "",
-                  abreviatura: "",
-              },
-              url_Imagen: "",
-             
           },
         },
       ],
@@ -85,65 +86,57 @@ export default function ProductTable() {
 
   return (
     <div className="container">
-      <Button
-        className="mt-4 mb-3"
-        onClick={() =>
-          handleClick(
-            "Nuevo Producto",
-            initializableNewProduct(),
-            ModalType.CREATE
-          )
-        }
-      >
-        {" "}
-        Nuevo Producto
-      </Button>
-     
-        <Table hover>
-          <thead>
+      <Button classes="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Producto" onClick={() =>
+        handleClick(
+          "Nuevo Producto",
+          initializableNewProduct(),
+          ModalType.CREATE
+        )}
+      />
+
+      <Table hover>
+        <thead>
+          <tr className="text-center">
+            <th>Nombre</th>
+            <th>Tiempo de Cocina</th>
+            <th>Precio Venta</th>
+
+            <th>Estado</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product) => (
             <tr className="text-center">
-              <th>Nombre</th>
-              <th>Rubro</th>
-              <th>Tiempo de Cocina</th>
-              <th>Precio Venta</th>
+              <td>{product.denominacion}</td>
+              <td>{product.tiempoEstimadoCocina} min</td>
+              <td>$ {product.precioVenta}</td>
 
-              <th>Estado</th>
-              <th>Editar</th>
-              <th>Eliminar</th>
+              <td>{product.estadoArticulo}</td>
+              <td>
+                <Button color="#FBC02D" size={23} icon={BsFillPencilFill} onClick={() =>
+                  handleClick(
+                    "Editar Producto",
+                    product,
+                    ModalType.UPDATE)
+                } />
+              </td>
+              <td>
+                <Button color="#D32F2F" size={23} icon={BsTrashFill} onClick={() =>
+                  handleClick(
+                    "Eliminar Producto",
+                    product,
+                    ModalType.DELETE
+                  )
+                } />
+
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr className="text-center">
-                <td>{product.denominacion}</td>
-         
-                <td>{product.tiempoEstimadoCocina} min</td>
-                <td>$ {product.precioVenta}</td>
-
-                <td>{product.estadoArticulo}</td>
-                <td>
-                  <EditButton
-                    onClick={() =>
-                      handleClick("Editar Producto", product, ModalType.UPDATE)
-                    }
-                  />
-                </td>
-                <td>
-                  <DeleteButton
-                    onClick={() =>
-                      handleClick(
-                        "Eliminar Producto",
-                        product,
-                        ModalType.DELETE
-                      )
-                    }
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      )
+          ))}
+        </tbody>
+      </Table>
+      
       {showModal && (
         <ProductModal
           show={showModal}
