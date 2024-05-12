@@ -26,9 +26,7 @@ export default function Header() {
             >
               <NavDropdown.Item href="#action3">Editar Perfil</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item onClick={() => navigate("/rubros")}>
-                Rubros
-              </NavDropdown.Item>
+            
               <NavDropdown.Item onClick={() => navigate("/productos")}>
                 Productos
               </NavDropdown.Item>

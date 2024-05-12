@@ -4,7 +4,7 @@ import { ProductServices } from "../../services/ProductServices";
 import { Button, Table } from "react-bootstrap";
 import { ModalType } from "../../types/ModalType";
 import { StateType } from "../../types/StateType";
-import { RubroType } from "../../types/RubroType";
+
 import DeleteButton from "../DeleteButton/DeleteButton";
 import EditButton from "../EditButton/EditButton";
 
@@ -19,12 +19,7 @@ export default function ProductTable() {
       descripcion: "",
       precioVenta: 0,
       estadoArticulo: StateType.Alta,
-      rubro: {
-        id: 0,
-        denominacion: "",
-        estadoRubro: StateType.Alta,
-        tipoRubro: RubroType.manufacturado,
-      },
+     
       tiempoEstimadoCocina: 0,
       precioCosto: 0,
       receta: "",
@@ -32,26 +27,22 @@ export default function ProductTable() {
         {
           cantidad: 0,
           articuloInsumo: {
-            id: 0,
-            denominacion: "",
-            descripcion: "",
-            precioVenta: 0,
-            estadoArticulo: StateType.Alta,
-            rubro: {
               id: 0,
               denominacion: "",
-              estadoRubro: StateType.Alta,
-              tipoRubro: RubroType.insumo,
-            },
-            precioCompra: 0,
-            stockActual: 0,
-            stockMinimo: 0,
-            unidadMedida: {
-              id: 0,
-              denominacion: "",
-              abreviatura: "",
-            },
-            url_Imagen: "",
+              descripcion: "",
+              precioVenta: 0,
+              estadoArticulo: StateType.Alta,
+
+              precioCompra: 0,
+              stockActual: 0,
+              stockMinimo: 0,
+              unidadMedida: {
+                  id: 0,
+                  denominacion: "",
+                  abreviatura: "",
+              },
+              url_Imagen: "",
+             
           },
         },
       ],
@@ -79,7 +70,7 @@ export default function ProductTable() {
   const [products, setProducts] = useState<Product[]>([]);
 
   //Variable que muestra el componente Loader
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
 
   //El useEffect se ejecuta cada vez que se renderice el componente
   useEffect(() => {
@@ -125,7 +116,7 @@ export default function ProductTable() {
             {products.map((product) => (
               <tr className="text-center">
                 <td>{product.denominacion}</td>
-                <td>{product.rubro?.denominacion}</td>
+         
                 <td>{product.tiempoEstimadoCocina} min</td>
                 <td>$ {product.precioVenta}</td>
 

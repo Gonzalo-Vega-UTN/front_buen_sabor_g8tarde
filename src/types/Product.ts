@@ -1,4 +1,4 @@
-import { RubroType } from "./RubroType";
+
 import { StateType } from "./StateType";
 
 export interface Product {
@@ -7,12 +7,7 @@ export interface Product {
   descripcion: string;
   precioVenta: number;
   estadoArticulo: StateType;
-  rubro: {
-    id: number;
-    denominacion: string;
-    estadoRubro: StateType;
-    tipoRubro: RubroType;
-  };
+
   tiempoEstimadoCocina: number;
   precioCosto: number;
   receta: string;
@@ -25,12 +20,7 @@ export interface Product {
         descripcion: string;
         precioVenta: number;
         estadoArticulo: StateType;
-        rubro: {
-          id: number;
-          denominacion: string;
-          estadoRubro: StateType;
-          tipoRubro: RubroType;
-        };
+      
         precioCompra: number;
         stockActual: number;
         stockMinimo: number;

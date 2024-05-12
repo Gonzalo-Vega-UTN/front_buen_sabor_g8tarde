@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { ModalType } from "../../types/ModalType";
 import { Product } from "../../types/Product";
-import { Rubro } from "../../types/Rubro";
+
 import { StateType } from "../../types/StateType";
 import { ArticuloInsumo } from "../../types/ArticuloInsumo";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ProductServices } from "../../services/ProductServices";
-import { RubroServices } from "../../services/RubroServices";
+
 import { ArticuloInsumosServices } from "../../services/ArticuloInsumoServices";
 import { toast } from "react-toastify";
 import { getIn } from "formik";
@@ -31,7 +31,7 @@ export default function ProductModal({
   products,
 }: ProductModalProps) {
   //Estado que contiene los rubros recibidos de nuestra API
-  const [rubros, setRubros] = useState<Rubro[]>([]);
+
 
   //Estado que contiene los ingredientes recibidos de nuestra API
   const [ingredients, setIngredients] = useState<ArticuloInsumo[]>([]);
@@ -46,13 +46,7 @@ export default function ProductModal({
   }, []);
 
   //Usamos este hook para obtener los rubros cada vez que se renderice el componente
-  useEffect(() => {
-    const fetchRubros = async () => {
-      const rubros = await RubroServices.getRubros();
-      setRubros(rubros);
-    };
-    fetchRubros();
-  }, []);
+  
 
   //CREATE - ACTUALIZAR
   const handleSaveUpdate = async (pro: Product) => {
@@ -267,37 +261,7 @@ export default function ProductModal({
                     </Form.Control.Feedback>
                   </Form.Group>
 
-                  {/* Rubro */}
-                  <Form.Group as={Col} controlId="formRubro">
-                    <Form.Label>Rubro</Form.Label>
-                    <Form.Select
-                      name="rubro" // Solo necesitas el nombre del campo
-                      value={formik.values.rubro ? formik.values.rubro.id : ""}
-                      onChange={(e) => {
-                        const selectedRubroId = e.target.value;
-                        const selectedRubro = rubros.find(
-                          (rubro) => rubro.id === parseInt(selectedRubroId)
-                        );
-
-                        // Setea el objeto completo de rubro
-                        formik.setFieldValue("rubro", selectedRubro);
-                      }}
-                      onBlur={formik.handleBlur}
-                      isInvalid={Boolean(
-                        formik.errors.rubro && formik.touched.rubro
-                      )}
-                    >
-                      <option value="">Selecciona un rubro</option>
-                      {rubros.map((rubro) => (
-                        <option key={rubro.id} value={rubro.id}>
-                          {rubro.denominacion}
-                        </option>
-                      ))}
-                    </Form.Select>
-                    <Form.Control.Feedback type="invalid">
-                      {formik.errors.rubro?.denominacion}
-                    </Form.Control.Feedback>
-                  </Form.Group>
+                
 
                   {/* Precio de Venta */}
                   <Form.Group as={Col} controlId="formPrecioVenta">

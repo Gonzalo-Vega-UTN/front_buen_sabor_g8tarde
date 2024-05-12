@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { ICliente } from '../../types/ICliente'
 import { ClienteService } from '../../services/ClienteService'
