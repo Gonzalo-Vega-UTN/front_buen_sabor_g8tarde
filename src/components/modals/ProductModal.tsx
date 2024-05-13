@@ -30,13 +30,11 @@ export default function ProductModal({
   prod,
   products,
 }: ProductModalProps) {
-  //Estado que contiene los rubros recibidos de nuestra API
-
-
-  //Estado que contiene los ingredientes recibidos de nuestra API
+  // Estado que contiene los rubros recibidos de nuestra API
+  // Estado que contiene los ingredientes recibidos de nuestra API
   const [ingredients, setIngredients] = useState<ArticuloInsumo[]>([]);
 
-  //Usamos este hook para obtener los INGREDIENTES cada vez que se renderice el componente
+  // Usamos este hook para obtener los INGREDIENTES cada vez que se renderice el componente
   useEffect(() => {
     const fetchArticuloInsumo = async () => {
       const ArticuloInsumo = await ArticuloInsumosServices.getArticuloInsumo();
@@ -45,10 +43,7 @@ export default function ProductModal({
     fetchArticuloInsumo();
   }, []);
 
-  //Usamos este hook para obtener los rubros cada vez que se renderice el componente
-
-
-  //CREATE - ACTUALIZAR
+  // CREATE - ACTUALIZAR
   const handleSaveUpdate = async (pro: Product) => {
     try {
       const isNew = pro.id === 0;
@@ -74,7 +69,7 @@ export default function ProductModal({
     }
   };
 
-  //DELETE
+  // DELETE
   const handleDelete = async () => {
     try {
       await ProductServices.deleteProduct(prod.id);
@@ -91,7 +86,7 @@ export default function ProductModal({
     }
   };
 
-  //Yup, esquema de validacion
+  // Yup, esquema de validacion
   const validationSchema = () => {
     return Yup.object().shape({
       denominacion: Yup.string().required("El nombre es requerido"),
@@ -107,9 +102,15 @@ export default function ProductModal({
     });
   };
 
-  //Formik, crea formulario dinamico y lo bloquea en caso de haber errores
+  // Inicializar detallesArtManufacturado como un array vacío si no está definido en prod
+  const initialValues = {
+    ...prod,
+    detallesArtManufacturado: prod.detallesArtManufacturado || [],
+  };
+
+  // Formik, crea formulario dinamico y lo bloquea en caso de haber errores
   const formik = useFormik({
-    initialValues: prod,
+    initialValues: initialValues,
     validationSchema: validationSchema(),
     validateOnChange: true,
     validateOnBlur: true,
@@ -261,8 +262,6 @@ export default function ProductModal({
                     </Form.Control.Feedback>
                   </Form.Group>
 
-
-
                   {/* Precio de Venta */}
                   <Form.Group as={Col} controlId="formPrecioVenta">
                     <Form.Label> Precio de Venta </Form.Label>
@@ -283,53 +282,58 @@ export default function ProductModal({
 
                   {/* Ingrediente */}
                   <Form.Group as={Col} controlId="formIngredient">
-                    <Form.Label>Ingredientes</Form.Label>
-                    {formik.values.detallesArtManufacturado.map(
-                      (detalle, index) => (
-                        <div
-                          key={index}
-                          className="d-flex align-items-center mb-2"
-                        >
-                          <Form.Select
-                            name={`detallesArtManufacturado[${index}].articuloInsumo.id`}
-                            value={detalle.articuloInsumo.id}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            isInvalid={Boolean(
-                              getIn(
-                                formik.errors,
-                                `detallesArtManufacturado[${index}].articuloInsumo.id`
-                              ) &&
-                              getIn(
-                                formik.touched,
-                                `detallesArtManufacturado[${index}].articuloInsumo.id`
-                              )
-                            )}
-                          >
-                            <option value="">Selecciona un ingrediente</option>
-                            {ingredients.map((ingrediente) => (
-                              <option
-                                key={ingrediente.id}
-                                value={ingrediente.id}
-                              >
-                                {ingrediente.denominacion}
-                              </option>
-                            ))}
-                          </Form.Select>
-                          <Button
-                            variant="outline-danger"
-                            className="ms-2"
-                            onClick={() => removeIngredient(index)}
-                          >
-                            X
-                          </Button>
-                        </div>
-                      )
-                    )}
-                    <Button variant="primary" onClick={() => addIngredient()}>
-                      Agregar Ingrediente
-                    </Button>
-                  </Form.Group>
+  <Form.Label>Ingredientes</Form.Label>
+  {formik.values.detallesArtManufacturado.map((detalle, index) => (
+    <div key={index} className="d-flex align-items-center mb-2">
+      <Form.Select
+        name={`detallesArtManufacturado[${index}].articuloInsumo.id`}
+        value={detalle.articuloInsumo.id}
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        isInvalid={
+          Boolean(
+            getIn(
+              formik.errors,
+              `detallesArtManufacturado[${index}].articuloInsumo.id`
+            ) &&
+            getIn(
+              formik.touched,
+              `detallesArtManufacturado[${index}].articuloInsumo.id`
+            )
+          )
+        }
+      >
+        <option value="">Selecciona un ingrediente</option>
+        {ingredients.map((ingrediente) => (
+          <option key={ingrediente.id} value={ingrediente.id}>
+            {ingrediente.denominacion}
+          </option>
+        ))}
+      </Form.Select>
+      <Form.Control
+        type="number"
+        value={detalle.cantidad}
+        onChange={(e) => {
+          const updatedIngredients = [...formik.values.detallesArtManufacturado];
+          updatedIngredients[index].cantidad = parseInt(e.target.value);
+          formik.setFieldValue("detallesArtManufacturado", updatedIngredients);
+        }}
+        placeholder="Cantidad"
+      />
+      <Button
+        variant="outline-danger"
+        className="ms-2"
+        onClick={() => removeIngredient(index)}
+      >
+        X
+      </Button>
+    </div>
+  ))}
+  <Button variant="primary" onClick={() => addIngredient()}>
+    Agregar Ingrediente
+  </Button>
+</Form.Group>
+
 
                   {/* Estado */}
                   <Form.Group as={Col} controlId="formEstado">
