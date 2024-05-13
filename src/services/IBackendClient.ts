@@ -1,5 +1,4 @@
-export interface BackendClient<T> {
-    
+export interface IBackendClient<T> {
 
     getAll(): Promise<T[]>;
 
@@ -9,6 +8,6 @@ export interface BackendClient<T> {
 
     put(id: number, data: T): Promise<T>;
 
-  
     delete(id: number): Promise<void>;
+    
 }
