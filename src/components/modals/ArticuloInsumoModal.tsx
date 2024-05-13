@@ -202,7 +202,7 @@ export default function ArticuloInsumoModal({
                                                 </option>
                                             ))}
                                         </Form.Select>
-                                       
+
                                     </Form.Group>
                                 </Row>
 

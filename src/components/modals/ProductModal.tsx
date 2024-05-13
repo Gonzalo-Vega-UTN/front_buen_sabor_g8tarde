@@ -46,7 +46,7 @@ export default function ProductModal({
   }, []);
 
   //Usamos este hook para obtener los rubros cada vez que se renderice el componente
-  
+
 
   //CREATE - ACTUALIZAR
   const handleSaveUpdate = async (pro: Product) => {
@@ -177,7 +177,7 @@ export default function ProductModal({
                       onBlur={formik.handleBlur}
                       isInvalid={Boolean(
                         formik.errors.denominacion &&
-                          formik.touched.denominacion
+                        formik.touched.denominacion
                       )}
                     />
                     <Form.Control.Feedback type="invalid">
@@ -253,7 +253,7 @@ export default function ProductModal({
                       onBlur={formik.handleBlur}
                       isInvalid={Boolean(
                         formik.errors.tiempoEstimadoCocina &&
-                          formik.touched.tiempoEstimadoCocina
+                        formik.touched.tiempoEstimadoCocina
                       )}
                     />
                     <Form.Control.Feedback type="invalid">
@@ -261,7 +261,7 @@ export default function ProductModal({
                     </Form.Control.Feedback>
                   </Form.Group>
 
-                
+
 
                   {/* Precio de Venta */}
                   <Form.Group as={Col} controlId="formPrecioVenta">
@@ -300,10 +300,10 @@ export default function ProductModal({
                                 formik.errors,
                                 `detallesArtManufacturado[${index}].articuloInsumo.id`
                               ) &&
-                                getIn(
-                                  formik.touched,
-                                  `detallesArtManufacturado[${index}].articuloInsumo.id`
-                                )
+                              getIn(
+                                formik.touched,
+                                `detallesArtManufacturado[${index}].articuloInsumo.id`
+                              )
                             )}
                           >
                             <option value="">Selecciona un ingrediente</option>
@@ -341,7 +341,7 @@ export default function ProductModal({
                       onBlur={formik.handleBlur}
                       isInvalid={Boolean(
                         formik.errors.estadoArticulo &&
-                          formik.touched.estadoArticulo
+                        formik.touched.estadoArticulo
                       )}
                     >
                       <option value={StateType.Alta}>Alta</option>

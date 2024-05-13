@@ -1,17 +1,18 @@
 import logo from "../../assets/images/Buen sabor logo 1.png";
-import * as Icon from "react-bootstrap-icons";
-
+import { FaTwitter, FaWhatsapp } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
+import { FaFacebook } from "react-icons/fa";
 export default function Footer() {
   return (
     <footer
       className="container border border-dark border-3"
       style={{ backgroundColor: "#FFB20E" }}
     >
-      <div className="container p-4">
+      <div className="container p-2">
         <div className="row">
           <div className="col-lg-6 col-md-12 mb-4 mb-md-0">
-            <div>
-              <img src={logo} alt="Cargando.." className="img-fluid" />
+            <div className="d-flex justify-content-start align-items-center">
+              <img src={logo} alt="Cargando.." className="img-fluid" style={{ maxHeight: "100px" }} />
               <h4 className="fw-bold pt-2">¡GRACIAS POR ELEGIRNOS!</h4>
             </div>
           </div>
@@ -21,7 +22,7 @@ export default function Footer() {
               <h5 className="fw-bold">Contacto</h5>
             </div>
             <div className="d-flex align-items-center">
-              <Icon.Whatsapp size={19} />
+              <FaWhatsapp size={19} />
               <h5 style={{ margin: "0", marginLeft: "8px" }}>2615968435</h5>
             </div>
 
@@ -33,9 +34,9 @@ export default function Footer() {
           <article className="col-lg-3 col-md-6 mb-4 mb-md-0">
             <h5>Seguinos en nuestras redes</h5>
             <div className="pt-2">
-              <Icon.Instagram size={35} className="mx-3" />
-              <Icon.Facebook size={35} className="mx-3" />
-              <Icon.Twitter size={35} className="mx-3" />
+              <FaInstagram size={35} className="mx-3" />
+              <FaFacebook size={35} className="mx-3" />
+              <FaTwitter size={35} className="mx-3" />
             </div>
           </article>
         </div>

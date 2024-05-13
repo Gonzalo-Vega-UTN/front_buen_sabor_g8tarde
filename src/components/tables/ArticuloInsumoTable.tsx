@@ -1,12 +1,13 @@
-import  { useEffect, useState } from "react";
-import { Button, Table } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Table } from "react-bootstrap";
+import Button from "../generic/Button";
 import { ModalType } from "../../types/ModalType";
 import { ArticuloInsumo } from "../../types/ArticuloInsumo";
 import { StateType } from "../../types/StateType";
-import DeleteButton from "../DeleteButton/DeleteButton";
-import EditButton from "../EditButton/EditButton";
-import ArticuloInsumoModal from "../ArticuloInsumoModal/ArticuloInsumoModal";
+import ArticuloInsumoModal from "../modals/ArticuloInsumoModal";
 import { ArticuloInsumosServices } from "../../services/ArticuloInsumoServices";
+import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
+import { CiCirclePlus } from "react-icons/ci";
 
 export default function ArticuloInsumoTable() {
     const initializableNewArticuloInsumo = (): ArticuloInsumo => {
@@ -60,18 +61,13 @@ export default function ArticuloInsumoTable() {
 
     return (
         <div className="container">
-            <Button
-                className="mt-4 mb-3"
-                onClick={() =>
-                    handleClick(
-                        "Nuevo Ingrediente",
-                        initializableNewArticuloInsumo(),
-                        ModalType.CREATE
-                    )
-                }
-            >
-                Nuevo Ingrediente
-            </Button>
+            <Button classes="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Ingrediente" onClick={() =>
+                handleClick(
+                    "Nuevo Producto",
+                    initializableNewArticuloInsumo(),
+                    ModalType.CREATE
+                )}
+            />
             <Table hover>
                 <thead>
                     <tr className="text-center">
@@ -93,26 +89,21 @@ export default function ArticuloInsumoTable() {
                             <td>{articulo.stockActual}</td>
                             <td>{articulo.stockActual - articulo.stockMinimo}</td>
                             <td>
-                                <EditButton
-                                    onClick={() =>
-                                        handleClick(
-                                            "Editar Ingrediente",
-                                            articulo,
-                                            ModalType.UPDATE
-                                        )
-                                    }
-                                />
+                                <Button color="#FBC02D" size={23} icon={BsFillPencilFill} onClick={() =>
+                                    handleClick(
+                                        "Editar Articulo",
+                                        articulo,
+                                        ModalType.UPDATE)
+                                } />
                             </td>
                             <td>
-                                <DeleteButton
-                                    onClick={() =>
-                                        handleClick(
-                                            "Eliminar Ingrediente",
-                                            articulo,
-                                            ModalType.DELETE
-                                        )
-                                    }
-                                />
+                                <Button color="#D32F2F" size={23} icon={BsTrashFill} onClick={() =>
+                                    handleClick(
+                                        "Eliminar Articulo",
+                                        articulo,
+                                        ModalType.DELETE
+                                    )
+                                } />
                             </td>
                         </tr>
                     ))}

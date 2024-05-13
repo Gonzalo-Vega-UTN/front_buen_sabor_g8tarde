@@ -1,6 +1,6 @@
 import { ArticuloInsumo } from "../types/ArticuloInsumo";
 
-const BASE_URL = "http://localhost:8080/api/v1/articulos";
+const BASE_URL = "http://localhost:8080/api/articulos";
 
 export const ArticuloInsumosServices = {
   getArticuloInsumo: async (): Promise<ArticuloInsumo[]> => {

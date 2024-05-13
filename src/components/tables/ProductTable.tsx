@@ -7,9 +7,8 @@ import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { ModalType } from "../../types/ModalType";
 import { StateType } from "../../types/StateType";
-import { RubroType } from "../../types/RubroType";
 
-import ProductModal from "../ProductModal/ProductModal";
+import ProductModal from "../modals/ProductModal";
 
 export default function ProductTable() {
   //Inicializamos un producto por defecto cuando vayamos a crear uno nuevo
@@ -136,7 +135,7 @@ export default function ProductTable() {
           ))}
         </tbody>
       </Table>
-      
+
       {showModal && (
         <ProductModal
           show={showModal}
