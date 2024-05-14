@@ -4,7 +4,7 @@ const BASE_URL = "http://localhost:8080/api/v1";
 
 export const UnidadMedidaServices = {
   getUnidadMedida: async (): Promise<UnidadMedida[]> => {
-    const response = await fetch(`${BASE_URL}/unidadmedidas`);
+    const response = await fetch(`${BASE_URL}/unidadesmedida`);
     const data = response.json();
 
     return data;
@@ -13,7 +13,7 @@ export const UnidadMedidaServices = {
   createUnidadMedida: async (
     unidadMedida: UnidadMedida
   ): Promise<UnidadMedida> => {
-    const response = await fetch(`${BASE_URL}/unidadmedidas`, {
+    const response = await fetch(`${BASE_URL}/unidadesmedida`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

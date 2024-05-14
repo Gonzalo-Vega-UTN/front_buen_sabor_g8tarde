@@ -320,6 +320,12 @@ export default function ProductModal({
         }}
         placeholder="Cantidad"
       />
+      <Form.Control
+        type="text"
+        value={detalle.articuloInsumo.unidadMedida ? detalle.articuloInsumo.unidadMedida.denominacion : ''}
+        readOnly
+        className="ms-2"
+      />
       <Button
         variant="outline-danger"
         className="ms-2"
