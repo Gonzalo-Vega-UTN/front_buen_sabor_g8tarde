@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { ModalType } from "../../types/ModalType";
 import { Product } from "../../types/Product";
+
 import { StateType } from "../../types/StateType";
 import { ArticuloInsumo } from "../../types/ArticuloInsumo";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ProductServices } from "../../services/ProductServices";
+
 import { ArticuloInsumosServices } from "../../services/ArticuloInsumoServices";
 import { toast } from "react-toastify";
 import { getIn } from "formik";
@@ -28,48 +30,38 @@ export default function ProductModal({
   prod,
   products,
 }: ProductModalProps) {
-<<<<<<< Updated upstream
   // Estado que contiene los rubros recibidos de nuestra API
   // Estado que contiene los ingredientes recibidos de nuestra API
   const [ingredients, setIngredients] = useState<ArticuloInsumo[]>([]);
 
   // Usamos este hook para obtener los INGREDIENTES cada vez que se renderice el componente
-=======
-  const [ingredients, setIngredients] = useState<ArticuloInsumo[]>([]);
-  
->>>>>>> Stashed changes
   useEffect(() => {
     const fetchArticuloInsumo = async () => {
-      try {
-        const articuloInsumo = await ArticuloInsumosServices.getArticuloInsumo();
-        setIngredients(articuloInsumo);
-      } catch (error) {
-        console.error(error);
-        // Manejo de errores
-      }
+      const ArticuloInsumo = await ArticuloInsumosServices.getArticuloInsumo();
+      setIngredients(ArticuloInsumo);
     };
     fetchArticuloInsumo();
   }, []);
 
-<<<<<<< Updated upstream
   // CREATE - ACTUALIZAR
-=======
->>>>>>> Stashed changes
   const handleSaveUpdate = async (pro: Product) => {
     try {
       const isNew = pro.id === 0;
       if (isNew) {
         const newProduct = await ProductServices.createProduct(pro);
-        products((prevProducts) => [...prevProducts, newProduct]);
+        let updateData = (prevProducts: any) => [...prevProducts, newProduct];
+        products(updateData); // Agregar el nuevo producto al final del arreglo
       } else {
         await ProductServices.updateProduct(pro.id, pro);
         products((prevProducts) =>
           prevProducts.map((product) => (product.id === pro.id ? pro : product))
         );
       }
+
       toast.success(isNew ? "Producto creado" : "Producto actualizado", {
         position: "top-center",
       });
+
       onHide();
     } catch (error) {
       console.error(error);
@@ -77,17 +69,14 @@ export default function ProductModal({
     }
   };
 
-<<<<<<< Updated upstream
   // DELETE
-=======
->>>>>>> Stashed changes
   const handleDelete = async () => {
     try {
       await ProductServices.deleteProduct(prod.id);
       products((prevProducts) =>
-        prevProducts.filter((product) => product.id !== prod.id)
+        prevProducts.filter((products) => products.id !== prod.id)
       );
-      toast.success("Producto eliminado con éxito", {
+      toast.success("Producto eliminado con exito", {
         position: "top-center",
       });
       onHide();
@@ -97,14 +86,11 @@ export default function ProductModal({
     }
   };
 
-<<<<<<< Updated upstream
   // Yup, esquema de validacion
-=======
->>>>>>> Stashed changes
   const validationSchema = () => {
     return Yup.object().shape({
       denominacion: Yup.string().required("El nombre es requerido"),
-      descripcion: Yup.string().required("La descripción es requerida"),
+      descripcion: Yup.string().required("La descripcion es requerida"),
       receta: Yup.string().required("La receta es requerida"),
       tiempoEstimadoCocina: Yup.number()
         .min(0)
@@ -112,28 +98,10 @@ export default function ProductModal({
       url_Imagen: Yup.string().required("La URL de la imagen es requerida"),
       precioVenta: Yup.number()
         .min(0)
-        .required("El precio de venta es requerido"),
-      detallesArtManufacturado: Yup.array().of(
-        Yup.object().shape({
-          cantidad: Yup.number().required("La cantidad es requerida"),
-          articuloInsumo: Yup.object().shape({
-            id: Yup.string().required(),
-            denominacion: Yup.string().required(),
-            descripcion: Yup.string(),
-            precioVenta: Yup.number(),
-            estadoArticulo: Yup.string(),
-            precioCompra: Yup.number(),
-            stockActual: Yup.number(),
-            stockMinimo: Yup.number(),
-            unidadMedida: Yup.object(),
-            url_Imagen: Yup.string(),
-          }),
-        })
-      ),
+        .required("El precio de Venta es requerido"),
     });
   };
 
-<<<<<<< Updated upstream
   // Inicializar detallesArtManufacturado como un array vacío si no está definido en prod
   const initialValues = {
     ...prod,
@@ -141,8 +109,6 @@ export default function ProductModal({
   };
 
   // Formik, crea formulario dinamico y lo bloquea en caso de haber errores
-=======
->>>>>>> Stashed changes
   const formik = useFormik({
     initialValues: initialValues,
     validationSchema: validationSchema(),
@@ -167,24 +133,25 @@ export default function ProductModal({
   return (
     <>
       {modalType === ModalType.DELETE ? (
-        <Modal show={show} onHide={onHide} centered backdrop="static">
-          <Modal.Header closeButton>
-            <Modal.Title>{title}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>¿Está seguro que desea eliminar el producto?</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={onHide}>
-              Cancelar
-            </Button>
-            <Button variant="danger" onClick={handleDelete}>
-              Eliminar
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        <>
+          <Modal show={show} onHide={onHide} centered backdrop="static">
+            <Modal.Header closeButton>
+              <Modal.Title>{title}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>¿Esta seguro que desea eliminar el producto?</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={onHide}>
+                Cancelar
+              </Button>
+              <Button variant="danger" onClick={handleDelete}>
+                Eliminar
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </>
       ) : (
-<<<<<<< Updated upstream
         <>
           <Modal
             show={show}
@@ -394,69 +361,20 @@ export default function ProductModal({
                   <Button variant="secondary" onClick={onHide}>
                     {" "}
                     Cancelar{" "}
-=======
-        <Modal show={show} onHide={onHide} centered backdrop="static" className="modal-xl">
-          <Modal.Header>
-            <Modal.Title>{title}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form onSubmit={formik.handleSubmit}>
-              <Row className="mb-4">
-                {/* Resto del formulario */}
-              </Row>
-              <Row className="mb-5">
-                <Form.Group as={Col} controlId="formIngredient">
-                  <Form.Label>Ingredientes</Form.Label>
-                  {formik.values.detallesArtManufacturado.map((detalle, index) => (
-                    <div key={index} className="d-flex align-items-center mb-2">
-                      <Form.Select
-                        name={`detallesArtManufacturado[${index}].articuloInsumo.id`}
-                        value={detalle.articuloInsumo.id}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                      >
-                        <option value="">Selecciona un ingrediente</option>
-                        {ingredients.map((ingrediente) => (
-                          <option key={ingrediente.id} value={ingrediente.id}>
-                            {ingrediente.denominacion}
-                          </option>
-                        ))}
-                      </Form.Select>
-                      <Form.Control
-                        type="number"
-                        name={`detallesArtManufacturado[${index}].cantidad`}
-                        value={detalle.cantidad}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        placeholder="Cantidad"
-                        className="ms-2"
-                      />
-                      <Button
-                        variant="outline-danger"
-                        className="ms-2"
-                        onClick={() => removeIngredient(index)}
-                      >
-                        X
-                      </Button>
-                    </div>
-                  ))}
-                  <Button variant="primary" onClick={addIngredient}>
-                    Agregar Ingrediente
->>>>>>> Stashed changes
                   </Button>
-                </Form.Group>
-              </Row>
-              <Modal.Footer className="mt-4">
-                <Button variant="secondary" onClick={onHide}>
-                  Cancelar
-                </Button>
-                <Button variant="primary" type="submit" disabled={!formik.isValid}>
-                  Guardar
-                </Button>
-              </Modal.Footer>
-            </Form>
-          </Modal.Body>
-        </Modal>
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={!formik.isValid}
+                  >
+                    {" "}
+                    Guardar{" "}
+                  </Button>
+                </Modal.Footer>
+              </Form>
+            </Modal.Body>
+          </Modal>
+        </>
       )}
     </>
   );
