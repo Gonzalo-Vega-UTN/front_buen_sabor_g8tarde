@@ -1,4 +1,4 @@
-import ArticuloInsumoTable from "../components/ArticuloInsumoTable/ArticuloInsumoTable";
+import ArticuloInsumoTable from "../components/tables/ArticuloInsumoTable";
 
 export default function ArticuloInsumoPage() {
   return (

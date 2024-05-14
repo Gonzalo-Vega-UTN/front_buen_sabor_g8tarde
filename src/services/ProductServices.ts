@@ -1,24 +1,24 @@
-import { Product } from "../types/Product";
+import { ArticuloManufacturado } from "../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
 
-const BASE_URL = "http://localhost:8080/api/v1/articulos";
+const BASE_URL = "http://localhost:8080/api/articulos/manufacturados";
 
 export const ProductServices = {
-  getProducts: async (): Promise<Product[]> => {
-    const response = await fetch(`${BASE_URL}/manufacturados`);
+  getProducts: async (): Promise<ArticuloManufacturado[]> => {
+    const response = await fetch(`${BASE_URL}`);
     const data = await response.json();
 
     return data;
   },
 
-  getProduct: async (id: number): Promise<Product> => {
-    const response = await fetch(`${BASE_URL}/manufacturados/${id}`);
+  getProduct: async (id: number): Promise<ArticuloManufacturado> => {
+    const response = await fetch(`${BASE_URL}/${id}`);
     const data = await response.json();
 
     return data;
   },
 
-  createProduct: async (product: Product): Promise<Product> => {
-    const response = await fetch(`${BASE_URL}/manufacturados`, {
+  createProduct: async (product: ArticuloManufacturado): Promise<ArticuloManufacturado> => {
+    const response = await fetch(`${BASE_URL}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -30,8 +30,8 @@ export const ProductServices = {
     return data;
   },
 
-  updateProduct: async (id: number, product: Product): Promise<Product> => {
-    const response = await fetch(`${BASE_URL}/manufacturados/${id}`, {
+  updateProduct: async (id: number, product: ArticuloManufacturado): Promise<ArticuloManufacturado> => {
+    const response = await fetch(`${BASE_URL}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -44,7 +44,7 @@ export const ProductServices = {
   },
 
   deleteProduct: async (id: number): Promise<void> => {
-    await fetch(`${BASE_URL}/manufacturados/${id}`, {
+    await fetch(`${BASE_URL}/${id}`, {
       method: "DELETE",
     });
   },
