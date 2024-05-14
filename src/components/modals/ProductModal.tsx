@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { getIn } from "formik";
 import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
+import { ArticuloManufacturadoDetalle } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturadoDetalle";
 
 type ProductModalProps = {
   show: boolean;
@@ -109,14 +110,17 @@ export default function ProductModal({
   });
 
   const addIngredient = () => {
+    const detalles = formik.values.articuloManufacturadoDetalles ?? [];
     formik.setFieldValue("detallesArtManufacturado", [
-      ...formik.values.articuloManufacturadoDetalles,
+      ...detalles,
       { cantidad: 0, articuloInsumo: { id: "", denominacion: "" } },
     ]);
   };
 
   const removeIngredient = (index: number) => {
-    const updatedIngredients = [...formik.values.articuloManufacturadoDetalles];
+    // Verificar si articuloManufacturadoDetalles es null antes de manipularlo
+    const detalles = formik.values.articuloManufacturadoDetalles ?? [];
+    const updatedIngredients = [...detalles];
     updatedIngredients.splice(index, 1);
     formik.setFieldValue("detallesArtManufacturado", updatedIngredients);
   };
@@ -249,58 +253,60 @@ export default function ProductModal({
 
                   <Form.Group as={Col} controlId="formIngredient">
                     <Form.Label>Ingredientes</Form.Label>
-                    {formik.values.articuloManufacturadoDetalles?.map((detalle, index) => (
-                      <div key={index} className="d-flex align-items-center mb-2">
-                        <Form.Select
-                          name={`detallesArtManufacturado[${index}].articuloInsumo.id`}
-                          value={detalle.articuloInsumo?.id || ""}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          isInvalid={
-                            Boolean(
-                              getIn(
-                                formik.errors,
-                                `detallesArtManufacturado[${index}].articuloInsumo.id`
-                              ) &&
-                              getIn(
-                                formik.touched,
-                                `detallesArtManufacturado[${index}].articuloInsumo.id`
-                              )
-                            )
-                          }
-                        >
-                          <option value="">Selecciona un ingrediente</option>
-                          {ingredients.map((ingrediente) => (
-                            <option key={ingrediente.id} value={ingrediente.id}>
-                              {ingrediente.denominacion}
-                            </option>
-                          ))}
-                        </Form.Select>
-                        <Form.Control
-                          type="number"
-                          value={detalle.cantidad || ""}
-                          onChange={(e) => {
-                            const updatedIngredients = [...formik.values.articuloManufacturadoDetalles];
-                            updatedIngredients[index].cantidad = parseInt(e.target.value);
-                            formik.setFieldValue("detallesArtManufacturado", updatedIngredients);
-                          }}
-                          placeholder="Cantidad"
-                        />
-                        <Form.Control
-                          type="text"
-                          value={detalle.articuloInsumo?.unidadMedida ? detalle.articuloInsumo?.unidadMedida.denominacion : ''}
-                          readOnly
-                          className="ms-2"
-                        />
-                        <Button
-                          variant="outline-danger"
-                          className="ms-2"
-                          onClick={() => removeIngredient(index)}
-                        >
-                          X
-                        </Button>
-                      </div>
-                    ))}
+                    
+                    {formik.values.detallesArtManufacturado?.map((detalle: ArticuloManufacturadoDetalle, index: number) => (
+  <div key={index} className="d-flex align-items-center mb-2">
+    <Form.Select
+      name={`detallesArtManufacturado[${index}].articuloInsumo.id`}
+      value={detalle.articuloInsumo?.id || ""}
+      onChange={formik.handleChange}
+      onBlur={formik.handleBlur}
+      isInvalid={
+        Boolean(
+          getIn(
+            formik.errors,
+            `detallesArtManufacturado[${index}].articuloInsumo.id`
+          ) &&
+          getIn(
+            formik.touched,
+            `detallesArtManufacturado[${index}].articuloInsumo.id`
+          )
+        )
+      }
+    >
+      <option value="">Selecciona un ingrediente</option>
+      {ingredients.map((ingrediente) => (
+        <option key={ingrediente.id} value={ingrediente.id}>
+          {ingrediente.denominacion}
+        </option>
+      ))}
+    </Form.Select>
+    <Form.Control
+      type="number"
+      value={detalle.cantidad || ""}
+      onChange={(e) => {
+        const detalles = formik.values.detallesArtManufacturado ?? [];
+        const updatedIngredients = [...detalles];
+        updatedIngredients[index].cantidad = parseInt(e.target.value);
+        formik.setFieldValue("detallesArtManufacturado", updatedIngredients);
+      }}
+      placeholder="Cantidad"
+    />
+    <Form.Control
+      type="text"
+      value={detalle.articuloInsumo?.unidadMedida ? detalle.articuloInsumo?.unidadMedida.denominacion : ''}
+      readOnly
+      className="ms-2"
+    />
+    <Button
+      variant="outline-danger"
+      className="ms-2"
+      onClick={() => removeIngredient(index)}
+    >
+      X
+    </Button>
+  </div>
+))}
                     <Button variant="primary" onClick={() => addIngredient()}>
                       Agregar Ingrediente
                     </Button>

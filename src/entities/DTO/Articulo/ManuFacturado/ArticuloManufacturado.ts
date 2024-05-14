@@ -6,4 +6,5 @@ export class ArticuloManufacturado extends Articulo {
     tiempoEstimadoMinutos: number | null = 0;
     preparacion: string = '';
     articuloManufacturadoDetalles: ArticuloManufacturadoDetalle[] | null = null;
+  detallesArtManufacturado: any;
 }
