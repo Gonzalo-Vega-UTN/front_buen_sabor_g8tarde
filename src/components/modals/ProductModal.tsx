@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { getIn } from "formik";
 import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
+import { ArticuloManufacturadoDetalle } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturadoDetalle";
 
 type ProductModalProps = {
   show: boolean;
@@ -84,11 +85,11 @@ export default function ProductModal({
       denominacion: Yup.string().required("El nombre es requerido"),
       descripcion: Yup.string().required("La descripcion es requerida"),
       preparacion: Yup.string().required("La preparacion es requerida"),
-      alta: Yup.boolean().required("El alta es requerida"),
+      // alta: Yup.number().required("El alta es requerida"),
       tiempoEstimadoMinutos: Yup.number()
         .min(0)
         .required("El tiempo de cocina es requerido"),
-      url_Imagen: Yup.string().required("La URL de la imagen es requerida"),
+      //url_Imagen: Yup.string().required("La URL de la imagen es requerida"),
       precioVenta: Yup.number()
         .min(0)
         .required("El precio de Venta es requerido"),
@@ -110,13 +111,13 @@ export default function ProductModal({
 
   const addIngredient = () => {
     formik.setFieldValue("detallesArtManufacturado", [
-      ...formik.values.articuloManufacturadoDetalles,
+      ...formik.values.articuloManufacturadoDetalles as ArticuloManufacturadoDetalle[],
       { cantidad: 0, articuloInsumo: { id: "", denominacion: "" } },
     ]);
   };
 
   const removeIngredient = (index: number) => {
-    const updatedIngredients = [...formik.values.articuloManufacturadoDetalles];
+    const updatedIngredients = [...formik.values.articuloManufacturadoDetalles as ArticuloManufacturadoDetalle[]];
     updatedIngredients.splice(index, 1);
     formik.setFieldValue("detallesArtManufacturado", updatedIngredients);
   };
@@ -130,7 +131,7 @@ export default function ProductModal({
               <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>¿Esta seguro que desea eliminar el producto?</p>
+              {"¿Esta seguro que desea eliminar el producto?"}
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={onHide}>
@@ -280,7 +281,7 @@ export default function ProductModal({
                           type="number"
                           value={detalle.cantidad || ""}
                           onChange={(e) => {
-                            const updatedIngredients = [...formik.values.articuloManufacturadoDetalles];
+                            const updatedIngredients = [...formik.values.articuloManufacturadoDetalles as ArticuloManufacturadoDetalle[]];
                             updatedIngredients[index].cantidad = parseInt(e.target.value);
                             formik.setFieldValue("detallesArtManufacturado", updatedIngredients);
                           }}
@@ -310,7 +311,7 @@ export default function ProductModal({
                     <Form.Label>Estado</Form.Label>
                     <Form.Select
                       name="alta"
-                      value={formik.values.alta?.toString()}
+                      value={formik.values.alta ? 1 : 0}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       isInvalid={Boolean(
@@ -318,8 +319,8 @@ export default function ProductModal({
                         formik.touched.alta
                       )}
                     >
-                      <option value={StateType.Alta}>Alta</option>
-                      <option value={StateType.Baja}>Baja</option>
+                      <option value={1}>Alta</option>
+                      <option value={0}>Baja</option>
                     </Form.Select>
                     <Form.Control.Feedback type="invalid">
                       {formik.errors.alta}
