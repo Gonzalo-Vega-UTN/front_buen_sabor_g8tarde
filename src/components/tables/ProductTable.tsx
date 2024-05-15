@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { ProductServices } from "../../services/ProductServices";
 import { Table } from "react-bootstrap";
-import Button from "../generic/Button"
+import CustomButton from "../generic/Button"
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { ModalType } from "../../types/ModalType";
-import { StateType } from "../../types/StateType";
-
 import ProductModal from "../modals/ProductModal";
 import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
 
@@ -29,10 +27,24 @@ export default function ProductTable() {
     setShowModal(true);
   };
 
+  const handleSave = async (newProduct: ArticuloManufacturado) => {
+    console.log("AAAAAAAAAAA", newProduct);
+
+    try {
+      if (newProduct.id == 0) {
+        await ProductServices.createProduct(newProduct);
+      } else {
+        await ProductServices.updateProduct(newProduct.id, newProduct);
+      }
+      setProducts(prevProducts => [...prevProducts, newProduct]);
+    } catch (error) {
+      console.error(error);
+    }
+  }
   //Estado que contiene los productos recibidos de nuestra API
 
   //Variable que muestra el componente Loader
-  const [, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   //El useEffect se ejecuta cada vez que se renderice el componente
   useEffect(() => {
@@ -47,10 +59,10 @@ export default function ProductTable() {
 
   return (
     <div className="container">
-      <Button classes="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Producto" onClick={() =>
+      <CustomButton classes="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Producto" onClick={() =>
         handleClick(
           "Nuevo Producto",
-          product,
+          new ArticuloManufacturado(),
           ModalType.CREATE
         )}
       />
@@ -75,11 +87,11 @@ export default function ProductTable() {
               <td>{product.id}</td>
               <td>{product.denominacion}</td>
               <td>{product.tiempoEstimadoMinutos} min</td>
-              <td>$ {(product.precioVenta).toFixed(2)}</td>
+              <td>$ {(product.precioVenta)}</td>
               <td>{product.categoria?.denominacion}</td>
               <td>{product.alta ? "Activo" : "Inactivo"}</td>
               <td>
-                <Button color="#FBC02D" size={23} icon={BsFillPencilFill} onClick={() =>
+                <CustomButton color="#FBC02D" size={23} icon={BsFillPencilFill} onClick={() =>
                   handleClick(
                     "Editar Producto",
                     product,
@@ -87,7 +99,7 @@ export default function ProductTable() {
                 } />
               </td>
               <td>
-                <Button color="#D32F2F" size={23} icon={BsTrashFill} onClick={() =>
+                <CustomButton color="#D32F2F" size={23} icon={BsTrashFill} onClick={() =>
                   handleClick(
                     "Eliminar Producto",
                     product,
@@ -109,6 +121,7 @@ export default function ProductTable() {
           modalType={modalType}
           prod={product}
           products={setProducts}
+          handleSave={handleSave}
         />
       )}
     </div>

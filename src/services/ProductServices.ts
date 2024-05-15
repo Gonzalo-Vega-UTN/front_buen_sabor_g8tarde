@@ -31,6 +31,8 @@ export const ProductServices = {
   },
 
   updateProduct: async (id: number, product: ArticuloManufacturado): Promise<ArticuloManufacturado> => {
+    console.log(product);
+    
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: "PUT",
       headers: {

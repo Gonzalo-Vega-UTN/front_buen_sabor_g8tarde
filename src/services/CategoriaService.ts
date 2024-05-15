@@ -1,54 +1,54 @@
-import { UnidadMedida } from "../entities/DTO/UnidadMedida/UnidadMedida";
+import { Categoria } from "../entities/DTO/Categoria/Categoria";
 
-const BASE_URL = "http://localhost:8080/api/unidades-medida";
+const BASE_URL = "http://localhost:8080/api/categorias";
 
-export const UnidadMedidaServices = {
-  getUnidadesMedida: async (): Promise<UnidadMedida[]> => {
+export const CategoriaService = {
+  getCategorias: async (): Promise<Categoria[]> => {
     const response = await fetch(`${BASE_URL}`);
     const data = response.json();
 
     return data;
   },
 
-  getUnidadMedidaById: async (id : number): Promise<UnidadMedida> => {
+  getCategoriaById: async (id : number): Promise<Categoria> => {
     const response = await fetch(`${BASE_URL}/${id}`);
     const data = response.json();
 
     return data;
   },
 
-  createUnidadMedida: async (
-    unidadMedida: UnidadMedida
-  ): Promise<UnidadMedida> => {
+  createCategoria: async (
+    categoria: Categoria
+  ): Promise<Categoria> => {
     const response = await fetch(`${BASE_URL}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(unidadMedida),
+      body: JSON.stringify(categoria),
     });
     const data = await response.json();
 
     return data;
   },
 
-  updateUnidadMedida: async (
+  updateCategoria: async (
     id: number,
-    unidadMedida: UnidadMedida
-  ): Promise<UnidadMedida> => {
+    categoria: Categoria
+  ): Promise<Categoria> => {
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(unidadMedida),
+      body: JSON.stringify(categoria),
     });
     const data = await response.json();
 
     return data;
   },
 
-  deleteUnidadMedida: async (id: number): Promise<void> => {
+  deleteCategoria: async (id: number): Promise<void> => {
     await fetch(`${BASE_URL}/${id}`, {
       method: "DELETE",
     });
