@@ -11,6 +11,7 @@ export interface ArticuloInsumo {
   precioCompra: number;
   stockActual: number;
   stockMinimo: number;
+  cantidad: number;
   unidadMedida: {
     id: number;
     denominacion: string;

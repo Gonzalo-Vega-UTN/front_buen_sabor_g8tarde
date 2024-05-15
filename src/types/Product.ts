@@ -24,6 +24,7 @@ export interface Product {
         precioCompra: number;
         stockActual: number;
         stockMinimo: number;
+        
         unidadMedida: {
           id: number;
           denominacion: string;

@@ -1,10 +1,10 @@
-import { ArticuloInsumo } from "../types/ArticuloInsumo";
+import { ArticuloInsumo } from "../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 
-const BASE_URL = "http://localhost:8080/api/articulos";
+const BASE_URL = "http://localhost:8080/api/articulos/insumos";
 
 export const ArticuloInsumosServices = {
   getArticuloInsumo: async (): Promise<ArticuloInsumo[]> => {
-    const response = await fetch(`${BASE_URL}/insumos`);
+    const response = await fetch(`${BASE_URL}`);
     const data = response.json();
 
     return data;
@@ -13,7 +13,10 @@ export const ArticuloInsumosServices = {
   createArticuloInsumo: async (
     articuloInsumo: ArticuloInsumo
   ): Promise<ArticuloInsumo> => {
-    const response = await fetch(`${BASE_URL}/insumos`, {
+    
+    
+    
+    const response = await fetch(`${BASE_URL}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -29,7 +32,10 @@ export const ArticuloInsumosServices = {
     id: number,
     articuloInsumo: ArticuloInsumo
   ): Promise<ArticuloInsumo> => {
-    const response = await fetch(`${BASE_URL}/insumos/${id}`, {
+    console.log("BBBBBBBB");
+
+    console.log(articuloInsumo);
+    const response = await fetch(`${BASE_URL}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -42,7 +48,7 @@ export const ArticuloInsumosServices = {
   },
 
   deleteArticuloInsumo: async (id: number): Promise<void> => {
-    await fetch(`${BASE_URL}/insumos/${id}`, {
+    await fetch(`${BASE_URL}/${id}`, {
       method: "DELETE",
     });
   },

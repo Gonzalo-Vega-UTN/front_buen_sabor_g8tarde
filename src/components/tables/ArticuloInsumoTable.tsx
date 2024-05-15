@@ -2,36 +2,18 @@ import { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import Button from "../generic/Button";
 import { ModalType } from "../../types/ModalType";
-import { ArticuloInsumo } from "../../types/ArticuloInsumo";
 import { StateType } from "../../types/StateType";
 import ArticuloInsumoModal from "../modals/ArticuloInsumoModal";
 import { ArticuloInsumosServices } from "../../services/ArticuloInsumoServices";
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
+import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 
 export default function ArticuloInsumoTable() {
-    const initializableNewArticuloInsumo = (): ArticuloInsumo => {
-        return {
-            id: 0,
-            denominacion: "",
-            descripcion: "",
-            precioVenta: 0,
-            estadoArticulo: StateType.Alta,
-            precioCompra: 0,
-            stockActual: 0,
-            stockMinimo: 0,
-            unidadMedida: {
-                id: 0,
-                denominacion: "",
-                abreviatura: "",
-            },
-            url_Imagen: "",
-        };
-    };
 
-    const [articuloInsumo, setArticuloInsumo] = useState<ArticuloInsumo>(
-        initializableNewArticuloInsumo()
-    );
+    const [articuloInsumo, setArticuloInsumo] = useState<ArticuloInsumo>(new ArticuloInsumo());
+    const [articuloInsumos, setArticuloInsumos] = useState<ArticuloInsumo[]>([]);
+
 
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState<ModalType>(ModalType.NONE);
@@ -48,7 +30,6 @@ export default function ArticuloInsumoTable() {
         setShowModal(true);
     };
 
-    const [articuloInsumos, setArticuloInsumos] = useState<ArticuloInsumo[]>([]);
 
     useEffect(() => {
         const fetchArticuloInsumos = async () => {
@@ -64,18 +45,18 @@ export default function ArticuloInsumoTable() {
             <Button classes="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Ingrediente" onClick={() =>
                 handleClick(
                     "Nuevo Producto",
-                    initializableNewArticuloInsumo(),
+                    articuloInsumo,
                     ModalType.CREATE
                 )}
             />
             <Table hover>
                 <thead>
                     <tr className="text-center">
+                        <th>ID</th>
                         <th>Nombre</th>
                         <th>Unidad de Medida</th>
-                        <th>Stock Minimo</th>
-                        <th>Stock Actual</th>
-                        <th>Diferencia Stock</th>
+                        <th>Stock Actual / Stock Maximo</th>
+                        <th>Costo</th>
                         <th>Editar</th>
                         <th>Eliminar</th>
                     </tr>
@@ -83,11 +64,11 @@ export default function ArticuloInsumoTable() {
                 <tbody>
                     {articuloInsumos.map((articulo) => (
                         <tr key={articulo.id} className="text-center">
+                            <td>{articulo.id}</td>
                             <td>{articulo.denominacion}</td>
-                            <td>{articulo.unidadMedida.denominacion}</td>
-                            <td>{articulo.stockMinimo}</td>
-                            <td>{articulo.stockActual}</td>
-                            <td>{articulo.stockActual - articulo.stockMinimo}</td>
+                            <td>{articulo.unidadMedida?.denominacion}</td>
+                            <td>{`${articulo.stockActual} / ${articulo.stockMaximo}`}</td>
+                            <td>{articulo.precioCompra}</td>
                             <td>
                                 <Button color="#FBC02D" size={23} icon={BsFillPencilFill} onClick={() =>
                                     handleClick(

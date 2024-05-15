@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { ModalType } from "../../types/ModalType";
-import { ArticuloInsumo } from "../../types/ArticuloInsumo";
-import { UnidadMedida } from "../../types/UnidadMedida";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ArticuloInsumosServices } from "../../services/ArticuloInsumoServices";
 import { UnidadMedidaServices } from "../../services/UnidadMedidaServices";
 
 import { toast } from "react-toastify";
+import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
+import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
 
 type ArticuloInsumoModalProps = {
     show: boolean;
@@ -39,8 +39,10 @@ export default function ArticuloInsumoModal({
 
     const handleSaveUpdate = async (art: ArticuloInsumo) => {
         try {
+
             const isNew = art.id === 0;
             if (isNew) {
+                
                 const newArticuloInsumo =
                     await ArticuloInsumosServices.createArticuloInsumo(art);
                 let updateData = (prevArtInsumo: any) => [
@@ -49,6 +51,8 @@ export default function ArticuloInsumoModal({
                 ];
                 articulosInsumos(updateData);
             } else {
+            console.log("AAAAAAAAA");
+
                 await ArticuloInsumosServices.updateArticuloInsumo(art.id, art);
                 articulosInsumos((prevArtInsumo) =>
                     prevArtInsumo.map((articuloEdit) =>
@@ -96,18 +100,15 @@ export default function ArticuloInsumoModal({
                 .integer()
                 .min(0)
                 .required("El precio de compra es requerido"),
-            precioVenta: Yup.number()
-                .integer()
-                .min(0)
-                .required("El precio de venta es requerido"),
+            
             stockActual: Yup.number()
                 .integer()
                 .min(0)
                 .required("El stock actual es requerido"),
-            stockMinimo: Yup.number()
+            stockMaximo: Yup.number()
                 .integer()
                 .min(0)
-                .required("El stock mínimo es requerido"),
+                .required("El stock máximo es requerido"),
         });
     };
 
@@ -225,24 +226,7 @@ export default function ArticuloInsumoModal({
                                         </Form.Control.Feedback>
                                     </Form.Group>
 
-                                    <Form.Group as={Col} controlId="formPrecioVenta">
-                                        <Form.Label>Precio de Venta</Form.Label>
-                                        <Form.Control
-                                            name="precioVenta"
-                                            type="number"
-                                            value={formik.values.precioVenta || ""}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            isInvalid={Boolean(
-                                                formik.errors.precioVenta &&
-                                                formik.touched.precioVenta
-                                            )}
-                                        />
-                                        <Form.Control.Feedback type="invalid">
-                                            {formik.errors.precioVenta}
-                                        </Form.Control.Feedback>
-                                    </Form.Group>
-
+                                    
                                     <Form.Group as={Col} controlId="formStockActual">
                                         <Form.Label>Stock Actual</Form.Label>
                                         <Form.Control
@@ -262,20 +246,20 @@ export default function ArticuloInsumoModal({
                                     </Form.Group>
 
                                     <Form.Group as={Col} controlId="formStockMinimo">
-                                        <Form.Label>Stock Mínimo</Form.Label>
+                                        <Form.Label>Stock Máximo</Form.Label>
                                         <Form.Control
-                                            name="stockMinimo"
+                                            name="stockMaximo"
                                             type="number"
-                                            value={formik.values.stockMinimo || ""}
+                                            value={formik.values.stockMaximo || ""}
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
                                             isInvalid={Boolean(
-                                                formik.errors.stockMinimo &&
-                                                formik.touched.stockMinimo
+                                                formik.errors.stockMaximo &&
+                                                formik.touched.stockMaximo
                                             )}
                                         />
                                         <Form.Control.Feedback type="invalid">
-                                            {formik.errors.stockMinimo}
+                                            {formik.errors.stockMaximo}
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </Row>

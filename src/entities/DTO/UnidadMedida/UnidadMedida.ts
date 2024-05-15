@@ -1,5 +1,5 @@
 import { Base } from "../Base";
 
-export class Categoria extends Base {
+export class UnidadMedida extends Base{
     denominacion: string = '';
 }

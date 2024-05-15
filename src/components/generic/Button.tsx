@@ -10,7 +10,7 @@ interface ButtonProps {
   classes?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({ color, icon: Icon, onClick, size = 20, text = "", classes = "" }) => {
+const CustomButton: React.FC<ButtonProps> = ({ color, icon: Icon, onClick, size = 20, text = "", classes = "" }) => {
   return (
     <button className={classes}
       style={{ backgroundColor: color, padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer' }}
@@ -22,4 +22,4 @@ const Button: React.FC<ButtonProps> = ({ color, icon: Icon, onClick, size = 20, 
   )
 }
 
-export default Button;
+export default CustomButton;
