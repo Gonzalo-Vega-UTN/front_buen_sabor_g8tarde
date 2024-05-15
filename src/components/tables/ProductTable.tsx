@@ -40,6 +40,7 @@ export default function ProductTable() {
     } catch (error) {
       console.error(error);
     }
+    //window.location.reload();
   }
   //Estado que contiene los productos recibidos de nuestra API
 
