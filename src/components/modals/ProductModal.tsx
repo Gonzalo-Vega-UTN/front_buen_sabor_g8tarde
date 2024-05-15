@@ -49,7 +49,6 @@ export default function ProductModal({
       toast.success("Producto eliminado con exito", {
         position: "top-center",
       });
-      onHide();
     } catch (error) {
       console.error(error);
       toast.error("Ha ocurrido un error");

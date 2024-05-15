@@ -28,20 +28,25 @@ export default function ProductTable() {
   };
 
   const handleSave = async (newProduct: ArticuloManufacturado) => {
-    console.log("AAAAAAAAAAA", newProduct);
-
     try {
-      if (newProduct.id == 0) {
-        await ProductServices.createProduct(newProduct);
+      if (newProduct.id === 0) {
+        const createdProduct = await ProductServices.createProduct(newProduct);
+        console.log("Se está creando el producto", createdProduct);
+        setProducts(prevProducts => [...prevProducts, createdProduct]);
       } else {
-        await ProductServices.updateProduct(newProduct.id, newProduct);
+        const updatedProduct = await ProductServices.updateProduct(newProduct.id, newProduct);
+        console.log("Se está actualizando el producto", updatedProduct);
+        setProducts(prevProducts =>
+          prevProducts.map(prod =>
+            prod.id === updatedProduct.id ? updatedProduct : prod
+          )
+        );
       }
-      setProducts(prevProducts => [...prevProducts, newProduct]);
     } catch (error) {
       console.error(error);
     }
-    //window.location.reload();
-  }
+    setShowModal(false); // Ocultar el modal después de guardar
+  };
   //Estado que contiene los productos recibidos de nuestra API
 
   //Variable que muestra el componente Loader
