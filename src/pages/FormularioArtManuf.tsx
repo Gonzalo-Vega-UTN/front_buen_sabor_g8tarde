@@ -11,10 +11,14 @@ import { CategoriaService } from '../services/CategoriaService'
 import { UnidadMedida } from '../entities/DTO/UnidadMedida/UnidadMedida'
 import { UnidadMedidaServices } from '../services/UnidadMedidaServices'
 import { AgregarInsumosModal } from '../components/modals/AgregarInsumosModal'
+import { ArticuloInsumo } from '../entities/DTO/Articulo/Insumo/ArticuloInsumo'
+import { ArticuloManufacturadoDetalleTable } from '../components/tables/ArtManufacturadoDetalleTable'
+import { ArticuloManufacturadoDetalle } from '../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturadoDetalle'
 
 
 export const FormularioArtManuf = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [articuloManufacturado, setArticuloManufacturado] = useState<ArticuloManufacturado | null>(null)
 
     const [categorias, setCategorias] = useState<Categoria[]>([])
@@ -23,13 +27,15 @@ export const FormularioArtManuf = () => {
     const [selectedCategoria, setSelectedCategoria] = useState<Categoria | null | undefined>(articuloManufacturado?.categoria)
     const [selectedUnidadMedida, setSelectedUnidadMedida] = useState<UnidadMedida | null | undefined>(articuloManufacturado?.unidadMedida)
 
+    const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([])
+
     const [error, setError] = useState<string | null>(null);
+    const [exito, setExito] = useState<string>("")
     const [submitError, setSubmitError] = useState<boolean>(false);
 
     const [showModal, setShowModal] = useState(false);
     const [title, setTitle] = useState("");
 
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (!id || id == '0') {
@@ -40,12 +46,12 @@ export const FormularioArtManuf = () => {
             try {
                 const articuloManufacturado = await ProductServices.getProduct(Number(id));
                 setArticuloManufacturado(articuloManufacturado);
-
+                setDetalles(articuloManufacturado.articuloManufacturadoDetalles ? articuloManufacturado.articuloManufacturadoDetalles : [])
             } catch (error: any) {
                 setError(error.message);
                 setTimeout(() => {
                     navigate('/productos');
-                }, 1500); // 2 segundos de delay
+                }, 1500); // 1.5 segundos de delay
             }
         };
         fetchData();
@@ -88,13 +94,49 @@ export const FormularioArtManuf = () => {
             })
         );
     };
+
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         if (!articuloManufacturado?.unidadMedida || !articuloManufacturado?.categoria || !articuloManufacturado.denominacion) {
             setSubmitError(true)
+            return;
+        }
+        articuloManufacturado.articuloManufacturadoDetalles = detalles;
+        console.log(articuloManufacturado);
+
+        if (articuloManufacturado.id == 0) {
+            ProductServices.createProduct(articuloManufacturado).then((data) => {
+                setExito("ENTIDAD CREADA CON EXITO")
+                setTimeout(() => {
+                    navigate('/productos');
+                }, 1500); // 1.5 segundos de delay
+            }
+            ).catch(error => {
+                console.log("Algo salio mal CREATE", error);
+
+            })
+        } else {
+            ProductServices.updateProduct(articuloManufacturado.id, articuloManufacturado).then((data) => {
+                setExito("ENTIDAD ACTUALIZADA CON EXITO")
+                setTimeout(() => {
+                    navigate('/productos');
+                }, 1500); // 1.5 segundos de delay
+            }
+            ).catch(error => {
+                console.log("Algo salio mal UPDATE", error);
+
+            })
+
         }
 
     }
+    const handleCantidadChange = (index: number, newCantidad: number) => {
+        setDetalles(prevDetalles => {
+            const updatedDetalles = [...prevDetalles];
+            updatedDetalles[index] = { ...updatedDetalles[index], cantidad: newCantidad };
+            return updatedDetalles;
+        });
+    };
 
 
     const handleOpenModal = (
@@ -105,12 +147,57 @@ export const FormularioArtManuf = () => {
         setTitle(newTitle);
         setShowModal(true);
     };
+    function handleSeleccionInsumos(articulosInsumo: ArticuloInsumo[]): void {
+        // Crear un mapa para un acceso rápido a los insumos nuevos
+        const nuevosInsumosMap = new Map<number, ArticuloInsumo>();
+        articulosInsumo.forEach(articulo => {
+            if (articulo.id !== undefined) { // Asegúrate de que id no es undefined
+                nuevosInsumosMap.set(articulo.id, articulo);
+            }
+        });
+
+        // Filtrar y actualizar los detalles viejos que están en la nueva lista de insumos
+        const detallesActualizados = detalles.filter(detalle => {
+            return detalle.articuloInsumo?.id !== undefined && nuevosInsumosMap.has(detalle.articuloInsumo.id);
+        }).map(detalle => {
+            // Actualiza el insumo del detalle con el nuevo insumo si es necesario
+            if (detalle.articuloInsumo?.id !== undefined) {
+                detalle.articuloInsumo = nuevosInsumosMap.get(detalle.articuloInsumo.id) || detalle.articuloInsumo;
+            }
+            return detalle;
+        });
+
+        // Agregar nuevos detalles para los insumos que no estaban en los detalles viejos
+        articulosInsumo.forEach(articulo => {
+            const exists = detallesActualizados.some(detalle => detalle.articuloInsumo?.id === articulo.id);
+            if (!exists) {
+                const nuevoDetalle = new ArticuloManufacturadoDetalle();
+                nuevoDetalle.articuloInsumo = articulo;
+                detallesActualizados.push(nuevoDetalle);
+            }
+        });
+
+        console.log("detalles actualizados", detallesActualizados);
+
+        // Actualizar el estado con los nuevos detalles
+        setDetalles(detallesActualizados);
+        setShowModal(false)
+    }
+
     return (
         <>
             {error && (
                 <Alert variant="danger" className="text-center mt-5">
                     <Alert.Heading>Oops!</Alert.Heading>
                     <p>{error}</p>
+                    <span>Redirigiendo...</span>
+                </Alert>
+            )}
+
+            {exito && (
+                <Alert variant="success" className="text-center mt-5">
+                    <Alert.Heading>OK!</Alert.Heading>
+                    <p>{exito}</p>
                     <span>Redirigiendo...</span>
                 </Alert>
             )}
@@ -213,16 +300,32 @@ export const FormularioArtManuf = () => {
                                 name='unidadMedida'
                             />
                         </Row>
-                        <Button variant='primary' onClick={() => handleOpenModal("Agregar Insumos")}>Agregar Insumos</Button>
-                        <Row>
-                            {showModal && (
+
+                        {showModal && (
+                            <Row>
                                 <AgregarInsumosModal
                                     show={showModal}
                                     onHide={() => setShowModal(false)}
                                     title={title}
+                                    articulosExistentes={detalles?.map(detalle => detalle.articuloInsumo)}
+                                    handleSave={handleSeleccionInsumos}
                                 />
-                            )}
+
+                            </Row>
+                        )}
+
+                        <Row className='p-5'>
+                            <Button className='mb-2' variant='primary' onClick={() => handleOpenModal("Agregar Insumos")}>Editar Insumos</Button>
+                            {articuloManufacturado.articuloManufacturadoDetalles &&
+                                <ArticuloManufacturadoDetalleTable
+                                    detalles={detalles}
+                                    onCantidadChange={handleCantidadChange}
+                                />
+                            }
                         </Row>
+
+
+
                         <Button className="m-2 p-2" variant="primary" type="submit">Guardar</Button>
                         <Row>
                             {submitError && <h4 className='text-danger'>Completa todos los campos</h4>}
