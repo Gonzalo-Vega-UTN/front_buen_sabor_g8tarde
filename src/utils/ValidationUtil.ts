@@ -22,7 +22,7 @@ export class ValidationUtil{
         return value.length >= min;
     }
     static validatePositive(value: string) : boolean {
-        return value.length >= 0;
+        return value.length > 0;
     }
 
     static validate(validations: ValidationRequest[]) : Record<string, ValidationResult>{

@@ -10,7 +10,7 @@ interface AgregarInsumosProps {
     onHide: () => void;
     title: string;
     handleSave: (articulosInsumo: ArticuloInsumo[]) => void;
-    articulosExistentes : ArticuloInsumo[] | null ;
+    articulosExistentes : ArticuloInsumo[];
 }
 export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulosExistentes  }: AgregarInsumosProps) => {
 

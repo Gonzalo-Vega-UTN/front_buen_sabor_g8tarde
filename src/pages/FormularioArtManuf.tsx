@@ -31,7 +31,7 @@ export const FormularioArtManuf = () => {
 
     const [error, setError] = useState<string | null>(null);
     const [exito, setExito] = useState<string>("")
-    const [submitError, setSubmitError] = useState<boolean>(false);
+    const [submitError, setSubmitError] = useState<string>("");
 
     const [showModal, setShowModal] = useState(false);
     const [title, setTitle] = useState("");
@@ -39,14 +39,16 @@ export const FormularioArtManuf = () => {
 
     useEffect(() => {
         if (!id || id == '0') {
-            setArticuloManufacturado(new ArticuloManufacturado());
+            const artNuevo = new ArticuloManufacturado();
+            artNuevo.articuloManufacturadoDetalles = []
+            setArticuloManufacturado(artNuevo);
             return;
         }
         const fetchData = async () => {
             try {
                 const articuloManufacturado = await ProductServices.getProduct(Number(id));
                 setArticuloManufacturado(articuloManufacturado);
-                setDetalles(articuloManufacturado.articuloManufacturadoDetalles ? articuloManufacturado.articuloManufacturadoDetalles : [])
+                setDetalles(articuloManufacturado.articuloManufacturadoDetalles ? articuloManufacturado.articuloManufacturadoDetalles.filter(detalle => detalle.alta) : [])
             } catch (error: any) {
                 setError(error.message);
                 setTimeout(() => {
@@ -96,12 +98,36 @@ export const FormularioArtManuf = () => {
     };
 
     const handleSubmit = (event: React.FormEvent) => {
+        
         event.preventDefault();
-        if (!articuloManufacturado?.unidadMedida || !articuloManufacturado?.categoria || !articuloManufacturado.denominacion) {
-            setSubmitError(true)
+        
+        if (!articuloManufacturado) {
+            setSubmitError("El artículo manufacturado no está definido");
             return;
         }
+    
+        const { unidadMedida, categoria, denominacion, descripcion, precioVenta } = articuloManufacturado;
         articuloManufacturado.articuloManufacturadoDetalles = detalles;
+
+    
+        if (!unidadMedida || !categoria || !denominacion || !descripcion || precioVenta === 0) {
+            setSubmitError("Completa todos los campos");
+            return;
+        }
+        const detallesConCero = articuloManufacturado.articuloManufacturadoDetalles?.filter(detalle => detalle.cantidad === 0);
+        
+        if (detallesConCero && detallesConCero.length > 0) {
+            setSubmitError("Agrega cantidad a los insumos agregados");
+            return;
+        }
+    
+        if (!articuloManufacturado.articuloManufacturadoDetalles || articuloManufacturado.articuloManufacturadoDetalles.length === 0) {
+            setSubmitError("Agrega insumos");
+            return;
+        }
+    
+       
+
         console.log(articuloManufacturado);
 
         if (articuloManufacturado.id == 0) {
@@ -119,7 +145,7 @@ export const FormularioArtManuf = () => {
             ProductServices.updateProduct(articuloManufacturado.id, articuloManufacturado).then((data) => {
                 setExito("ENTIDAD ACTUALIZADA CON EXITO")
                 setTimeout(() => {
-                    navigate('/productos');
+                   navigate('/productos');
                 }, 1500); // 1.5 segundos de delay
             }
             ).catch(error => {
@@ -181,6 +207,7 @@ export const FormularioArtManuf = () => {
 
         // Actualizar el estado con los nuevos detalles
         setDetalles(detallesActualizados);
+        
         setShowModal(false)
     }
 
@@ -230,7 +257,7 @@ export const FormularioArtManuf = () => {
                                 attribute={articuloManufacturado.descripcion}
                                 validationRules={[
                                     { rule: ValidationEnum.Empty, errorMessage: 'El campo no puede estar vacío' },
-                                    { rule: ValidationEnum.MinLength, errorMessage: `El campo debe tener al menos ${25} caracteres`, min: 25 },
+                                    { rule: ValidationEnum.MinLength, errorMessage: `El campo debe tener al menos ${10} caracteres`, min: 25 },
                                 ]}
                             />
                             <MyFormGroupInput
@@ -242,7 +269,7 @@ export const FormularioArtManuf = () => {
                                 attribute={articuloManufacturado.preparacion}
                                 validationRules={[
                                     { rule: ValidationEnum.Empty, errorMessage: 'El campo no puede estar vacío' },
-                                    { rule: ValidationEnum.MinLength, errorMessage: `El campo debe tener al menos ${30} caracteres`, min: 30 },
+                                    { rule: ValidationEnum.MinLength, errorMessage: `El campo debe tener al menos ${10} caracteres`, min: 30 },
                                 ]}
                             />
 
@@ -328,7 +355,7 @@ export const FormularioArtManuf = () => {
 
                         <Button className="m-2 p-2" variant="primary" type="submit">Guardar</Button>
                         <Row>
-                            {submitError && <h4 className='text-danger'>Completa todos los campos</h4>}
+                            {submitError && <h4 className='text-danger'>{submitError}</h4>}
                         </Row>
                     </Form>
                 </>
