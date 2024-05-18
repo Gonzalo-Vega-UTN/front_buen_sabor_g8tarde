@@ -7,9 +7,10 @@ import { CiCirclePlus } from "react-icons/ci";
 import { ModalType } from "../../types/ModalType";
 import ProductModal from "../modals/ProductModal";
 import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductTable() {
-
+  const navigate = useNavigate();
   //Producto seleccionado que se va a pasar como prop al modal
   const [product, setProduct] = useState<ArticuloManufacturado>(new ArticuloManufacturado());
   const [products, setProducts] = useState<ArticuloManufacturado[]>([]);
@@ -20,7 +21,11 @@ export default function ProductTable() {
   const [title, setTitle] = useState("");
 
   //Logica del modal
-  const handleClick = (newTitle: string, prod: ArticuloManufacturado, modal: ModalType) => {
+  const handleClick = (id: number) => {
+    navigate("/create-product/" + id)
+  };
+
+  const handleClickEliminar = (newTitle: string, prod: ArticuloManufacturado, modal: ModalType) => {
     setTitle(newTitle);
     setModalType(modal);
     setProduct(prod);
@@ -66,11 +71,7 @@ export default function ProductTable() {
   return (
     <div className="container">
       <CustomButton classes="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Producto" onClick={() =>
-        handleClick(
-          "Nuevo Producto",
-          new ArticuloManufacturado(),
-          ModalType.CREATE
-        )}
+        handleClick(0)}
       />
 
       <Table hover>
@@ -98,15 +99,12 @@ export default function ProductTable() {
               <td>{product.alta ? "Activo" : "Inactivo"}</td>
               <td>
                 <CustomButton color="#FBC02D" size={23} icon={BsFillPencilFill} onClick={() =>
-                  handleClick(
-                    "Editar Producto",
-                    product,
-                    ModalType.UPDATE)
+                  handleClick(product.id)
                 } />
               </td>
               <td>
                 <CustomButton color="#D32F2F" size={23} icon={BsTrashFill} onClick={() =>
-                  handleClick(
+                  handleClickEliminar(
                     "Eliminar Producto",
                     product,
                     ModalType.DELETE

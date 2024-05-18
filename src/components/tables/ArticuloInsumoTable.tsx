@@ -8,6 +8,7 @@ import { ArticuloInsumosServices } from "../../services/ArticuloInsumoServices";
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
+import { FaSave } from "react-icons/fa";
 
 export default function ArticuloInsumoTable() {
 
@@ -54,6 +55,7 @@ export default function ArticuloInsumoTable() {
                     <tr className="text-center">
                         <th>ID</th>
                         <th>Nombre</th>
+                        <th>Categoria</th>
                         <th>Unidad de Medida</th>
                         <th>Stock Actual / Stock Maximo</th>
                         <th>Costo</th>
@@ -63,13 +65,14 @@ export default function ArticuloInsumoTable() {
                 </thead>
                 <tbody>
                     {articuloInsumos.map((articulo) => (
-                        <tr key={articulo.id} className="text-center">
-                            <td>{articulo.id}</td>
-                            <td>{articulo.denominacion}</td>
-                            <td>{articulo.unidadMedida?.denominacion}</td>
-                            <td>{`${articulo.stockActual} / ${articulo.stockMaximo}`}</td>
-                            <td>{articulo.precioCompra}</td>
-                            <td>
+                        <tr key={articulo.id} className="text-center ">
+                            <td className={articulo.alta ? "" : "bg-secondary"}>{articulo.id}</td>
+                            <td className={articulo.alta ? "" : "bg-secondary"}>{articulo.denominacion}</td>
+                            <td className={articulo.alta ? "" : "bg-secondary"}>{articulo.categoria?.denominacion}</td>
+                            <td className={articulo.alta ? "" : "bg-secondary"}>{articulo.unidadMedida?.denominacion}</td>
+                            <td className={articulo.alta ? "" : "bg-secondary"}>{`${articulo.stockActual} / ${articulo.stockMaximo}`}</td>
+                            <td className={articulo.alta ? "" : "bg-secondary"}> {articulo.precioCompra}</td>
+                            <td className={articulo.alta ? "" : "bg-secondary"}>
                                 <Button color="#FBC02D" size={23} icon={BsFillPencilFill} onClick={() =>
                                     handleClick(
                                         "Editar Articulo",
@@ -77,10 +80,10 @@ export default function ArticuloInsumoTable() {
                                         ModalType.UPDATE)
                                 } />
                             </td>
-                            <td>
-                                <Button color="#D32F2F" size={23} icon={BsTrashFill} onClick={() =>
+                            <td className={articulo.alta ? "" : "bg-secondary"}>
+                                <Button color={articulo.alta ? "#D32F2F" : "#50C878"} size={23} icon={articulo.alta ? BsTrashFill : FaSave } onClick={() =>
                                     handleClick(
-                                        "Eliminar Articulo",
+                                        "Alta/Baja Articulo",
                                         articulo,
                                         ModalType.DELETE
                                     )

@@ -12,6 +12,9 @@ export const ProductServices = {
 
   getProduct: async (id: number): Promise<ArticuloManufacturado> => {
     const response = await fetch(`${BASE_URL}/${id}`);
+    if (!response.ok) {
+      throw new Error("No se puede encontrar el Articulo " + id);
+  }
     const data = await response.json();
 
     return data;

@@ -6,7 +6,7 @@ const Sidebar = () => {
         <div className="col-auto col-sm-2 bg-dark d-flex flex-column justify-content-between min-vh-100" style={{ width: "100%" }}>
             <div>
                 <Link to="" className="text-decoration-none ms-4 d-flex align-items-center  d-none d-sm-inline "></Link>
-                <span className="fs-4 text-white">Side Menu</span>
+                <span className="fs-4 text-white">Buen Sabor</span>
                 <hr className="text-white d-none d-sm-block" />
                 <ul
                     className="nav nav-pills flex-column"
@@ -17,9 +17,9 @@ const Sidebar = () => {
                     <li className="nav-item">
                         <Link to="/ingredientes" className="nav-link text-white">Ingredientes</Link>
                     </li>
-                    <li className="nav-item disabled">
+                    {/* <li className="nav-item disabled">
                         <Link to="#" className="nav-link">#</Link>
-                    </li>
+                    </li> */}
                 </ul>
             </div>
 

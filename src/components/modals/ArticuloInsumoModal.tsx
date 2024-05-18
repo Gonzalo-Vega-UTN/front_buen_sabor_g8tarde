@@ -31,7 +31,7 @@ export default function ArticuloInsumoModal({
 
     useEffect(() => {
         const fetchUnidadMedida = async () => {
-            const unidad = await UnidadMedidaServices.getUnidadMedida();
+            const unidad = await UnidadMedidaServices.getUnidadesMedida();
             setUnidad(unidad);
         };
         fetchUnidadMedida();
@@ -73,19 +73,38 @@ export default function ArticuloInsumoModal({
     };
 
     const handleDelete = async () => {
-        try {
-            await ArticuloInsumosServices.deleteArticuloInsumo(articulo.id);
-            articulosInsumos((prevArtInsumo) =>
-                prevArtInsumo.filter((insumo) => insumo.id !== articulo.id)
-            );
-            toast.success("Ingrediente eliminado con éxito", {
-                position: "top-center",
-            });
-            onHide();
-        } catch (error) {
-            console.error(error);
-            toast.error("Ha ocurrido un error");
+        if(articulo.alta){
+            try {
+                await ArticuloInsumosServices.deleteArticuloInsumo(articulo.id);
+                articulosInsumos((prevArtInsumo) =>
+                    prevArtInsumo.filter((insumo) => insumo.id !== articulo.id)
+                );
+                toast.success("Ingrediente eliminado con éxito", {
+                    position: "top-center",
+                });
+                onHide();
+            } catch (error) {
+                console.error(error);
+                toast.error("Ha ocurrido un error");
+            }
+        }else{
+            try {
+                articulo.alta = true;
+                await ArticuloInsumosServices.updateArticuloInsumo(articulo.id, articulo);
+                articulosInsumos((prevArtInsumo) =>
+                    prevArtInsumo.filter((insumo) => insumo.id !== articulo.id)
+                );
+                toast.success("Ingrediente eliminado con éxito", {
+                    position: "top-center",
+                });
+                onHide();
+            } catch (error) {
+                console.error(error);
+                toast.error("Ha ocurrido un error");
+            }
         }
+        window.location.reload()
+        
     };
 
     const validationSchema = () => {
