@@ -1,0 +1,41 @@
+.sidebar {
+    transition: width 0.3s;
+}
+
+.sidebar.collapsed {
+    width: 125px; /* Ancho de la barra lateral cuando está oculta */
+}
+
+.sidebar.expanded {
+    width: 300px; /* Ancho de la barra lateral cuando está expandida */
+}
+
+.nav-link {
+    padding: 10px;
+    font-size: 1.1rem;
+    transition: background-color 0.3s, color 0.3s;
+    cursor: pointer; /* Añadido para que el cursor cambie a pointer */
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link.active {
+    border: 2px solid white;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: bold;
+}
+
+.fs-4 {
+    font-weight: bold;
+}
+
+.submenu {
+    padding-left: 20px;
+}
+
+.submenu .nav-link {
+    font-size: 1rem;
+}
