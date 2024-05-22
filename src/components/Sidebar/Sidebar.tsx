@@ -42,6 +42,18 @@ const Sidebar = () => {
                         Empresas
                     </Link>
                 </li>
+
+                <li className="nav-item">
+                    <Link 
+                        to="/sucursal" 
+                        className={`nav-link text-white ${location.pathname === '/sucursal' || selected === '/sucursal' ? 'active' : ''}`}
+                        onClick={() => handleClick('/sucursal')}
+                    >
+                        Sucursal
+                    </Link>
+                </li>
+
+
                 <li className="nav-item">
                     <span 
                         className={`nav-link text-white ${location.pathname.startsWith('/productos') || selected.startsWith('/productos') ? 'active' : ''}`} 
@@ -79,6 +91,46 @@ const Sidebar = () => {
                         onClick={() => handleClick('/ingredientes')}
                     >
                         Ingredientes
+                    </Link>
+                </li>
+
+                <li className="nav-item">
+                    <Link 
+                        to="/promociones" 
+                        className={`nav-link text-white ${location.pathname === '/promociones' || selected === '/promociones' ? 'active' : ''}`}
+                        onClick={() => handleClick('/promociones')}
+                    >
+                        Promociones
+                    </Link>
+                </li>
+
+                <li className="nav-item">
+                    <Link 
+                        to="/pedidos" 
+                        className={`nav-link text-white ${location.pathname === '/pedidos' || selected === '/pedidos' ? 'active' : ''}`}
+                        onClick={() => handleClick('/pedidos')}
+                    >
+                        Pedidos
+                    </Link>
+                </li>
+
+                <li className="nav-item">
+                    <Link 
+                        to="/clientes" 
+                        className={`nav-link text-white ${location.pathname === '/clientes' || selected === '/clientes' ? 'active' : ''}`}
+                        onClick={() => handleClick('/clientes')}
+                    >
+                        Clientes
+                    </Link>
+                </li>
+
+                <li className="nav-item">
+                    <Link 
+                        to="/estadisticas" 
+                        className={`nav-link text-white ${location.pathname === '/estadisticas' || selected === '/estadisticas' ? 'active' : ''}`}
+                        onClick={() => handleClick('/estadisticas')}
+                    >
+                        Estadisticas
                     </Link>
                 </li>
             
