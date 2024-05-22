@@ -5,7 +5,7 @@ import axios from 'axios';
 interface Empresa {
   [x: string]: any;
   nombre: string;
-  razonsocial: string;
+  razonSocial: string;
   cuil: string;
 }
 
@@ -15,7 +15,7 @@ interface AddEmpresaFormProps {
 }
 
 const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEditando }) => {
-  const [empresa, setEmpresa] = useState<Empresa>({ nombre: '', razonsocial: '', cuil: '' });
+  const [empresa, setEmpresa] = useState<Empresa>({ nombre: '', razonSocial: '', cuil: '' });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
@@ -39,7 +39,7 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEd
         await axios.post('http://localhost:8080/api/empresas', empresa);
       }
       setSuccess(true);
-      setEmpresa({ nombre: '', razonsocial: '', cuil: '' });
+      setEmpresa({ nombre: '', razonSocial: '', cuil: '' });
       setError(null);
       onAddEmpresa();
     } catch (err) {
@@ -62,11 +62,11 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEd
             required
           />
         </Form.Group>
-        <Form.Group controlId="razonsocial">
+        <Form.Group controlId="razonSocial">
           <Form.Label>Razón Social</Form.Label>
           <Form.Control
             type="text"
-            name="razonsocial"
+            name="razonSocial"
             value={empresa.razonsocial}
             onChange={handleChange}
             required

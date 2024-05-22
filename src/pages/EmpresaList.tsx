@@ -8,8 +8,8 @@ import AddEmpresaForm from './AddEmpresaForm';
 interface Empresa {
   id: number;
   nombre: string;
-  razonsocial: string;
-  cuil: number;
+  razonSocial: string;
+  cuil: string;
 }
 
 const EmpresaList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
@@ -61,7 +61,7 @@ const EmpresaList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
                   <Card.Title>{empresa.nombre}</Card.Title>
                   <Card.Text>
                     <strong>ID:</strong> {empresa.id} <br />
-                    <strong>Razón Social:</strong> {empresa.razonsocial} <br />
+                    <strong>Razón Social:</strong> {empresa.razonSocial} <br />
                     <strong>CUIL:</strong> {empresa.cuil}
                   </Card.Text>
                   <Button onClick={() => handleEdit(empresa)}>

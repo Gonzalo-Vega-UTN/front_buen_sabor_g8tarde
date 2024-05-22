@@ -20,7 +20,7 @@ const EmpresasPage: React.FC = () => {
       </Row>
       <Row>
         <Col>
-          <AddEmpresaForm onAddEmpresa={handleAddEmpresa} />
+          <AddEmpresaForm onAddEmpresa={handleAddEmpresa} empresaEditando={null} />
         </Col>
       </Row>
     </Container>
