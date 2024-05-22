@@ -6,7 +6,7 @@ interface Empresa {
   [x: string]: any;
   nombre: string;
   razonsocial: string;
-  cuil: number;
+  cuil: string;
 }
 
 interface AddEmpresaFormProps {
@@ -15,7 +15,7 @@ interface AddEmpresaFormProps {
 }
 
 const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEditando }) => {
-  const [empresa, setEmpresa] = useState<Empresa>({ nombre: '', razonsocial: '', cuil: 0 });
+  const [empresa, setEmpresa] = useState<Empresa>({ nombre: '', razonsocial: '', cuil: '' });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
@@ -39,7 +39,7 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEd
         await axios.post('http://localhost:8080/api/empresas', empresa);
       }
       setSuccess(true);
-      setEmpresa({ nombre: '', razonsocial: '', cuil: 0 });
+      setEmpresa({ nombre: '', razonsocial: '', cuil: '' });
       setError(null);
       onAddEmpresa();
     } catch (err) {
