@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
 
 interface Empresa {
+  [x: string]: any;
   nombre: string;
   razonsocial: string;
   cuil: number;
@@ -10,12 +11,19 @@ interface Empresa {
 
 interface AddEmpresaFormProps {
   onAddEmpresa: () => void;
+  empresaEditando: Empresa | null;
 }
 
-const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa }) => {
+const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEditando }) => {
   const [empresa, setEmpresa] = useState<Empresa>({ nombre: '', razonsocial: '', cuil: 0 });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (empresaEditando) {
+      setEmpresa(empresaEditando);
+    }
+  }, [empresaEditando]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -25,20 +33,24 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa }) => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      await axios.post('http://localhost:8080/api/empresas', empresa);
+      if (empresaEditando) {
+        await axios.put(`http://localhost:8080/api/empresas/${empresaEditando.id}`, empresa);
+      } else {
+        await axios.post('http://localhost:8080/api/empresas', empresa);
+      }
       setSuccess(true);
       setEmpresa({ nombre: '', razonsocial: '', cuil: 0 });
       setError(null);
       onAddEmpresa();
     } catch (err) {
-      setError('Error al crear la empresa');
+      setError('Error al crear o actualizar la empresa');
       setSuccess(false);
     }
   };
 
   return (
     <div>
-      <h2>Agregar Empresa</h2>
+      <h2>{empresaEditando ? 'Editar Empresa' : 'Agregar Empresa'}</h2>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="nombre">
           <Form.Label>Nombre</Form.Label>
@@ -71,10 +83,10 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa }) => {
           />
         </Form.Group>
         <Button variant="primary" type="submit">
-          Agregar
+          {empresaEditando ? 'Actualizar' : 'Agregar'}
         </Button>
       </Form>
-      {success && <Alert variant="success">Empresa creada con éxito</Alert>}
+      {success && <Alert variant="success">{empresaEditando ? 'Empresa actualizada con éxito' : 'Empresa creada con éxito'}</Alert>}
       {error && <Alert variant="danger">{error}</Alert>}
     </div>
   );

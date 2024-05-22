@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Table } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import AddEmpresaForm from './AddEmpresaForm';
 
 interface Empresa {
   id: number;
@@ -12,6 +15,7 @@ interface Empresa {
 const EmpresaList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [empresaEditando, setEmpresaEditando] = useState<Empresa | null>(null);
 
   const fetchEmpresas = () => {
     axios.get('http://localhost:8080/api/empresas')
@@ -33,31 +37,43 @@ const EmpresaList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
     fetchEmpresas();
   }, [refresh]);
 
+  const handleEdit = (empresa: Empresa) => {
+    setEmpresaEditando(empresa);
+  };
+
+  const handleAddEmpresa = () => {
+    setEmpresaEditando(null);
+    fetchEmpresas();
+  };
+
   return (
-    <div>
+    <Container>
       <h2>Empresas</h2>
       {error && <p>{error}</p>}
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Razon Social</th>
-            <th>CUIL</th>
-          </tr>
-        </thead>
-        <tbody>
+      {empresaEditando ? (
+        <AddEmpresaForm onAddEmpresa={handleAddEmpresa} empresaEditando={empresaEditando} />
+      ) : (
+        <Row>
           {empresas.map(empresa => (
-            <tr key={empresa.id}>
-              <td>{empresa.id}</td>
-              <td>{empresa.nombre}</td>
-              <td>{empresa.razonsocial}</td>
-              <td>{empresa.cuil}</td>
-            </tr>
+            <Col key={empresa.id} sm={12} md={6} lg={4} className="mb-4">
+              <Card>
+                <Card.Body>
+                  <Card.Title>{empresa.nombre}</Card.Title>
+                  <Card.Text>
+                    <strong>ID:</strong> {empresa.id} <br />
+                    <strong>Razón Social:</strong> {empresa.razonsocial} <br />
+                    <strong>CUIL:</strong> {empresa.cuil}
+                  </Card.Text>
+                  <Button onClick={() => handleEdit(empresa)}>
+                    <FontAwesomeIcon icon={faEdit} />
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
           ))}
-        </tbody>
-      </Table>
-    </div>
+        </Row>
+      )}
+    </Container>
   );
 };
 
