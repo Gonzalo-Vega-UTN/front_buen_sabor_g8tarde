@@ -23,12 +23,12 @@ const SucursalList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
       try {
         const data = await fetchSucursales();
         setSucursales(data);
-      } catch (error) { // Elimina la anotación de tipo aquí
+      } catch (error) {
         if (error instanceof Error) {
-            setError(error.message);
-          } else {
-            setError("An unknown error occurred");
-          }
+          setError(error.message);
+        } else {
+          setError("An unknown error occurred");
+        }
       }
     };
 

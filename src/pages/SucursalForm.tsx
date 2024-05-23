@@ -6,7 +6,7 @@ interface Sucursal {
   id: number;
   nombre: string;
   horarioApertura: string;
-  horarioCierre: string;
+  horarioCierre: string ;
   // Añade otras propiedades de Sucursal si es necesario
 }
 
@@ -19,7 +19,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalE
   const [sucursal, setSucursal] = useState<Sucursal>({
     id: 0,
     nombre: '',
-    horarioApertura: '',
+    horarioApertura:'',
     horarioCierre: '',
     // Añade otras propiedades de Sucursal si es necesario
   });
