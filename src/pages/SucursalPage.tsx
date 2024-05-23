@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import SucursalList from './SucursalList';
 import SucursalForm from './SucursalForm';
+import { useParams } from 'react-router-dom';
 
 const SucursalesPage: React.FC = () => {
+  const { id } = useParams();
   const [refreshSucursales, setRefreshSucursales] = useState(false);
 
   const handleAddSucursal = () => {
@@ -15,14 +17,23 @@ const SucursalesPage: React.FC = () => {
       <h1>Gestión de Sucursales</h1>
       <Row>
         <Col>
-          <SucursalList refresh={refreshSucursales} />
+          {id ? (
+            <SucursalList refresh={refreshSucursales} empresaId={Number(id)} />
+          ) : (
+            <SucursalList refresh={refreshSucursales} />
+          )}
         </Col>
       </Row>
-      <Row>
-        <Col>
-          <SucursalForm onAddSucursal={handleAddSucursal} sucursalEditando={null} />
-        </Col>
-      </Row>
+      {id &&(
+            <Row>
+
+            <Col>
+            
+              <SucursalForm onAddSucursal={handleAddSucursal} sucursalEditando={null} idEmpresa={Number(id)} />
+            </Col>
+          </Row>
+          ) }
+      
     </Container>
   );
 };

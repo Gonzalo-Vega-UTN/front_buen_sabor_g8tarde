@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import AddEmpresaForm from './AddEmpresaForm';
+import { useNavigate } from 'react-router-dom';
 
 interface Empresa {
   id: number;
@@ -16,6 +17,7 @@ const EmpresaList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [empresaEditando, setEmpresaEditando] = useState<Empresa | null>(null);
+  const navigate = useNavigate(); // Usa useNavigate
 
   const fetchEmpresas = () => {
     axios.get('http://localhost:8080/api/empresas')
@@ -45,6 +47,9 @@ const EmpresaList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
     setEmpresaEditando(null);
     fetchEmpresas();
   };
+  const handleCardClick = (empresaId: number) => {
+    navigate(`/sucursales/${empresaId}`); // Redirige a la página de sucursales
+  };
 
   return (
     <Container>
@@ -56,7 +61,7 @@ const EmpresaList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
         <Row>
           {empresas.map(empresa => (
             <Col key={empresa.id} sm={12} md={6} lg={4} className="mb-4">
-              <Card>
+              <Card onClick={() => handleCardClick(empresa.id)}>
                 <Card.Body>
                   <Card.Title>{empresa.nombre}</Card.Title>
                   <Card.Text>

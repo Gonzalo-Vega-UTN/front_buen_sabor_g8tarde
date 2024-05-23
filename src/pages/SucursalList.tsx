@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { fetchSucursales } from '../services/SucursalService';
+import { fetchSucursales, fetchSucursalesByEmpresaId } from '../services/SucursalService';
 import SucursalForm from './SucursalForm';
 
 interface Sucursal {
@@ -10,10 +10,14 @@ interface Sucursal {
   nombre: string;
   horarioApertura: string;
   horarioCierre: string;
-  // Añade otras propiedades de Sucursal si es necesario
 }
 
-const SucursalList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
+interface SucursalListProps {
+  refresh: boolean;
+  empresaId?: number;
+}
+
+const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresaId }) => {
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [sucursalEditando, setSucursalEditando] = useState<Sucursal | null>(null);
@@ -21,7 +25,13 @@ const SucursalList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
   useEffect(() => {
     const getSucursales = async () => {
       try {
-        const data = await fetchSucursales();
+        let data;
+        if (empresaId) {
+          console.log("Entre por id")
+          data = await fetchSucursalesByEmpresaId(empresaId);
+        } else {
+          data = await fetchSucursales();
+        }
         setSucursales(data);
       } catch (error) {
         if (error instanceof Error) {
@@ -33,7 +43,7 @@ const SucursalList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
     };
 
     getSucursales();
-  }, [refresh]);
+  }, [refresh, empresaId]);
 
   const handleEdit = (sucursal: Sucursal) => {
     setSucursalEditando(sucursal);
@@ -49,7 +59,7 @@ const SucursalList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
       <h2>Sucursales</h2>
       {error && <p>{error}</p>}
       {sucursalEditando ? (
-        <SucursalForm onAddSucursal={handleAddSucursal} sucursalEditando={sucursalEditando} />
+        <SucursalForm onAddSucursal={handleAddSucursal} sucursalEditando={sucursalEditando} idEmpresa={empresaId} />
       ) : (
         <Row>
           {sucursales.map(sucursal => (

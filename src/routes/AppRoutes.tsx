@@ -15,6 +15,7 @@ export default function AppRoutes() {
       <Route path="/ingredientes" element={<ArticuloInsumoPage />} />
       <Route path="/empresas" element={<EmpresasPage />} />
       <Route path="/sucursales" element={<SucursalesPage />} />
+      <Route path="/sucursales/:id" element={<SucursalesPage />} />
     </Routes>
   );
 }

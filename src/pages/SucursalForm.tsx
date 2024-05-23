@@ -6,22 +6,23 @@ interface Sucursal {
   id: number;
   nombre: string;
   horarioApertura: string;
-  horarioCierre: string ;
-  // Añade otras propiedades de Sucursal si es necesario
+  horarioCierre: string;
+  idEmpresa: number;
 }
 
 interface AddSucursalFormProps {
   onAddSucursal: () => void;
   sucursalEditando: Sucursal | null;
+  idEmpresa: number;
 }
 
-const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalEditando }) => {
+const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalEditando, idEmpresa }) => {
   const [sucursal, setSucursal] = useState<Sucursal>({
     id: 0,
     nombre: '',
-    horarioApertura:'',
+    horarioApertura: '',
     horarioCierre: '',
-    // Añade otras propiedades de Sucursal si es necesario
+    idEmpresa: idEmpresa, // Inicializa el ID de la empresa con el valor recibido desde el prop
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
@@ -46,7 +47,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalE
         await createSucursal(sucursal);
       }
       setSuccess(true);
-      setSucursal({ id: 0, nombre: '', horarioApertura: '', horarioCierre: '' });
+      setSucursal({ id: 0, nombre: '', horarioApertura: '', horarioCierre: '', idEmpresa: idEmpresa }); // Reinicializa el estado de sucursal con el ID de empresa
       setError(null);
       onAddSucursal();
     } catch (err) {
