@@ -45,9 +45,9 @@ const Sidebar = () => {
 
                 <li className="nav-item">
                     <Link 
-                        to="/sucursal" 
+                        to="/sucursales" 
                         className={`nav-link text-white ${location.pathname === '/sucursal' || selected === '/sucursal' ? 'active' : ''}`}
-                        onClick={() => handleClick('/sucursal')}
+                        onClick={() => handleClick('/sucursales')}
                     >
                         Sucursal
                     </Link>

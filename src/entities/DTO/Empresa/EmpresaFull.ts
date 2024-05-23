@@ -1,6 +1,8 @@
+import { SucursalFull } from "../Sucursal/SucursalFull";
+
 class EmpresaFull {
     nombre: string = '';
     razonSocial: string = '';
     cuil: string = '' ;
-    sucursalFullDto: SucursalFull | null = null;
+    sucursalFull: SucursalFull = new SucursalFull();
 }
