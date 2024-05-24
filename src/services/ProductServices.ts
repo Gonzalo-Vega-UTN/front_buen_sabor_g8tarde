@@ -10,6 +10,13 @@ export const ProductServices = {
     return data;
   },
 
+  getProductsFiltered: async (idCategoria : number , idUnidadMedida : number): Promise<ArticuloManufacturado[]> => {
+    const response = await fetch(`${BASE_URL}`);
+    const data = await response.json();
+
+    return data;
+  },
+
   getProduct: async (id: number): Promise<ArticuloManufacturado> => {
     const response = await fetch(`${BASE_URL}/${id}`);
     if (!response.ok) {
