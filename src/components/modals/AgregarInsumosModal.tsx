@@ -5,6 +5,11 @@ import { ArticuloInsumosServices } from '../../services/ArticuloInsumoServices';
 import { BsTrashFill } from 'react-icons/bs';
 import CustomButton from '../generic/Button';
 import { FaSave } from 'react-icons/fa';
+import { Categoria } from '../../entities/DTO/Categoria/Categoria';
+import { CategoriaService } from '../../services/CategoriaService';
+import { UnidadMedidaServices } from '../../services/UnidadMedidaServices';
+import { UnidadMedida } from '../../types/UnidadMedida';
+import FiltroProductos from '../Filtrado/FiltroArticulo';
 interface AgregarInsumosProps {
     show: boolean;
     onHide: () => void;
@@ -14,31 +19,48 @@ interface AgregarInsumosProps {
 }
 export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulosExistentes  }: AgregarInsumosProps) => {
 
-    const [listaArticulos, setListaArticulos] = useState<ArticuloInsumo[]>([]);
     const [listaFiltrada, setListaFiltrada] = useState<ArticuloInsumo[]>([]);
 
-    const [searchedText, setSearchedText] = useState<string>('')
+    const [categorias, setCategorias] = useState<Categoria[]>([])
+    const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([])
 
     const [articulosAgregados, setArticulosAgregados] = useState<ArticuloInsumo[]>(articulosExistentes? articulosExistentes : [] )
 
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<number>();
+    const [unidadMedidaSeleccionada, setUnidadMedidaSeleccionada] = useState<number>();
+    const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
+
+
+    const fetchDataArticulosInsumo = async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string) => {
+        const articulos = await ArticuloInsumosServices.getArticuloInsumoFiltered(idCategoria, idUnidadMedida, denominacion );
+        setListaFiltrada(articulos);
+        setArticulosAgregados([...articulosAgregados])
+    };
+    
     useEffect(() => {
-        const fetchData = async () => {
-            const articulos = await ArticuloInsumosServices.getArticuloInsumo();
-            setListaArticulos(articulos);
-            setListaFiltrada(articulos);
-            setArticulosAgregados([...articulosAgregados])
-        };
-        fetchData();
+       
+        fetchDataArticulosInsumo();
     }, []);
 
 
     useEffect(() => {
-        // Filtrar la lista basada en el término de búsqueda
-        const filtered = listaArticulos.filter(articulo =>
-            articulo.denominacion.toLowerCase().includes(searchedText.toLowerCase())
-        );
-        setListaFiltrada(filtered);
-    }, [searchedText, listaArticulos]);
+        const fetchCategorias = async () => {
+          const categorias = await CategoriaService.getCategorias();
+          setCategorias(categorias);
+        };
+    
+        fetchCategorias();
+      }, []);
+    
+      useEffect(() => {
+        const fetchUnidadadMedida = async () => {
+          const unidadesMedida = await UnidadMedidaServices.getUnidadesMedida();
+          setUnidadesMedida(unidadesMedida);
+        };
+    
+        fetchUnidadadMedida();
+      }, []);
+   
 
     const handleClick = (articulo: ArticuloInsumo) => {
         if (articulosAgregados.find(selected => selected.id === articulo.id)) {
@@ -48,6 +70,23 @@ export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulos
         }
     }
 
+
+    const handleChangeCategoria = (id: number) => {
+        setCategoriaSeleccionada(id > 0 ? id : undefined);
+      }
+      
+      const handleChangeUnidadMedida = (id: number) => {
+        setUnidadMedidaSeleccionada(id > 0 ? id : undefined);
+      }
+    
+      const handleChangeText = (denominacion: string) => {
+        setSearchedDenominacion(denominacion ? denominacion : undefined);
+      }
+      useEffect(() => {
+        fetchDataArticulosInsumo(categoriaSeleccionada, unidadMedidaSeleccionada, searchedDenominacion);
+      }, [categoriaSeleccionada, unidadMedidaSeleccionada,searchedDenominacion]);
+    
+      
     return (
         <Modal show={show} onHide={onHide} centered backdrop="static">
             <Modal.Header closeButton>
@@ -55,7 +94,14 @@ export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulos
             </Modal.Header>
             <Modal.Body>
                 <h2></h2>
-                <input value={searchedText} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setSearchedText(event.target.value)} />
+
+                <FiltroProductos
+      categorias={categorias}
+      unidadesMedida={unidadesMedida}
+      handleChangeText={handleChangeText}
+      handleChangeCategoria={handleChangeCategoria}
+      handleChangeUnidadMedida={handleChangeUnidadMedida}
+    />
                 <Table hover>
                     <thead>
                         <tr className="text-center">

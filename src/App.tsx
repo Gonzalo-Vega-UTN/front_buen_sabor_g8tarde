@@ -7,7 +7,6 @@ import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "./components/footer/Footer"
 import Sidebar from "./components/sidebar/Sidebar"
-import EmpresaList from './pages/EmpresaList';
 
 export default function App() {
 

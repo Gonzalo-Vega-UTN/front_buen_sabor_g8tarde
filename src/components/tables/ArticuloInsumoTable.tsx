@@ -2,20 +2,31 @@ import { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import Button from "../generic/Button";
 import { ModalType } from "../../types/ModalType";
-import { StateType } from "../../types/StateType";
 import ArticuloInsumoModal from "../modals/ArticuloInsumoModal";
 import { ArticuloInsumosServices } from "../../services/ArticuloInsumoServices";
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 import { FaSave } from "react-icons/fa";
+import FiltroProductos from "../Filtrado/FiltroArticulo";
+import { Categoria } from "../../entities/DTO/Categoria/Categoria";
+import { UnidadMedida } from "../../types/UnidadMedida";
+import { CategoriaService } from "../../services/CategoriaService";
+import { UnidadMedidaServices } from "../../services/UnidadMedidaServices";
 
 export default function ArticuloInsumoTable() {
 
     const [articuloInsumo, setArticuloInsumo] = useState<ArticuloInsumo>(new ArticuloInsumo());
     const [articuloInsumos, setArticuloInsumos] = useState<ArticuloInsumo[]>([]);
 
+    const [categorias, setCategorias] = useState<Categoria[]>([])
+    const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([])
 
+
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<number>();
+    const [unidadMedidaSeleccionada, setUnidadMedidaSeleccionada] = useState<number>();
+    const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
+    
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState<ModalType>(ModalType.NONE);
     const [title, setTitle] = useState("");
@@ -32,14 +43,51 @@ export default function ArticuloInsumoTable() {
     };
 
 
+    const fetchDataArticulosInsumo = async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string) => {
+        const articulos = await ArticuloInsumosServices.getArticuloInsumoFiltered(idCategoria, idUnidadMedida, denominacion );
+        setArticuloInsumos(articulos);
+    };
+    
     useEffect(() => {
-        const fetchArticuloInsumos = async () => {
-            const articulos = await ArticuloInsumosServices.getArticuloInsumo();
-            setArticuloInsumos(articulos);
-        };
-
-        fetchArticuloInsumos();
+       
+        fetchDataArticulosInsumo();
     }, []);
+
+
+    useEffect(() => {
+        const fetchCategorias = async () => {
+          const categorias = await CategoriaService.getCategorias();
+          setCategorias(categorias);
+        };
+    
+        fetchCategorias();
+      }, []);
+    
+      useEffect(() => {
+        const fetchUnidadadMedida = async () => {
+          const unidadesMedida = await UnidadMedidaServices.getUnidadesMedida();
+          setUnidadesMedida(unidadesMedida);
+        };
+    
+        fetchUnidadadMedida();
+      }, []);
+
+
+
+    const handleChangeCategoria = (id: number) => {
+        setCategoriaSeleccionada(id > 0 ? id : undefined);
+      }
+      
+      const handleChangeUnidadMedida = (id: number) => {
+        setUnidadMedidaSeleccionada(id > 0 ? id : undefined);
+      }
+    
+      const handleChangeText = (denominacion: string) => {
+        setSearchedDenominacion(denominacion ? denominacion : undefined);
+      }
+      useEffect(() => {
+        fetchDataArticulosInsumo(categoriaSeleccionada, unidadMedidaSeleccionada, searchedDenominacion);
+      }, [categoriaSeleccionada, unidadMedidaSeleccionada,searchedDenominacion]);
 
     return (
         <div className="container">
@@ -50,6 +98,13 @@ export default function ArticuloInsumoTable() {
                     ModalType.CREATE
                 )}
             />
+            <FiltroProductos
+      categorias={categorias}
+      unidadesMedida={unidadesMedida}
+      handleChangeText={handleChangeText}
+      handleChangeCategoria={handleChangeCategoria}
+      handleChangeUnidadMedida={handleChangeUnidadMedida}
+    />
             <Table hover>
                 <thead>
                     <tr className="text-center">
