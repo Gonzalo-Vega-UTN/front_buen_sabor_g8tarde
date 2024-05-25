@@ -1,48 +1,162 @@
-import React from 'react'
-import { BsFillPeopleFill } from "react-icons/bs";
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BsFillPeopleFill } from 'react-icons/bs';
+import { Link, useLocation } from 'react-router-dom';
+import { OverlayTrigger, Button, Popover } from 'react-bootstrap';
+import './style.css';  // Importa el archivo CSS
+
 const Sidebar = () => {
+    const [expanded, setExpanded] = useState(false);
+    const [selected, setSelected] = useState('');
+    const [submenuOpen, setSubmenuOpen] = useState(false);
+    const location = useLocation();
+
+    const handleMouseEnter = () => setExpanded(true);
+    const handleMouseLeave = () => setExpanded(false);
+
+    const handleClick = (path: React.SetStateAction<string>) => {
+        setSelected(path);
+    };
+
+    const toggleSubmenu = () => {
+        setSubmenuOpen(!submenuOpen);
+    };
+
     return (
-        <div className="col-auto col-sm-2 bg-dark d-flex flex-column justify-content-between min-vh-100" style={{ width: "100%" }}>
-            <div>
-                <Link to="" className="text-decoration-none ms-4 d-flex align-items-center  d-none d-sm-inline "></Link>
-                <span className="fs-4 text-white">Buen Sabor</span>
-                <hr className="text-white d-none d-sm-block" />
-                <ul
-                    className="nav nav-pills flex-column"
-                >
-                    <li className="nav-item ">
-                        <Link to="/productos" className="nav-link text-white" aria-current="page">Productos</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/ingredientes" className="nav-link text-white">Ingredientes</Link>
-                    </li>
-                    {/* <li className="nav-item disabled">
-                        <Link to="#" className="nav-link">#</Link>
-                    </li> */}
-                </ul>
+        <div 
+            className={`bg-dark text-white min-vh-100 sidebar ${expanded ? 'expanded' : 'collapsed'}`}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
+            <div className="ms-4 my-3">
+                <span className="fs-4">Buen Sabor</span>
             </div>
+            
+            <hr className="text-white" />
+            <ul className="nav flex-column">
+            <li className="nav-item">
+                    <Link 
+                        to="/empresas" 
+                        className={`nav-link text-white ${location.pathname === '/empresas' || selected === '/empresas' ? 'active' : ''}`}
+                        onClick={() => handleClick('/empresas')}
+                    >
+                        Empresas
+                    </Link>
+                </li>
+
+                <li className="nav-item">
+                    <Link 
+                        to="/sucursales" 
+                        className={`nav-link text-white ${location.pathname === '/sucursal' || selected === '/sucursal' ? 'active' : ''}`}
+                        onClick={() => handleClick('/sucursales')}
+                    >
+                        Sucursal
+                    </Link>
+                </li>
 
 
-            <div className="dropdown open">
-                <a
-                    className="btn border-none dropdown-toggle text-white d-flex align-items-center"
-                    type="button"
-                    id="triggerId"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
+                <li className="nav-item">
+                    <span 
+                        className={`nav-link text-white ${location.pathname.startsWith('/productos') || selected.startsWith('/productos') ? 'active' : ''}`} 
+                        onClick={toggleSubmenu}
+                    >
+                        Productos
+                    </span>
+                    {submenuOpen && (
+                        <ul className="nav flex-column submenu">
+                            <li className="nav-item">
+                                <Link 
+                                    to="/productos" 
+                                    className={`nav-link text-white ${location.pathname === '/productos' || selected === '/productos/lista' ? 'active' : ''}`} 
+                                    onClick={() => handleClick('/productos')}
+                                >
+                                    Lista Productos
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link 
+                                    to="/create-product/0" 
+                                    className={`nav-link text-white ${location.pathname === '/create-product/0' || selected === '/create-product/0' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/create-product/0')}
+                                >
+                                    Crear Producto
+                                </Link>
+                            </li>
+                        </ul>
+                    )}
+                </li>
+                <li className="nav-item">
+                    <Link 
+                        to="/ingredientes" 
+                        className={`nav-link text-white ${location.pathname === '/ingredientes' || selected === '/ingredientes' ? 'active' : ''}`}
+                        onClick={() => handleClick('/ingredientes')}
+                    >
+                        Ingredientes
+                    </Link>
+                </li>
+
+                <li className="nav-item">
+                    <Link 
+                        to="/promociones" 
+                        className={`nav-link text-white ${location.pathname === '/promociones' || selected === '/promociones' ? 'active' : ''}`}
+                        onClick={() => handleClick('/promociones')}
+                    >
+                        Promociones
+                    </Link>
+                </li>
+
+                <li className="nav-item">
+                    <Link 
+                        to="/pedidos" 
+                        className={`nav-link text-white ${location.pathname === '/pedidos' || selected === '/pedidos' ? 'active' : ''}`}
+                        onClick={() => handleClick('/pedidos')}
+                    >
+                        Pedidos
+                    </Link>
+                </li>
+
+                <li className="nav-item">
+                    <Link 
+                        to="/clientes" 
+                        className={`nav-link text-white ${location.pathname === '/clientes' || selected === '/clientes' ? 'active' : ''}`}
+                        onClick={() => handleClick('/clientes')}
+                    >
+                        Clientes
+                    </Link>
+                </li>
+
+                <li className="nav-item">
+                    <Link 
+                        to="/estadisticas" 
+                        className={`nav-link text-white ${location.pathname === '/estadisticas' || selected === '/estadisticas' ? 'active' : ''}`}
+                        onClick={() => handleClick('/estadisticas')}
+                    >
+                        Estadisticas
+                    </Link>
+                </li>
+            
+            </ul>
+
+            <div className="mt-auto">
+                <OverlayTrigger
+                    trigger="hover"
+                    placement="right"
+                    overlay={
+                        <Popover id="popover-basic" style={{ width: '10em' }}>
+                            <Popover.Header as="h3">Account</Popover.Header>
+                            <Popover.Body>
+                                <Link to="/profile" className="dropdown-item">Profile</Link>
+                                <a href="#" className="dropdown-item disabled">Log Out</a>
+                            </Popover.Body>
+                        </Popover>
+                    }
                 >
-                    <BsFillPeopleFill size={24} /> <span className='fs-4 ms-3'>Account</span>
-                </a>
-                <div className="dropdown-menu" aria-labelledby="triggerId">
-                    <Link className="dropdown-item" to="/profile">Profile</Link>
-                    <a className="dropdown-item disabled" href="#">Log Out</a>
-                </div>
+                    <Button variant="outline-light" className="w-100" style={{ textAlign: 'left' }}>
+                        <BsFillPeopleFill size={24} className="me-2" /> Account
+                    </Button>
+                </OverlayTrigger>
             </div>
-
         </div>
-    )
-}
+    );
+};
 
-export default Sidebar
+export default Sidebar;

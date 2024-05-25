@@ -1,6 +1,9 @@
-class SucursalFull {
-    nombre: string= '';
-    horarioApertura: string= '';
-    horarioCierre: string= '';
-    domicilioFull: DomicilioFull|null=null;
+import { Base } from "../Base";
+
+
+export class SucursalFull extends Base {
+    nombre: string = '';
+    horarioApertura: string = '';
+    horarioCierre: string = '';
+    idEmpresa:number=0;
 }

@@ -10,18 +10,6 @@ export const ArticuloInsumosServices = {
     return data;
   },
 
-  getArticuloInsumoFiltered: async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string): Promise<ArticuloInsumo[]> => {
-    const params = new URLSearchParams();
-    if (idCategoria !== undefined) params.append("categoria_id", idCategoria.toString());
-    if (idUnidadMedida !== undefined) params.append("unidad_id", idUnidadMedida.toString());
-    if (denominacion !== undefined) params.append("denominacion", denominacion);
-
-    const response = await fetch(`${BASE_URL}/search?${params}`);
-    const data = response.json();
-
-    return data;
-  },
-
   createArticuloInsumo: async (
     articuloInsumo: ArticuloInsumo
   ): Promise<ArticuloInsumo> => {
