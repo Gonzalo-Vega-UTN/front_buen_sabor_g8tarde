@@ -10,10 +10,14 @@ export const ProductServices = {
     return data;
   },
 
-  getProductsFiltered: async (idCategoria : number , idUnidadMedida : number): Promise<ArticuloManufacturado[]> => {
-    const response = await fetch(`${BASE_URL}`);
-    const data = await response.json();
+  getProductsFiltered: async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string): Promise<ArticuloManufacturado[]> => {
+    const params = new URLSearchParams();
+    if (idCategoria !== undefined) params.append("categoria_id", idCategoria.toString());
+    if (idUnidadMedida !== undefined) params.append("unidad_id", idUnidadMedida.toString());
+    if (denominacion !== undefined) params.append("denominacion", denominacion);
 
+    const response = await fetch(`${BASE_URL}/search?${params}`);
+    const data = await response.json();
     return data;
   },
 
