@@ -3,7 +3,7 @@ import { Form, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
 
 interface Empresa {
-  [x: string]: any;
+  id?: number; // ID opcional porque no se necesita al crear una nueva empresa
   nombre: string;
   razonSocial: string;
   cuil: string;
@@ -67,7 +67,7 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEd
           <Form.Control
             type="text"
             name="razonSocial"
-            value={empresa.razonsocial}
+            value={empresa.razonSocial}
             onChange={handleChange}
             required
           />

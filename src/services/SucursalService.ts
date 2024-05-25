@@ -18,7 +18,7 @@ export const fetchSucursales = async () => {
 };
 export const fetchSucursalesByEmpresaId = async (empresaId:number) => {
   try {
-    const response = await axios.get(`${API_URL}/${empresaId}`);
+    const response = await axios.get(`${API_URL}/empresa/${empresaId}`);
     if (Array.isArray(response.data)) {
       return response.data;
     } else {

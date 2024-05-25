@@ -27,10 +27,7 @@ const SucursalesPage: React.FC = () => {
       {id &&(
             <Row>
 
-            <Col>
             
-              <SucursalForm onAddSucursal={handleAddSucursal} sucursalEditando={null} idEmpresa={Number(id)} />
-            </Col>
           </Row>
           ) }
       

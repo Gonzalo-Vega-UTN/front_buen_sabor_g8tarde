@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { BsFillPeopleFill } from 'react-icons/bs';
+import { BsFillPeopleFill, BsBuilding, BsShop, BsBox, BsBasket, BsPercent, BsCart, BsGraphUp } from 'react-icons/bs';
 import { Link, useLocation } from 'react-router-dom';
 import { OverlayTrigger, Button, Popover } from 'react-bootstrap';
-import './style.css';  // Importa el archivo CSS
+import './style.css';
 
 const Sidebar = () => {
     const [expanded, setExpanded] = useState(false);
@@ -33,13 +33,14 @@ const Sidebar = () => {
             
             <hr className="text-white" />
             <ul className="nav flex-column">
-            <li className="nav-item">
+                <li className="nav-item">
                     <Link 
                         to="/empresas" 
                         className={`nav-link text-white ${location.pathname === '/empresas' || selected === '/empresas' ? 'active' : ''}`}
                         onClick={() => handleClick('/empresas')}
                     >
-                        Empresas
+                        <BsBuilding size={24} className="me-2" />
+                        <span className="nav-text">Empresas</span>
                     </Link>
                 </li>
 
@@ -49,17 +50,18 @@ const Sidebar = () => {
                         className={`nav-link text-white ${location.pathname === '/sucursal' || selected === '/sucursal' ? 'active' : ''}`}
                         onClick={() => handleClick('/sucursales')}
                     >
-                        Sucursal
+                        <BsShop size={24} className="me-2" />
+                        <span className="nav-text">Sucursal</span>
                     </Link>
                 </li>
-
 
                 <li className="nav-item">
                     <span 
                         className={`nav-link text-white ${location.pathname.startsWith('/productos') || selected.startsWith('/productos') ? 'active' : ''}`} 
                         onClick={toggleSubmenu}
                     >
-                        Productos
+                        <BsBox size={24} className="me-2" />
+                        <span className="nav-text">Productos</span>
                     </span>
                     {submenuOpen && (
                         <ul className="nav flex-column submenu">
@@ -90,7 +92,8 @@ const Sidebar = () => {
                         className={`nav-link text-white ${location.pathname === '/ingredientes' || selected === '/ingredientes' ? 'active' : ''}`}
                         onClick={() => handleClick('/ingredientes')}
                     >
-                        Ingredientes
+                        <BsBasket size={24} className="me-2" />
+                        <span className="nav-text">Ingredientes</span>
                     </Link>
                 </li>
 
@@ -100,7 +103,8 @@ const Sidebar = () => {
                         className={`nav-link text-white ${location.pathname === '/promociones' || selected === '/promociones' ? 'active' : ''}`}
                         onClick={() => handleClick('/promociones')}
                     >
-                        Promociones
+                        <BsPercent size={24} className="me-2" />
+                        <span className="nav-text">Promociones</span>
                     </Link>
                 </li>
 
@@ -110,7 +114,8 @@ const Sidebar = () => {
                         className={`nav-link text-white ${location.pathname === '/pedidos' || selected === '/pedidos' ? 'active' : ''}`}
                         onClick={() => handleClick('/pedidos')}
                     >
-                        Pedidos
+                        <BsCart size={24} className="me-2" />
+                        <span className="nav-text">Pedidos</span>
                     </Link>
                 </li>
 
@@ -120,7 +125,8 @@ const Sidebar = () => {
                         className={`nav-link text-white ${location.pathname === '/clientes' || selected === '/clientes' ? 'active' : ''}`}
                         onClick={() => handleClick('/clientes')}
                     >
-                        Clientes
+                        <BsFillPeopleFill size={24} className="me-2" />
+                        <span className="nav-text">Clientes</span>
                     </Link>
                 </li>
 
@@ -130,31 +136,14 @@ const Sidebar = () => {
                         className={`nav-link text-white ${location.pathname === '/estadisticas' || selected === '/estadisticas' ? 'active' : ''}`}
                         onClick={() => handleClick('/estadisticas')}
                     >
-                        Estadisticas
+                        <BsGraphUp size={24} className="me-2" />
+                        <span className="nav-text">Estadísticas</span>
                     </Link>
                 </li>
             
             </ul>
 
-            <div className="mt-auto">
-                <OverlayTrigger
-                    trigger="hover"
-                    placement="right"
-                    overlay={
-                        <Popover id="popover-basic" style={{ width: '10em' }}>
-                            <Popover.Header as="h3">Account</Popover.Header>
-                            <Popover.Body>
-                                <Link to="/profile" className="dropdown-item">Profile</Link>
-                                <a href="#" className="dropdown-item disabled">Log Out</a>
-                            </Popover.Body>
-                        </Popover>
-                    }
-                >
-                    <Button variant="outline-light" className="w-100" style={{ textAlign: 'left' }}>
-                        <BsFillPeopleFill size={24} className="me-2" /> Account
-                    </Button>
-                </OverlayTrigger>
-            </div>
+            
         </div>
     );
 };
