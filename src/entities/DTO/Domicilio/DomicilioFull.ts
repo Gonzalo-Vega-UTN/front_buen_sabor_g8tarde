@@ -1,7 +1,9 @@
-class DomicilioFull extends Base {
+import { Base } from "../Base";
+
+export class DomicilioFull extends Base {
     calle: string = '';
-    numero: number | null = 0;
-    cp: number | null = 0;
+    numero: number = 0;
+    cp: number  = 0;
     localidad: string = '';
     provincia: string = '';
     pais: string = '';

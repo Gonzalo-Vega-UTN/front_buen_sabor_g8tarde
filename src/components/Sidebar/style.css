@@ -1,0 +1,40 @@
+.sidebar {
+    transition: width 0.3s;
+    overflow: hidden;
+}
+
+.sidebar.collapsed {
+    width: 90px;
+}
+
+.sidebar.expanded {
+    width: 200px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+}
+
+.nav-text {
+    display: none;
+    transition: opacity 0.3s;
+}
+
+.sidebar.expanded .nav-text {
+    display: inline;
+    opacity: 1;
+    margin-left: 10px;
+}
+
+.sidebar.collapsed .nav-text {
+    display: none;
+}
+
+.submenu {
+    padding-left: 20px;
+}
+
+.submenu .nav-item {
+    padding-left: 10px;
+}
