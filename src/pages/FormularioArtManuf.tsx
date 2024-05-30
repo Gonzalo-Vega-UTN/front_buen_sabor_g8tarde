@@ -24,7 +24,7 @@ export const FormularioArtManuf = () => {
     const [categorias, setCategorias] = useState<Categoria[]>([])
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([])
 
-    const [selectedCategoria, setSelectedCategoria] = useState<Categoria | null | undefined>(articuloManufacturado?.categoria)
+    const [, setSelectedCategoria] = useState<Categoria | null | undefined>(articuloManufacturado?.categoria)
     const [selectedUnidadMedida, setSelectedUnidadMedida] = useState<UnidadMedida | null | undefined>(articuloManufacturado?.unidadMedida)
 
     const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([])
@@ -131,7 +131,7 @@ export const FormularioArtManuf = () => {
         console.log(articuloManufacturado);
 
         if (articuloManufacturado.id == 0) {
-            ProductServices.createProduct(articuloManufacturado).then((data) => {
+            ProductServices.createProduct(articuloManufacturado).then(() => {
                 setExito("ENTIDAD CREADA CON EXITO")
                 setTimeout(() => {
                     navigate('/productos');
@@ -142,7 +142,7 @@ export const FormularioArtManuf = () => {
 
             })
         } else {
-            ProductServices.updateProduct(articuloManufacturado.id, articuloManufacturado).then((data) => {
+            ProductServices.updateProduct(articuloManufacturado.id, articuloManufacturado).then(() => {
                 setExito("ENTIDAD ACTUALIZADA CON EXITO")
                 setTimeout(() => {
                    navigate('/productos');
@@ -329,16 +329,16 @@ export const FormularioArtManuf = () => {
                         </Row>
 
                         {showModal && (
-                            <Row>
-                                <AgregarInsumosModal
-                                    show={showModal}
-                                    onHide={() => setShowModal(false)}
-                                    title={title}
-                                    articulosExistentes={detalles?.map(detalle => detalle.articuloInsumo)}
-                                    handleSave={handleSeleccionInsumos}
-                                />
-
-                            </Row>
+                        <Row>
+                        <AgregarInsumosModal
+                            show={showModal}
+                            onHide={() => setShowModal(false)}
+                            title={title}
+                            articulosExistentes={detalles ? detalles.filter(detalle => detalle.articuloInsumo !== null).map(detalle => detalle.articuloInsumo as ArticuloInsumo) : []}
+                            handleSave={handleSeleccionInsumos}
+                        />
+                    </Row>
+                    
                         )}
 
                         <Row className='p-5'>

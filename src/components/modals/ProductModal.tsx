@@ -28,7 +28,7 @@ export default function ProductModal({
   handleSave
 }: ProductModalProps) {
 
-  const [ingredients, setIngredients] = useState<ArticuloInsumo[]>([]);
+  const [, setIngredients] = useState<ArticuloInsumo[]>([]);
 
   useEffect(() => {
     const fetchArticuloInsumo = async () => {

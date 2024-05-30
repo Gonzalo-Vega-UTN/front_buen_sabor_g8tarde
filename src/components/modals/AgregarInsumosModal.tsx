@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { Button, Modal, Table } from 'react-bootstrap'
 import { ArticuloInsumo } from '../../entities/DTO/Articulo/Insumo/ArticuloInsumo';
 import { ArticuloInsumosServices } from '../../services/ArticuloInsumoServices';
@@ -16,6 +16,7 @@ interface AgregarInsumosProps {
     title: string;
     handleSave: (articulosInsumo: ArticuloInsumo[]) => void;
     articulosExistentes : ArticuloInsumo[];
+    
 }
 export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulosExistentes  }: AgregarInsumosProps) => {
 

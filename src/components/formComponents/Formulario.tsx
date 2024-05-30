@@ -6,7 +6,7 @@ import { CategoriaService } from "../../services/CategoriaService";
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
 import { UnidadMedidaServices } from "../../services/UnidadMedidaServices";
 import { BsTrashFill } from "react-icons/bs";
-import CustomButton from "../generic/Button";
+import CustomButton from "../generic/CustomButton";
 import { ArticuloManufacturadoDetalle } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturadoDetalle";
 import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 import { ArticuloInsumosServices } from "../../services/ArticuloInsumoServices";
@@ -338,7 +338,12 @@ const Formulario = ({ articuloExistente, onHide, handleSave }: FormProps) => {
                   />
                 </td>
                 <td>
-                  <CustomButton color="#D32F2F" size={20} icon={BsTrashFill} onClick={(e) => handleDeleteIngrediente(e, detalle.id)} />
+                  <CustomButton
+                    color="#D32F2F"
+                    size={20}
+                    icon={BsTrashFill}
+                    onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleDeleteIngrediente(e, detalle.id)}
+                  />
                 </td>
               </tr>
             ))}

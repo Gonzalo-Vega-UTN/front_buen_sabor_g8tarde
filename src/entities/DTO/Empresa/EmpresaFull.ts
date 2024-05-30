@@ -1,3 +1,5 @@
+/*
+
 import { SucursalFull } from "../Sucursal/SucursalFull";
 
 class EmpresaFull {
@@ -6,3 +8,5 @@ class EmpresaFull {
     cuil: string = '' ;
     sucursalFull: SucursalFull = new SucursalFull();
 }
+
+*/

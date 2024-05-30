@@ -1,29 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { createSucursal, updateSucursal } from '../services/SucursalService';
+import { SucursalFull } from '../entities/DTO/Sucursal/SucursalFull';
 
-interface Sucursal {
-  id: number;
-  nombre: string;
-  horarioApertura: string;
-  horarioCierre: string;
-  idEmpresa: number;
-}
+
 
 interface AddSucursalFormProps {
   onAddSucursal: () => void;
-  sucursalEditando: Sucursal | null;
-  idEmpresa: number;
+  sucursalEditando: SucursalFull | null;
+  idEmpresa: number | undefined;
 }
 
-const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalEditando, idEmpresa }) => {
-  const [sucursal, setSucursal] = useState<Sucursal>({
-    id: 0,
-    nombre: '',
-    horarioApertura: '',
-    horarioCierre: '',
-    idEmpresa: idEmpresa, // Inicializa el ID de la empresa con el valor recibido desde el prop
-  });
+const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalEditando , idEmpresa}) => {
+  const [sucursal, setSucursal] = useState<SucursalFull>(() => sucursalEditando? sucursalEditando : new SucursalFull(idEmpresa))
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
@@ -47,7 +36,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalE
         await createSucursal(sucursal);
       }
       setSuccess(true);
-      setSucursal({ id: 0, nombre: '', horarioApertura: '', horarioCierre: '', idEmpresa: idEmpresa }); // Reinicializa el estado de sucursal con el ID de empresa
+      setSucursal(new SucursalFull(idEmpresa)); // Reinicializa el estado de sucursal con el ID de empresa
       setError(null);
       onAddSucursal();
     } catch (err) {

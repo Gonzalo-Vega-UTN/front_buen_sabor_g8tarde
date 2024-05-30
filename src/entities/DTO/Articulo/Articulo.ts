@@ -1,6 +1,5 @@
 import { Base } from "../Base";
 import { Categoria } from "../Categoria/Categoria";
-import { Imagen } from "../Imagen";
 import { UnidadMedida } from "../UnidadMedida/UnidadMedida";
 
 export class Articulo extends Base {

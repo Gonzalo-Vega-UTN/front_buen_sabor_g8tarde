@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { BsFillPeopleFill, BsBuilding, BsShop, BsBox, BsBasket, BsPercent, BsCart, BsGraphUp } from 'react-icons/bs';
 import { Link, useLocation } from 'react-router-dom';
-import { OverlayTrigger, Button, Popover } from 'react-bootstrap';
 import './style.css';
 
 const Sidebar = () => {

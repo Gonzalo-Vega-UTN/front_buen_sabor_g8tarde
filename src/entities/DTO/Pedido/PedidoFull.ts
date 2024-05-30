@@ -7,6 +7,6 @@ class PedidoFull {
     formaDePago: string = '';
     fechaPedido: string | null = ''; // Considera cómo deseas representar LocalDate en TypeScript
     domicilioShort: DomicilioShort | null = null;
-    cliente: ClienteFull | null = null;
+    //cliente: ClienteFull | null = null;
     detallePedidoList: DetallePedido[] | null = null;
 }

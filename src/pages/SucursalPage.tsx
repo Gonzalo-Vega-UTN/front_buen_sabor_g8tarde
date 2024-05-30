@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import SucursalList from './SucursalList';
-import SucursalForm from './SucursalForm';
+
 import { useParams } from 'react-router-dom';
 
 const SucursalesPage: React.FC = () => {
   const { id } = useParams();
-  const [refreshSucursales, setRefreshSucursales] = useState(false);
+  const [refreshSucursales] = useState(false);
 
-  const handleAddSucursal = () => {
-    setRefreshSucursales(!refreshSucursales);
-  };
 
   return (
     <Container>

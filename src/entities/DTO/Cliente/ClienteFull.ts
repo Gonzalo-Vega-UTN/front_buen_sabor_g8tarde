@@ -1,3 +1,6 @@
+/*import { Base } from "../Base";
+import { DomicilioFull } from "../Domicilio/DomicilioFull";
+/*
 class ClienteFull extends Base {
     nombre: string = '';
     apellido: string = '';
@@ -7,3 +10,4 @@ class ClienteFull extends Base {
     imagen: string = '';
     domicilios: DomicilioFull[] | null = null;
 }
+*/
