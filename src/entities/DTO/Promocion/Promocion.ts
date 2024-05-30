@@ -1,3 +1,7 @@
+
+/*
+import { Base } from "../Base";
+
 class Promocion extends Base {
     denominacion: string = '';
     fechaDesde: string | null = ''; 
@@ -9,3 +13,5 @@ class Promocion extends Base {
     tipoPromocion: TipoPromocion | null = null;
     detallesPromocion: PromocionDetalle[] | null = null;
 }
+
+*/

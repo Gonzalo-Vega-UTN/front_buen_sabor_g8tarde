@@ -4,13 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { fetchSucursales, fetchSucursalesByEmpresaId } from '../services/SucursalService';
 import SucursalForm from './SucursalForm';
+import { SucursalFull } from '../entities/DTO/Sucursal/SucursalFull';
 
-interface Sucursal {
-  id: number;
-  nombre: string;
-  horarioApertura: string;
-  horarioCierre: string;
-}
 
 interface SucursalListProps {
   refresh: boolean;
@@ -18,9 +13,9 @@ interface SucursalListProps {
 }
 
 const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresaId }) => {
-  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
+  const [sucursales, setSucursales] = useState<SucursalFull[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [sucursalEditando, setSucursalEditando] = useState<Sucursal | null>(null);
+  const [sucursalEditando, setSucursalEditando] = useState<SucursalFull | null>(null);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
@@ -45,7 +40,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresaId }) => {
     getSucursales();
   }, [refresh, empresaId]);
 
-  const handleEdit = (sucursal: Sucursal) => {
+  const handleEdit = (sucursal: SucursalFull) => {
     setSucursalEditando(sucursal);
     setShowModal(true);
   };

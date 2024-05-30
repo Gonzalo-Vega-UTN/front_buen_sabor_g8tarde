@@ -1,13 +1,9 @@
 import { BrowserRouter as Router } from "react-router-dom"
-import Header from "./components/header/Header"
 import AppRoutes from "./routes/AppRoutes"
-import { Col, Container, Row } from "react-bootstrap"
-
-import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css";
-import Footer from "./components/footer/Footer"
-import Sidebar from "./components/sidebar/Sidebar"
-import EmpresaList from './pages/EmpresaList';
+import Footer from "./components/Footer/Footer"
+import Sidebar from "./components/Sidebar/Sidebar"
+
 
 export default function App() {
 

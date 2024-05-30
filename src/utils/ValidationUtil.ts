@@ -28,7 +28,7 @@ export class ValidationUtil{
     static validate(validations: ValidationRequest[]) : Record<string, ValidationResult>{
         let results: Record<string, ValidationResult> = {};
         validations.forEach(validation =>{
-            const { type, value, errorMessage, min, max} = validation;
+            const { type, value, errorMessage, min, } = validation;
             let isValid : boolean = false;
             switch(type){
                 case ValidationEnum.Empty:

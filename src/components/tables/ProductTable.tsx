@@ -68,7 +68,7 @@ export default function ProductTable() {
   //Estado que contiene los productos recibidos de nuestra API
 
   //Variable que muestra el componente Loader
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
 
   //El useEffect se ejecuta cada vez que se renderice el componente
 
