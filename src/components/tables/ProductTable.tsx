@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ProductServices } from "../../services/ProductServices";
-import { Col, Row, Table } from "react-bootstrap";
+import {  Table } from "react-bootstrap";
 import CustomButton from "../generic/Button"
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
