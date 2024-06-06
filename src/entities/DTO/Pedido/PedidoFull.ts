@@ -1,4 +1,8 @@
-export default class PedidoFull {
+import { Base } from "../Base";
+import { DomicilioShort } from "../Domicilio/DomicilioShort";
+import { DetallePedido } from "./DetallePedido";
+
+export default class PedidoFull extends Base {
     horaEstimadaFinalizacion: string  = ''; 
     total: number  = 0;
     totalCosto: number = 0;

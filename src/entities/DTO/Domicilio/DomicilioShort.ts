@@ -1,5 +1,5 @@
-class DomicilioShort {
+export class DomicilioShort {
     calle: string = '';
-    numero: number | null = 0;
+    numero: number = 0;
     localidad: string = '';
 }

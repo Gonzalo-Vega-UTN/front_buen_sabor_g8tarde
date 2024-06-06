@@ -1,4 +1,8 @@
-class DetallePedido {
-    cantidad: number | null = 0;
-    subTotal: number | null = 0;
+import { ArticuloManufacturado } from "../Articulo/ManuFacturado/ArticuloManufacturado";
+
+export class DetallePedido {
+    cantidad: number  = 0;
+    subTotal: number  = 0;
+    ArticuloManufacturado:ArticuloManufacturado=new ArticuloManufacturado();
+
 }

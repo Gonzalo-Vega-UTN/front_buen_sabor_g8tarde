@@ -1,6 +1,5 @@
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 import { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom"; // Importa useHistory desde React Router
 
 interface Props {
   preferenceId: string;
