@@ -32,6 +32,7 @@ export const ProductServices = {
   },
 
   createProduct: async (product: ArticuloManufacturado): Promise<ArticuloManufacturado> => {
+    console.log("art mandado"+ArticuloManufacturado)
     const response = await fetch(`${BASE_URL}`, {
       method: "POST",
       headers: {
