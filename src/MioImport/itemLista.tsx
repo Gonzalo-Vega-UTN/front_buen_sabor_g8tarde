@@ -34,7 +34,6 @@ const ItemProducto: React.FC<ItemLista> = ({ producto }) => {
             {isAuthenticated && (
                <button className="btn btn-primary me-2" onClick={handleAgregarAlCarrito}>Agregar al carrito</button>
             )}
-            {/* Aquí deberías agregar el componente BotonDetalle */}
           </div>
         </div>
       </div>

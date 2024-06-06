@@ -1,16 +1,16 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import PedidoFull from '../../entities/DTO/Pedido/PedidoFull';
-import { ArticuloManufacturado } from '../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado';
 import { useAuth } from '../../Auth/Auth';
-import { DetallePedido } from '../../entities/DTO/Pedido/DetallePedido';
 import ModalConfirm from '../modals/ModalConfirm';
 import { createPreferenceMP } from '../../services/MPService';
 import { agregarPedido } from '../../services/PedidoService';
+import { DetallePedido } from '../../entities/DTO/Pedido/DetallePedido';
+import { Articulo } from '../../entities/DTO/Articulo/Articulo';
 
 interface CartContextType {
   pedido: PedidoFull;
-  agregarAlCarrito: (producto: ArticuloManufacturado | undefined) => void;
+  agregarAlCarrito: (producto: Articulo | undefined) => void;
   quitarDelCarrito: (index: number) => void;
   vaciarCarrito: () => void;
   handleCompra: () => Promise<void>;
@@ -18,6 +18,7 @@ interface CartContextType {
   error: string;
   preferenceId: string;
 }
+
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -37,47 +38,68 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [modalConfig, setModalConfig] = useState({ title: '', text: '', onConfirm: () => {}, onCancel: () => {} });
   const [preferenceId, setPreferenceId] = useState<string>('');
 
-  const agregarAlCarrito = (articuloManufacturado: ArticuloManufacturado | undefined) => {
-    if (articuloManufacturado) {
+  const agregarAlCarrito = (articulo: Articulo | undefined) => {
+    if (articulo) {
       const nuevoPedido = { ...pedido };
-      const detalleExistente = nuevoPedido.detallePedidoList.find(detalle => detalle.ArticuloManufacturado?.id === articuloManufacturado.id);
+      const detalleExistente = nuevoPedido.detallePedidos.find(detalle => detalle.articulo?.id === articulo.id);
       if (detalleExistente) {
         detalleExistente.cantidad++;
-        detalleExistente.subTotal = articuloManufacturado.precioVenta * detalleExistente.cantidad; // Cambiado a subTotal
+        detalleExistente.subTotal = articulo.precioVenta * detalleExistente.cantidad;
       } else {
-        const nuevoDetalle = new DetallePedido(); // Crea un nuevo detalle de pedido
-        nuevoDetalle.ArticuloManufacturado = articuloManufacturado;
+        const nuevoDetalle = new DetallePedido();
+        nuevoDetalle.articulo = articulo;
         nuevoDetalle.cantidad = 1;
-        nuevoDetalle.subTotal = articuloManufacturado.precioVenta; // Cambiado a subTotal
-        nuevoPedido.detallePedidoList.push(nuevoDetalle); // Agrega el nuevo detalle al pedido
+        nuevoDetalle.subTotal = articulo.precioVenta;
+        nuevoPedido.detallePedidos.push(nuevoDetalle);
       }
-  
-      nuevoPedido.total += articuloManufacturado.precioVenta; // Cambiado a total
-  
+
+      nuevoPedido.total += articulo.precioVenta;
+
+      
       setPedido(nuevoPedido);
       setPreferenceId('');
       setError('');
     }
   };
-  
   const quitarDelCarrito = (index: number) => {
-    const detalle = pedido.detallePedidoList[index]; // Corregido el acceso al detalle del pedido
-  
-    if (detalle && detalle.ArticuloManufacturado && detalle.ArticuloManufacturado.precioVenta) {
+    const detalle = pedido.detallePedidos[index];
+    if (detalle.articulo && detalle.articulo.precioVenta) {
       detalle.cantidad--;
-  
       if (detalle.cantidad <= 0) {
-        pedido.detallePedidoList.splice(index, 1);
+        pedido.detallePedidos.splice(index, 1);
       } else {
-        detalle.subTotal = detalle.ArticuloManufacturado.precioVenta * detalle.cantidad; // Cambiado a subTotal
+        detalle.subTotal = detalle.articulo.precioVenta * detalle.cantidad;
       }
-  
-      pedido.total -= detalle.ArticuloManufacturado.precioVenta; // Cambiado a total
-  
-  
+      pedido.total -= detalle.articulo.precioVenta;
+
+      
       setPedido({ ...pedido });
+      
       setPreferenceId('');
     }
+  };
+  
+  
+  
+  const handleCantidadChange = (index: number, cantidad: number) => {
+    setPedido(prevPedido => {
+      const newPedido = { ...prevPedido };
+      const detalle = newPedido.detallePedidos[index];
+      if (!cantidad || cantidad <= 0) {
+        setError('La cantidad debe ser mayor que 0');
+        return newPedido;
+      }
+      if (detalle && detalle.articulo && detalle.articulo.precioVenta) {
+        const subtotalDetalle = detalle.articulo.precioVenta * cantidad;
+        const cambioSubtotal = subtotalDetalle - detalle.subTotal;
+        detalle.subTotal = subtotalDetalle;
+        newPedido.total += cambioSubtotal;
+        detalle.cantidad = cantidad;
+        setError('');
+      }
+      return newPedido;
+    });
+    setPreferenceId('');
   };
   
 
@@ -86,32 +108,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setPreferenceId('');
   };
 
-  const handleCantidadChange = (index: number, cantidad: number) => {
-    const newPedido = { ...pedido };
-    const detalle = newPedido.detallePedidoList[index]; // Corregido el acceso al detalle del pedido
-  
-    if (!cantidad || cantidad <= 0) {
-      setError('La cantidad debe ser mayor que 0');
-      return;
-    }
-  
-    const subtotalDetalle = detalle.ArticuloManufacturado?.precioVenta * cantidad; // Corregido el acceso al precio y manejo de null o undefined
-    const cambioSubtotal = subtotalDetalle - detalle.subTotal; // Cambiado a subTotal
-    detalle.subTotal = subtotalDetalle;
-  
-    newPedido.total += cambioSubtotal; // Cambiado a total
-  
-  
-    detalle.cantidad = cantidad;
-    setPedido(newPedido);
-    setError('');
-    
-    setPreferenceId('');
-  };
-  
 
   const handleCompra = async () => {
-    if (pedido.detallePedidoList.length === 0) {
+    
+    if (pedido.detallePedidos.length === 0) {
       setError('El carrito debe tener al menos un producto.');
       return;
     } else {
@@ -125,6 +125,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       onConfirm: async () => {
         setShowModal(false);
         try {
+          console.log(pedido)
+          console.log(pedido.detallePedidos)
+          pedido.cliente.usuario.username=activeUser;
           const data = await agregarPedido({ ...pedido });
           if (data > 0) {
             await getPreferenceMP(data);
@@ -154,7 +157,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         formaDePago: pedido.formaDePago, // Asigna la forma de pago si está disponible
         fechaPedido: pedido.fechaPedido,
         domicilioShort: pedido.domicilioShort, // Asegúrate de que esté asignado correctamente
-        detallePedidoList: pedido.detallePedidoList,
+        detallePedidos: pedido.detallePedidos,
+        cliente:pedido.cliente
       };
   
       const response = await createPreferenceMP(pedidoFull);

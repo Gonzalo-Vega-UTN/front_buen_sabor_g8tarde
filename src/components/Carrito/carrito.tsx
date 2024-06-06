@@ -21,16 +21,21 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
   return (
     <div className="carrito">
       <h2>Carrito de Compras</h2>
-      <p>Cantidad de ítems: {pedido.detallePedidoList.length}</p>
-      {pedido.detallePedidoList.length === 0 ? (
+      <p>Cantidad de ítems: {pedido.detallePedidos.length}</p>
+      {pedido.detallePedidos.length === 0 ? (
         <p>No hay productos en el carrito.</p>
       ) : (
-        pedido.detallePedidoList.map((detalle, index) => (
+        pedido.detallePedidos.map((detalle, index) => (
           <div key={index} className="item-carrito d-flex align-items-center mb-3">
             <div className="d-flex align-items-center flex-grow-1">
-              <img src={`img/${detalle.ArticuloManufacturado?.descripcion}`} alt={detalle.ArticuloManufacturado?.denominacion} className="img-fluid rounded-circle me-3" style={{ width: '50px', height: '50px' }} />
+              <img
+                src={`assets/images/${detalle.articulo?.descripcion}`}
+                alt={detalle.articulo?.denominacion}
+                className="img-fluid rounded-circle me-3"
+                style={{ width: '50px', height: '50px' }}
+              />
               <div>
-                <p>{detalle.ArticuloManufacturado?.denominacion}</p>
+                <p>{detalle.articulo?.denominacion}</p>
                 <p>Precio: ${detalle.subTotal}</p>
               </div>
             </div>
@@ -43,7 +48,7 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
                 onChange={(e) => handleCantidadChange(index, parseInt(e.target.value))}
                 className="cantidad"
               />
-              <button onClick={() => agregarAlCarrito(detalle.ArticuloManufacturado)} className="btn btn-success ms-2">+</button>
+              <button onClick={() => agregarAlCarrito(detalle.articulo)} className="btn btn-success ms-2">+</button>
             </div>
           </div>
         ))

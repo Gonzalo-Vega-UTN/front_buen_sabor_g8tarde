@@ -1,4 +1,4 @@
 export class Base {
-    id: number=0;
+    id?: number;
     alta: boolean = true;
   }

@@ -39,7 +39,6 @@ const Lista: React.FC = () => {
             <div className="row">
               {productos.map((producto: ArticuloManufacturado) => (
                 <div key={producto.id} className="col-md-6 mb-4">
-                  {/* Reemplaza el uso de ItemInstrumento por ItemProducto */}
                   <ItemProducto producto={producto} />
                 </div>
               ))}
