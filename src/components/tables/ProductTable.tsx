@@ -47,7 +47,7 @@ export default function ProductTable() {
 
   const handleSave = async (newProduct: ArticuloManufacturado) => {
     try {
-      if (newProduct.id === 0) {
+      if (newProduct.id === undefined) {
         const createdProduct = await ProductServices.createProduct(newProduct);
         console.log("Se está creando el producto", createdProduct);
         setProducts(prevProducts => [...prevProducts, createdProduct]);

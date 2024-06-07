@@ -130,7 +130,7 @@ export const FormularioArtManuf = () => {
 
         console.log(articuloManufacturado);
 
-        if (articuloManufacturado.id == 0) {
+        if (articuloManufacturado.id ===undefined) {
             ProductServices.createProduct(articuloManufacturado).then(() => {
                 setExito("ENTIDAD CREADA CON EXITO")
                 setTimeout(() => {
