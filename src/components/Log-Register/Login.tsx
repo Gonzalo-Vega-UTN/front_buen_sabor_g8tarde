@@ -29,7 +29,7 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
             console.log(data+"sadawda")
             if (data) {
                 console.log(data)
-                login(data.username,data.auth0Id); 
+                login(data.username,data.rol); 
                 setMensaje('Login exitoso');
                 closeModal();
             }

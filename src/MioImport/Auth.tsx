@@ -6,7 +6,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   activeUser: string;
   userRol: Rol;
-  login: (username: string, rol: Rol) => void;
+  login: (username: string, rol: string) => void;
   logout: () => void;
 }
 
@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('userRol', userRol); 
   }, [isAuthenticated, activeUser, userRol]);
 
-  const login = (username: string, rol: Rol) => { 
+  const login = (username: string, rol: string) => { 
     setIsAuthenticated(true);
     setActiveUser(username);
     setUserRol(rol);
