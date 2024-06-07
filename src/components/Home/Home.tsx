@@ -7,13 +7,16 @@ import Lista from '../../MioImport/lista';
 const Home = () => {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [error, setError] = useState<string | null>(null);
-    const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+    const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>(undefined);
 
     // Función para obtener categorías
     const fetchCategories = async () => {
         try {
             const data = await CategoriaService.getCategorias();
-            setCategorias(data);
+            setCategorias([{
+                id: undefined, denominacion: 'Todos', imagen: '',
+                alta: false
+            }, ...data]); // Agrega la categoría "Todos"
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);
@@ -29,7 +32,7 @@ const Home = () => {
 
     const defaultImageUrl = 'https://http2.mlstatic.com/storage/sc-seller-journey-backoffice/images-assets/234940675890-Sucursales--una-herramienta-para-mejorar-la-gesti-n-de-tus-puntos-de-venta.png';
 
-    const handleCategoryClick = (categoryId: number) => {
+    const handleCategoryClick = (categoryId: number | undefined) => {
         setSelectedCategoryId(categoryId);
     };
 
@@ -49,7 +52,7 @@ const Home = () => {
                 {categorias.map(category => (
                     <div 
                         className={`col-3 text-center ${selectedCategoryId === category.id ? 'selected' : ''}`} 
-                        key={category.id} 
+                        key={category.id === undefined ? 'all' : category.id} 
                         onClick={() => handleCategoryClick(category.id)}
                     >
                         <img 

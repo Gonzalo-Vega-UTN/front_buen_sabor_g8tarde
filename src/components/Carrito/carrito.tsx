@@ -29,7 +29,7 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
           <div key={index} className="item-carrito d-flex align-items-center mb-3">
             <div className="d-flex align-items-center flex-grow-1">
               <img
-               src={require(`./src/assets/images/pizza.jpg`)}
+               //src={require(`./src/assets/images/pizza.jpg`)}
                 alt={detalle.articulo?.denominacion}
                 className="img-fluid rounded-circle me-3"
                 style={{ width: '50px', height: '50px' }}

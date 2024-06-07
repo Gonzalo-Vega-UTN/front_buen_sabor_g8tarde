@@ -32,6 +32,17 @@ const Sidebar = () => {
             
             <hr className="text-white" />
             <ul className="nav flex-column">
+            <li className="nav-item">
+                    <Link 
+                        to="/" 
+                        className={`nav-link text-white ${location.pathname === '/' || selected === '/' ? 'active' : ''}`}
+                        onClick={() => handleClick('/')}
+                    >
+                        <BsShop size={24} className="me-2" />
+                        <span className="nav-text">Tienda</span>
+                    </Link>
+                </li>
+                
                 <li className="nav-item">
                     <Link 
                         to="/empresas" 
