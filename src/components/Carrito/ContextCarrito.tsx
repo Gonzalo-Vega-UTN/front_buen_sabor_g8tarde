@@ -4,9 +4,9 @@ import PedidoFull from '../../entities/DTO/Pedido/PedidoFull';
 import { useAuth } from '../../Auth/Auth';
 import ModalConfirm from '../modals/ModalConfirm';
 import { createPreferenceMP } from '../../services/MPService';
-import { agregarPedido } from '../../services/PedidoService';
 import { DetallePedido } from '../../entities/DTO/Pedido/DetallePedido';
 import { Articulo } from '../../entities/DTO/Articulo/Articulo';
+import PedidoService from '../../services/PedidoService';
 
 interface CartContextType {
   pedido: PedidoFull;
@@ -128,7 +128,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           console.log(pedido)
           console.log(pedido.detallePedidos)
           pedido.cliente.usuario.username=activeUser;
-          const data = await agregarPedido({ ...pedido });
+          const data = await PedidoService.agregarPedido({ ...pedido });
           if (data > 0) {
             await getPreferenceMP(data);
             toast.success('Compra realizada con éxito');

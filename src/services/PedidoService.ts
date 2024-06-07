@@ -1,36 +1,73 @@
 import PedidoFull from "../entities/DTO/Pedido/PedidoFull";
+import { obtenerPedidosMock } from "./mocks";
 
-export async function agregarPedido(pedido: PedidoFull): Promise<number> {
-    const urlServer = `http://localhost:8080/api/pedidos/guardar`;
-    console.log(JSON.stringify(pedido));
-    const response = await fetch(urlServer, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify(pedido),
-        mode: 'cors'
-    });
-    const responseData = await response.json();
-    console.log(responseData);
-    if (response.ok) {
-        return responseData; // Devuelve el ID del pedido si la respuesta es exitosa
-    } else {
-        throw new Error('Error al agregar el pedido');
+class PedidoService {
+    private static  urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/pedidos`;
+
+    private static async request(endpoint: string, options: RequestInit) {
+        console.log("URL: ", this.urlServer);
+        console.log("ENPOINT", endpoint );
+        
+        const response = await fetch(`${this.urlServer}${endpoint}`, options);
+        const responseData = await response.json();
+        if (!response.ok) {
+            throw new Error(responseData.message || 'Error al procesar la solicitud');
+        }
+        return responseData;
     }
+
+    static async agregarPedido(pedido: PedidoFull): Promise<number> {
+        try {
+            const responseData = await this.request('/guardar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(pedido),
+                mode: 'cors'
+            });
+            return responseData; 
+        } catch (error) {
+            console.error('Error al agregar el pedido:', error);
+            throw error;
+        }
+    }
+
+    static async obtenerPedidoById(id: number): Promise<PedidoFull> {
+        try {
+            return await this.request(`/traer/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                mode: 'cors'
+            }) as PedidoFull;
+        } catch (error) {
+            console.error(`Error al obtener el pedido con ID ${id}:`, error);
+            throw error;
+        }
+    }
+
+    static async obtenerPedidos(fecha : string, flag? : boolean): Promise<PedidoFull[]> {
+        if(flag) return obtenerPedidosMock() 
+        try {
+            return await this.request('/fecha/' + fecha , {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                mode: 'cors'
+            }) as PedidoFull[];
+        } catch (error) {
+            console.error('Error al obtener los pedidos:', error);
+            throw error;
+        }
+
+    }
+
+    
+    
 }
 
 
-export async function traerPedido(id: number) {
-    const urlServer = `http://localhost:8080/api/pedidos/traer/${id}`;
-    const response = await fetch(urlServer, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-        },
-        mode: "cors",
-    });
-    return (await response.json()) as PedidoFull;
-}
+export default PedidoService;

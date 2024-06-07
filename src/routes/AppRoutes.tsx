@@ -6,6 +6,7 @@ import EmpresasPage from '../pages/EmpresasPage';
 import SucursalesPage from "../pages/SucursalPage";
 import Home from "../components/Home/Home";
 import { CartProvider } from "../components/Carrito/ContextCarrito";
+import { PedidosList } from "../pages/PedidosList";
 
 
 export default function AppRoutes() {
@@ -24,6 +25,8 @@ export default function AppRoutes() {
       <Route path="/empresas" element={<EmpresasPage />} />
       <Route path="/sucursales" element={<SucursalesPage />} />
       <Route path="/sucursales/:id" element={<SucursalesPage />} />
+      <Route path="/pedidos" element={<PedidosList />} />
+
 
     </Routes>
   );

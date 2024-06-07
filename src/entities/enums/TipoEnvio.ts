@@ -1,4 +1,4 @@
-enum TipoEnvio {
+export enum TipoEnvio {
     Delivery,
     TakeAway
 }
