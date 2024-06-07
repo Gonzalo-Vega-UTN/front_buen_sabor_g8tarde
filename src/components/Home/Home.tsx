@@ -7,6 +7,7 @@ import Lista from '../../MioImport/lista';
 const Home = () => {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
     // Función para obtener categorías
     const fetchCategories = async () => {
@@ -28,6 +29,10 @@ const Home = () => {
 
     const defaultImageUrl = 'https://http2.mlstatic.com/storage/sc-seller-journey-backoffice/images-assets/234940675890-Sucursales--una-herramienta-para-mejorar-la-gesti-n-de-tus-puntos-de-venta.png';
 
+    const handleCategoryClick = (categoryId: number) => {
+        setSelectedCategoryId(categoryId);
+    };
+
     return (
         <div className="container mt-5">
             {/* Search Bar and Header */}
@@ -42,7 +47,11 @@ const Home = () => {
             {/* Categories */}
             <div className="row mb-4">
                 {categorias.map(category => (
-                    <div className="col-3 text-center" key={category.id}>
+                    <div 
+                        className={`col-3 text-center ${selectedCategoryId === category.id ? 'selected' : ''}`} 
+                        key={category.id} 
+                        onClick={() => handleCategoryClick(category.id)}
+                    >
                         <img 
                             src={category.imagen || defaultImageUrl} 
                             className="rounded-circle" 
@@ -55,7 +64,7 @@ const Home = () => {
             </div>
 
             {/* Featured Products */}
-            <Lista/> {/* Renderiza el componente Lista en lugar de mostrar directamente los productos */}
+            <Lista selectedCategoryId={selectedCategoryId} /> {/* Pasa la categoría seleccionada al componente Lista */}
         </div>
     );
 };

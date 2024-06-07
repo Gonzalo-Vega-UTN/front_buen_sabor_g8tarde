@@ -1,4 +1,5 @@
 import Usuario from "../entities/DTO/Usuario/Usuario";
+import { Rol } from "../entities/enums/Rol";
 
 
 const BASE_URL = "http://localhost:8080/api/auth";
@@ -50,5 +51,22 @@ export const UsuarioService = {
 
     const data = await response.json();
     return data;
+  },
+
+   LoginFalso  (isAdmin: boolean): Promise<Usuario>  {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const response = new Usuario();
+        if (isAdmin) {
+          response.username = "admin";
+          response.rol = Rol.Admin;
+        } else {
+          response.username = "user";
+          response.rol = Rol.Cliente;
+        }
+        resolve(response);
+      }, 1000); // Simula un retraso de 1 segundo
+    });
   }
+  
 };

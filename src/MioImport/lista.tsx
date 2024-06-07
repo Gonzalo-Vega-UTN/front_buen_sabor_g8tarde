@@ -5,9 +5,14 @@ import { ProductServices } from '../services/ProductServices';
 import Carrito from '../components/Carrito/carrito';
 import ItemProducto from './itemLista';
 
-const Lista: React.FC = () => {
-  const { isAuthenticated, activeUser } = useAuth();
+interface ListaProps {
+  selectedCategoryId: number | null;
+}
+
+const Lista: React.FC<ListaProps> = ({ selectedCategoryId }) => {
+  const { isAuthenticated } = useAuth();
   const [productos, setProductos] = useState<ArticuloManufacturado[]>([]);
+  const [filteredProductos, setFilteredProductos] = useState<ArticuloManufacturado[]>([]);
 
   const actualizarLista = async () => {
     try {
@@ -31,13 +36,21 @@ const Lista: React.FC = () => {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    if (selectedCategoryId) {
+      setFilteredProductos(productos.filter(producto => producto.categoria?.id === selectedCategoryId));
+    } else {
+      setFilteredProductos(productos);
+    }
+  }, [selectedCategoryId, productos]);
+
   return (
     <>
       <div className="container">
         <div className="row">
           <div className="col-lg-8">
             <div className="row">
-              {productos.map((producto: ArticuloManufacturado) => (
+              {filteredProductos.map((producto: ArticuloManufacturado) => (
                 <div key={producto.id} className="col-md-6 mb-4">
                   <ItemProducto producto={producto} />
                 </div>
