@@ -1,5 +1,10 @@
 import { Base } from "./Base";
 
 export class Imagen extends Base {
-    url : string  = "";
+    imagePath: string;
+
+    constructor(imageFileName: string) {
+        super();
+        this.imagePath = `assets/images/${imageFileName}`;
+    }
 }

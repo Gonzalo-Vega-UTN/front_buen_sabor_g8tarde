@@ -6,7 +6,7 @@ export class Articulo extends Base {
     denominacion: string = '';
     precioVenta: number  = 0;
     unidadMedida: UnidadMedida | null = null;
-    //imagenes: Imagen | null = null;
+    //imagenes: string ='';
     categoria: Categoria | null = null;
     //promocionDetalle: PromocionDetalle[] | null = null;
 }

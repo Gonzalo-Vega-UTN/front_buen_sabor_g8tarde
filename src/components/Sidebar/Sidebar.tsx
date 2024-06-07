@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { BsFillPeopleFill, BsBuilding, BsShop, BsBox, BsBasket, BsPercent, BsCart, BsGraphUp } from 'react-icons/bs';
 import { Link, useLocation } from 'react-router-dom';
 import './style.css';
+import { useAuth } from '../../Auth/Auth';
+import { Rol } from '../../entities/enums/Rol';
 
 const Sidebar = () => {
     const [expanded, setExpanded] = useState(false);
     const [selected, setSelected] = useState('');
     const [submenuOpen, setSubmenuOpen] = useState(false);
-    const location = useLocation();
+    const location = useLocation(); 
+    const {userRol}=useAuth();
 
     const handleMouseEnter = () => setExpanded(true);
     const handleMouseLeave = () => setExpanded(false);
@@ -32,6 +35,18 @@ const Sidebar = () => {
             
             <hr className="text-white" />
             <ul className="nav flex-column">
+                <li className="nav-item">
+                <Link 
+                        to="/" 
+                        className={`nav-link text-white ${location.pathname === '/' || selected === '/' ? 'active' : ''}`}
+                        onClick={() => handleClick('/')}
+                    >
+                        <BsShop size={24} className="me-2" />
+                        <span className="nav-text">Tienda</span>
+                    </Link>
+                </li>
+                {userRol === Rol.Admin && (
+                <>
                 <li className="nav-item">
                     <Link 
                         to="/empresas" 
@@ -139,7 +154,8 @@ const Sidebar = () => {
                         <span className="nav-text">Estadísticas</span>
                     </Link>
                 </li>
-            
+                </>
+                )}
             </ul>
 
             

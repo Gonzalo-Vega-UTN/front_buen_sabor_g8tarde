@@ -1,4 +1,9 @@
-class DetallePedido {
-    cantidad: number | null = 0;
-    subTotal: number | null = 0;
+import { Articulo } from "../Articulo/Articulo";
+import { Base } from "../Base";
+
+export class DetallePedido extends Base {
+    cantidad: number  = 0;
+    subTotal: number  = 0;
+    articulo:Articulo=new Articulo();
+
 }

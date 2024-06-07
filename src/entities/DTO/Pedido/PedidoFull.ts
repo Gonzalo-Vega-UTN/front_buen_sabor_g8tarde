@@ -1,12 +1,18 @@
-class PedidoFull {
-    horaEstimadaFinalizacion: string | null = ''; // Considera cómo deseas representar LocalTime en TypeScript
-    total: number | null = 0;
-    totalCosto: number | null = 0;
-    estado: Estado | null = null;
-    tipoEnvio: TipoEnvio | null = null;
+import { TipoEnvio } from "../../enums/TipoEnvio";
+import { Base } from "../Base";
+import { ClienteFull } from "../Cliente/ClienteFull";
+import { DomicilioShort } from "../Domicilio/DomicilioShort";
+import { DetallePedido } from "./DetallePedido";
+
+export default class PedidoFull extends Base {
+    horaEstimadaFinalizacion: string = '';
+    total: number = 0;
+    totalCosto: number = 0;
+    estado?: Estado;
+    tipoEnvio?: TipoEnvio;
     formaDePago: string = '';
-    fechaPedido: string | null = ''; // Considera cómo deseas representar LocalDate en TypeScript
-    domicilioShort: DomicilioShort | null = null;
-    //cliente: ClienteFull | null = null;
-    detallePedidoList: DetallePedido[] | null = null;
+    fechaPedido: Date = new Date();
+    domicilioShort: DomicilioShort = new DomicilioShort();
+    cliente: ClienteFull = new ClienteFull();
+    detallePedidos: DetallePedido[] = [];
 }

@@ -1,7 +1,7 @@
-/*import { Base } from "../Base";
+import { Base } from "../Base";
 import { DomicilioFull } from "../Domicilio/DomicilioFull";
-/*
-class ClienteFull extends Base {
+import Usuario from "../Usuario/Usuario";
+export class ClienteFull extends Base {
     nombre: string = '';
     apellido: string = '';
     telefono: string = '';
@@ -9,5 +9,5 @@ class ClienteFull extends Base {
     fechaNacimiento: string | null = ''; // Considera cómo deseas representar LocalDate en TypeScript
     imagen: string = '';
     domicilios: DomicilioFull[] | null = null;
+    usuario:Usuario=new Usuario();
 }
-*/
