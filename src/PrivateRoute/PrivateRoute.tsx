@@ -1,10 +1,11 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../Auth/Auth';
+import { Rol } from '../entities/enums/Rol';
 
 interface PrivateRouteProps {
   element: React.ComponentType<any>;
-  roles?: string[];
+  roles?: Rol[];
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ element: Component, roles }) => {

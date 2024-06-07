@@ -197,6 +197,7 @@ const Formulario = ({ articuloExistente, onHide, handleSave }: FormProps) => {
       });
     }
     if (Object.values(errors).every(error => !error)) {
+      console.log("en form",articulo)
       handleSave(articulo);
       onHide();
     }

@@ -1,4 +1,5 @@
 import Usuario from "../entities/DTO/Usuario/Usuario";
+import { Rol } from "../entities/enums/Rol";
 
 
 const BASE_URL = "http://localhost:8080/api/auth";
@@ -50,5 +51,6 @@ export const UsuarioService = {
 
     const data = await response.json();
     return data;
-  }
+  },
+  
 };

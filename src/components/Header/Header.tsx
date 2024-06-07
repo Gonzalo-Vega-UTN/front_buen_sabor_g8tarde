@@ -36,7 +36,7 @@ const Header: React.FC = () => {
                   <NavDropdown.Divider />
                 </>
               )}
-              {userRol === 'admin' && (
+              {userRol === 'Admin' && (
                 <>
                   <NavDropdown.Item onClick={() => handleNavigation('/productos')}>
                     Productos
