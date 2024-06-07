@@ -72,6 +72,7 @@ const Register: React.FC<RegisterProps> = ({ closeModal }) => {
                     <option value={Rol.Cliente}>Cliente</option>
                     <option value={Rol.Empleado}>Empleado</option>
                 </Form.Select>
+                <br></br>
             </Form.Group>
             <Button variant="primary" type="submit">
                 Registrar

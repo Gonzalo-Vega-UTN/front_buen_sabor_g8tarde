@@ -15,7 +15,7 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
     const [mensaje, setMensaje] = useState<string>('');
 
     const handleSubmit = async (e: React.FormEvent) => {
-        console.log("ingregs'swda")
+        console.log("ingrego")
         e.preventDefault();
         if (!username || !auth0Id) {
             setMensaje('Por favor, ingrese tanto el nombre de usuario como la contraseña.');
@@ -60,6 +60,7 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
                     placeholder="Ingrese su clave"
                     required
                 />
+            <br></br>
             </Form.Group>
             <Button variant="primary" type="submit">
                 Login

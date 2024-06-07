@@ -1,59 +1,41 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+// Auth.tsx
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { Rol } from '../entities/enums/Rol';
 
-// Define el tipo de contexto
 interface AuthContextType {
   isAuthenticated: boolean;
-  activeUser: string;
-  userRol: string;
-  login: (username: string, rol: string) => void;
+  userRol: Rol;
+  login: (role: Rol) => void;
   logout: () => void;
 }
 
-// Crea el contexto con un valor predeterminado
-const AuthContext = createContext<AuthContextType>({
-  isAuthenticated: false,
-  activeUser: '',
-  userRol: '', 
-  login: () => {},
-  logout: () => {}
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Proveedor de contexto para manejar la autenticación
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    const storedAuthState = localStorage.getItem('isAuthenticated');
-    return storedAuthState === 'true' || false;
-  });
-  const [activeUser, setActiveUser] = useState<string>(() => {
-    return localStorage.getItem('activeUser') || '';
-  });
-  const [userRol, setUserRol] = useState<string>(() => {
-    return localStorage.getItem('userRol') || '';
-  });
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRol, setUserRol] = useState<Rol>(Rol.Cliente);
 
-  useEffect(() => {
-    localStorage.setItem('isAuthenticated', String(isAuthenticated));
-    localStorage.setItem('activeUser', activeUser);
-    localStorage.setItem('userRol', userRol); 
-  }, [isAuthenticated, activeUser, userRol]);
-
-  const login = (username: string, rol: string) => { 
+  const login = (role: Rol) => {
     setIsAuthenticated(true);
-    setActiveUser(username);
-    setUserRol(rol);
+    setUserRol(role);
   };
 
   const logout = () => {
     setIsAuthenticated(false);
-    setActiveUser('');
-    setUserRol(''); 
+    setUserRol(Rol.Cliente);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, activeUser, userRol, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, userRol, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
