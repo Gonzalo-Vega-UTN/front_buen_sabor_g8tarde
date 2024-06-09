@@ -26,7 +26,7 @@ export default function ArticuloInsumoTable() {
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<number>();
     const [unidadMedidaSeleccionada, setUnidadMedidaSeleccionada] = useState<number>();
     const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
-    
+
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState<ModalType>(ModalType.NONE);
     const [title, setTitle] = useState("");
@@ -44,50 +44,50 @@ export default function ArticuloInsumoTable() {
 
 
     const fetchDataArticulosInsumo = async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string) => {
-        const articulos = await ArticuloInsumosServices.getArticuloInsumoFiltered(idCategoria, idUnidadMedida, denominacion );
+        const articulos = await ArticuloInsumosServices.getArticuloInsumoFiltered(idCategoria, idUnidadMedida, denominacion);
         setArticuloInsumos(articulos);
     };
-    
+
     useEffect(() => {
-       
+
         fetchDataArticulosInsumo();
     }, []);
 
 
     useEffect(() => {
         const fetchCategorias = async () => {
-          const categorias = await CategoriaService.getCategorias();
-          setCategorias(categorias);
+            const categorias = await CategoriaService.obtenerCategorias();
+            setCategorias(categorias);
         };
-    
+
         fetchCategorias();
-      }, []);
-    
-      useEffect(() => {
+    }, []);
+
+    useEffect(() => {
         const fetchUnidadadMedida = async () => {
-          const unidadesMedida = await UnidadMedidaServices.getUnidadesMedida();
-          setUnidadesMedida(unidadesMedida);
+            const unidadesMedida = await UnidadMedidaServices.getUnidadesMedida();
+            setUnidadesMedida(unidadesMedida);
         };
-    
+
         fetchUnidadadMedida();
-      }, []);
+    }, []);
 
 
 
     const handleChangeCategoria = (id: number) => {
         setCategoriaSeleccionada(id > 0 ? id : undefined);
-      }
-      
-      const handleChangeUnidadMedida = (id: number) => {
+    }
+
+    const handleChangeUnidadMedida = (id: number) => {
         setUnidadMedidaSeleccionada(id > 0 ? id : undefined);
-      }
-    
-      const handleChangeText = (denominacion: string) => {
+    }
+
+    const handleChangeText = (denominacion: string) => {
         setSearchedDenominacion(denominacion ? denominacion : undefined);
-      }
-      useEffect(() => {
+    }
+    useEffect(() => {
         fetchDataArticulosInsumo(categoriaSeleccionada, unidadMedidaSeleccionada, searchedDenominacion);
-      }, [categoriaSeleccionada, unidadMedidaSeleccionada,searchedDenominacion]);
+    }, [categoriaSeleccionada, unidadMedidaSeleccionada, searchedDenominacion]);
 
     return (
         <div className="container">
@@ -99,12 +99,12 @@ export default function ArticuloInsumoTable() {
                 )}
             />
             <FiltroProductos
-      categorias={categorias}
-      unidadesMedida={unidadesMedida}
-      handleChangeText={handleChangeText}
-      handleChangeCategoria={handleChangeCategoria}
-      handleChangeUnidadMedida={handleChangeUnidadMedida}
-    />
+                categorias={categorias}
+                unidadesMedida={unidadesMedida}
+                handleChangeText={handleChangeText}
+                handleChangeCategoria={handleChangeCategoria}
+                handleChangeUnidadMedida={handleChangeUnidadMedida}
+            />
             <Table hover>
                 <thead>
                     <tr className="text-center">
@@ -136,7 +136,7 @@ export default function ArticuloInsumoTable() {
                                 } />
                             </td>
                             <td className={articulo.alta ? "" : "bg-secondary"}>
-                                <Button color={articulo.alta ? "#D32F2F" : "#50C878"} size={23} icon={articulo.alta ? BsTrashFill : FaSave } onClick={() =>
+                                <Button color={articulo.alta ? "#D32F2F" : "#50C878"} size={23} icon={articulo.alta ? BsTrashFill : FaSave} onClick={() =>
                                     handleClick(
                                         "Alta/Baja Articulo",
                                         articulo,

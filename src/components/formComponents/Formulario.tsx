@@ -54,7 +54,7 @@ const Formulario = ({ articuloExistente, onHide, handleSave }: FormProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const categorias = await CategoriaService.getCategorias();
+      const categorias = await CategoriaService.obtenerCategorias();
       setCategorias(categorias);
     };
     fetchData();
@@ -197,7 +197,7 @@ const Formulario = ({ articuloExistente, onHide, handleSave }: FormProps) => {
       });
     }
     if (Object.values(errors).every(error => !error)) {
-      console.log("en form",articulo)
+      console.log("en form", articulo)
       handleSave(articulo);
       onHide();
     }

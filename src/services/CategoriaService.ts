@@ -1,56 +1,131 @@
 import { Categoria } from "../entities/DTO/Categoria/Categoria";
 
-const BASE_URL = "http://localhost:8080/api/categorias";
 
-export const CategoriaService = {
-  getCategorias: async (): Promise<Categoria[]> => {
-    const response = await fetch(`${BASE_URL}`);
-    const data = response.json();
+export class CategoriaService {
+  private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/categorias`;
 
-    return data;
-  },
+  private static async request(endpoint: string, options: RequestInit) {
+    const response = await fetch(`${this.urlServer}${endpoint}`, options);
+    const responseData = await response.json();
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Error al procesar la solicitud');
+    }
+    return responseData;
+  }
 
-  getCategoriaById: async (id : number): Promise<Categoria> => {
-    const response = await fetch(`${BASE_URL}/${id}`);
-    const data = response.json();
+  static async obtenerCategorias(): Promise<Categoria[]> {
+    try {
+      const responseData = await this.request('', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      });
+      return responseData as Categoria[];
+    } catch (error) {
+      console.error('Error al obtener todas las categorias:', error);
+      throw error;
+    }
+  }
 
-    return data;
-  },
+  static async obtenerCategoriasPadre(): Promise<Categoria[]> {
+    try {
+      const responseData = await this.request('/padres', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      });
+      return responseData;
+    } catch (error) {
+      console.error('Error al obtener todas las categorias padre:', error);
+      throw error;
+    }
+  }
 
-  createCategoria: async (
-    categoria: Categoria
-  ): Promise<Categoria> => {
-    const response = await fetch(`${BASE_URL}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(categoria),
-    });
-    const data = await response.json();
+  static async obtenerCategoriaById(id: number): Promise<Categoria> {
+    try {
+      return await this.request(`/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      }) as Categoria;
+    } catch (error) {
+      console.error(`Error al obtener la categoria con ID ${id}:`, error);
+      throw error;
+    }
+  }
 
-    return data;
-  },
+  static async agregarCategoria(idPadre: number, categoria: Categoria): Promise<Categoria> {
+    try {
+      console.log("SERVICE," , "PADRE", idPadre, "CATEGORIA", categoria );
+      
+      const responseData = await this.request(`/${idPadre}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(categoria),
+        mode: 'cors'
+      });
+      return responseData;
+    } catch (error) {
+      console.error('Error al agregar la Categoria:', error);
+      throw error;
+    }
+  }
 
-  updateCategoria: async (
-    id: number,
-    categoria: Categoria
-  ): Promise<Categoria> => {
-    const response = await fetch(`${BASE_URL}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(categoria),
-    });
-    const data = await response.json();
+  static async agregarSubCategoriaCategoria(idCateogriaPadre: number, categoria: Categoria): Promise<Categoria> {
+    try {
+      const responseData = await this.request(`/subcategoria/${idCateogriaPadre}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(categoria),
+        mode: 'cors'
+      });
+      return responseData;
+    } catch (error) {
+      console.error('Error al agregar la Categoria:', error);
+      throw error;
+    }
+  }
 
-    return data;
-  },
+  static async actualizarCategoria(idCateogria: number, categoria: Categoria): Promise<Categoria> {
+    try {
+      const responseData = await this.request(`/subcategoria/${idCateogria}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(categoria),
+        mode: 'cors'
+      });
+      return responseData;
+    } catch (error) {
+      console.error('Error al actualizar la Categoria:', error);
+      throw error;
+    }
+  }
 
-  deleteCategoria: async (id: number): Promise<void> => {
-    await fetch(`${BASE_URL}/${id}`, {
-      method: "DELETE",
-    });
-  },
+  static async eliminarCategoriaById(id: number): Promise<Categoria> {
+    try {
+      return await this.request(`/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      }) as Categoria;
+    } catch (error) {
+      console.error(`Error al dar de baja la categoria con ID ${id}:`, error);
+      throw error;
+    }
+  }
+
 };

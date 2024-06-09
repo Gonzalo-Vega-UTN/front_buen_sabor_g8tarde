@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ProductServices } from "../../services/ProductServices";
-import {  Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import CustomButton from "../generic/Button"
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
@@ -89,7 +89,7 @@ export default function ProductTable() {
 
   useEffect(() => {
     const fetchCategorias = async () => {
-      const categorias = await CategoriaService.getCategorias();
+      const categorias = await CategoriaService.obtenerCategorias();
       setCategorias(categorias);
     };
 
@@ -109,7 +109,7 @@ export default function ProductTable() {
   const handleChangeCategoria = (id: number) => {
     setCategoriaSeleccionada(id > 0 ? id : undefined);
   }
-  
+
   const handleChangeUnidadMedida = (id: number) => {
     setUnidadMedidaSeleccionada(id > 0 ? id : undefined);
   }
@@ -119,22 +119,22 @@ export default function ProductTable() {
   }
   useEffect(() => {
     fetchProducts(categoriaSeleccionada, unidadMedidaSeleccionada, searchedDenominacion);
-  }, [categoriaSeleccionada, unidadMedidaSeleccionada,searchedDenominacion]);
+  }, [categoriaSeleccionada, unidadMedidaSeleccionada, searchedDenominacion]);
 
-  
+
   return (
     <div className="container">
       <CustomButton classes="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Producto" onClick={() =>
         handleClick(0)}
       />
-      
-       <FiltroProductos
-      categorias={categorias}
-      unidadesMedida={unidadesMedida}
-      handleChangeText={handleChangeText}
-      handleChangeCategoria={handleChangeCategoria}
-      handleChangeUnidadMedida={handleChangeUnidadMedida}
-    />
+
+      <FiltroProductos
+        categorias={categorias}
+        unidadesMedida={unidadesMedida}
+        handleChangeText={handleChangeText}
+        handleChangeCategoria={handleChangeCategoria}
+        handleChangeUnidadMedida={handleChangeUnidadMedida}
+      />
       <Table hover>
         <thead>
           <tr className="text-center">

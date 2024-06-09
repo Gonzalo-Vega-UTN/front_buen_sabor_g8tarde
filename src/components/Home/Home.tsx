@@ -12,7 +12,7 @@ const Home = () => {
     // Función para obtener categorías
     const fetchCategories = async () => {
         try {
-            const data = await CategoriaService.getCategorias();
+            const data = await CategoriaService.obtenerCategorias();
             setCategorias([{
                 id: undefined, denominacion: 'Todos', imagen: '',
                 alta: false
@@ -50,16 +50,16 @@ const Home = () => {
             {/* Categories */}
             <div className="row mb-4">
                 {categorias.map(category => (
-                    <div 
-                        className={`col-3 text-center ${selectedCategoryId === category.id ? 'selected' : ''}`} 
-                        key={category.id === undefined ? 'all' : category.id} 
+                    <div
+                        className={`col-3 text-center ${selectedCategoryId === category.id ? 'selected' : ''}`}
+                        key={category.id === undefined ? 'all' : category.id}
                         onClick={() => handleCategoryClick(category.id)}
                     >
-                        <img 
-                            src={category.imagen || defaultImageUrl} 
-                            className="rounded-circle" 
-                            alt={category.denominacion} 
-                            width="100" 
+                        <img
+                            src={category.imagen || defaultImageUrl}
+                            className="rounded-circle"
+                            alt={category.denominacion}
+                            width="100"
                         />
                         <h5 className="mt-2">{category.denominacion}</h5>
                     </div>
