@@ -24,7 +24,7 @@ const LoginPage: React.FC<LoginProps> = () => {
             if (data) {
                 
                 console.log("exitoso");
-                setlogMensaje('Login exitoso'); // Set the success message
+                setMensaje('Login exitoso'); // Set the success message
                 setTimeout(() =>{
                     closeModal();
                     login(data.username, data.rol);  
@@ -43,6 +43,14 @@ const LoginPage: React.FC<LoginProps> = () => {
         setCliente(prev =>(
             ...prev
         ))
+    }
+
+    function setUsername(value: string): void {
+        throw new Error('Function not implemented.');
+    }
+
+    function setAuth0Id(value: string): void {
+        throw new Error('Function not implemented.');
     }
 
     return (
@@ -72,9 +80,13 @@ const LoginPage: React.FC<LoginProps> = () => {
                 Login
             </Button>
             {mensaje && <Alert className='mt-2' variant="danger">{mensaje}</Alert>}
-            {logMensaje && <Alert  variant="success">{logMensaje}</Alert>}
+            {mensaje && <Alert  variant="success">{mensaje}</Alert>}
         </Form>
     );
 };
 
 export default LoginPage;
+function closeModal() {
+    throw new Error('Function not implemented.');
+}
+

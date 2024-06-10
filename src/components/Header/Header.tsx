@@ -11,8 +11,7 @@ import { useAuth } from '../../Auth/Auth';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
-
-  const { isAuthenticated ,userRol } = useAuth(); 
+  const { isAuthenticated, userRol } = useAuth();
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -21,18 +20,16 @@ const Header: React.FC = () => {
   return (
     <Container>
       <Navbar expand="lg">
-        <Navbar.Brand onClick={() => handleNavigation('/')}>
-        </Navbar.Brand>
+        <Navbar.Brand onClick={() => handleNavigation('/')}></Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll" className="position-relative">
           <Nav className="me-auto my-2 my-lg-0 position-absolute top-50 end-0 translate-middle-y px-5">
-            <NavDropdown
-              title={<Icon.PersonCircle size={32} />}
-              id="navbarScrollingDropdown"
-            >
+            <NavDropdown title={<Icon.PersonCircle size={32} />} id="navbarScrollingDropdown">
               {isAuthenticated && (
                 <>
-                  <NavDropdown.Item href="#action3">Editar Perfil</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => handleNavigation('/perfil')}>
+                    Editar Perfil
+                  </NavDropdown.Item>
                   <NavDropdown.Divider />
                 </>
               )}
@@ -47,9 +44,8 @@ const Header: React.FC = () => {
                   <NavDropdown.Divider />
                 </>
               )}
-              {isAuthenticated ? <BotonLogout /> : <BotonLogin />} 
+              {isAuthenticated ? <BotonLogout /> : <BotonLogin />}
             </NavDropdown>
-            
           </Nav>
         </Navbar.Collapse>
       </Navbar>
