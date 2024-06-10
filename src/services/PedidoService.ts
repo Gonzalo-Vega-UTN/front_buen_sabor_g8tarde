@@ -1,5 +1,4 @@
 import PedidoFull from "../entities/DTO/Pedido/PedidoFull";
-import { obtenerPedidosMock } from "./mocks";
 
 class PedidoService {
     private static  urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/pedidos`;
@@ -46,7 +45,6 @@ class PedidoService {
     }
 
     static async obtenerPedidos(fecha : string, flag? : boolean): Promise<PedidoFull[]> {
-        if(flag) return obtenerPedidosMock() 
         try {
             return await this.request('/fecha/' + fecha , {
                 method: 'GET',

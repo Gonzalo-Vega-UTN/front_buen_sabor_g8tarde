@@ -10,6 +10,7 @@ import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import { Rol } from "../entities/enums/Rol";
 import { PedidosList } from "../pages/PedidosList";
 import { CategoriasList } from "../pages/CategoriasList";
+import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
 
 
 export default function AppRoutes() {
@@ -37,6 +38,7 @@ export default function AppRoutes() {
           />
         }
       />
+      <Route path="/registro" element={<RegistroUsuarioCliente/>}/>
       <Route
         path="/productos"
         element={

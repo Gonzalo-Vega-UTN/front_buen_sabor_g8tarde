@@ -42,23 +42,26 @@ class UsuarioService {
       });
       return responseData; 
   } catch (error) {
-      console.error('Error al agregar el pedido:', error);
+      console.error('Error al registrar:', error);
       throw error;
   }
   }
 
-  // static async validarExistenciaUsuario: async (nombreUsuario: string): Promise<boolean> => {
-  //   const response = await fetch(`${BASE_URL}/validar?nombreUsuario=${encodeURIComponent(nombreUsuario)}`);
-    
-  //   if (!response.ok) {
-  //     const errorText = await response.text();
-  //     throw new Error(errorText);
-  //   }
-
-  //   const data = await response.json();
-  //   return data;
-  // },
-  
-};
+  static async validarExistenciaUsuario(nombreUsuario: string): Promise<boolean> {
+    try {
+        const responseData = await this.request(`/validar/${nombreUsuario}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors'
+        });
+        return responseData; 
+    } catch (error) {
+        console.error('Error al validar existencia usuario:', error);
+        throw error;
+    }
+}
+}
 
 export default UsuarioService;
