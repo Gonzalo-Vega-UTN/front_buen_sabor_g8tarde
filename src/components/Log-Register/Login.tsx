@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Form, Alert } from 'react-bootstrap';
 import { useAuth } from '../../Auth/Auth';
 import Usuario from '../../entities/DTO/Usuario/Usuario';
-import { UsuarioService } from '../../services/UsuarioService';
+import UsuarioService from '../../services/UsuarioService';
 
 interface LoginProps {
     closeModal: () => void;
@@ -13,28 +13,32 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
     const [username, setUsername] = useState<string>('');
     const [auth0Id, setAuth0Id] = useState<string>('');
     const [mensaje, setMensaje] = useState<string>('');
+    const [logMensaje, setlogMensaje] = useState<string>('');
 
     const handleSubmit = async (e: React.FormEvent) => {
-        console.log("ingrego")
         e.preventDefault();
+        console.log("CLICKED")
         if (!username || !auth0Id) {
             setMensaje('Por favor, ingrese tanto el nombre de usuario como la contraseña.');
             return;
         }
         try {
             const usuario: Usuario = { username, auth0Id };
-            console.log(usuario)
            const data = await UsuarioService.login(usuario);
            
-            console.log(data+"sadawda")
             if (data) {
-                console.log(data)
-                login(data.username,data.rol); 
-                setMensaje('Login exitoso');
-                closeModal();
+                
+                console.log("exitoso");
+                setlogMensaje('Login exitoso'); // Set the success message
+                setTimeout(() =>{
+                    closeModal();
+                    login(data.username, data.rol);  
+                },1500)
             }
         } catch (err) {
-            setMensaje('Credenciales incorrectas, por favor vuelva a intentarlo.');
+            if(err instanceof Error){
+                setMensaje(err.message);
+            }
             console.error(err);
         }
     };
@@ -62,10 +66,11 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
                 />
             <br></br>
             </Form.Group>
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit" >
                 Login
             </Button>
-            {mensaje && <Alert variant="danger">{mensaje}</Alert>}
+            {mensaje && <Alert className='mt-2' variant="danger">{mensaje}</Alert>}
+            {logMensaje && <Alert className='mt-2' variant="success">{logMensaje}</Alert>}
         </Form>
     );
 };

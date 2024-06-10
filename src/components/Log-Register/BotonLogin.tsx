@@ -13,7 +13,9 @@ const BotonLogin: React.FC = () => {
   };
 
   const handleLoginModalClose = () => {
-    setShowLoginModal(false);
+  
+      setShowLoginModal(false);
+     
   }
 
   const handleRegisterModalOpen = () => {
