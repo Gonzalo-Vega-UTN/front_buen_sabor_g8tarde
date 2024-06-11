@@ -12,6 +12,8 @@ import { PedidosList } from "../pages/PedidosList";
 import { CategoriasList } from "../pages/CategoriasList";
 import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
 import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
+import { Reportes } from "../pages/Reportes";
+import { Estadisticas } from "../pages/Estadisticas";
 
 
 export default function AppRoutes() {
@@ -39,8 +41,8 @@ export default function AppRoutes() {
           />
         }
       />
-      <Route path="/registro" element={<RegistroUsuarioCliente/>}/>
-      <Route path="/perfil" element={<ClienteFormulario />} /> 
+      <Route path="/registro" element={<RegistroUsuarioCliente />} />
+      <Route path="/perfil" element={<ClienteFormulario />} />
       <Route
         path="/productos"
         element={
@@ -99,7 +101,7 @@ export default function AppRoutes() {
         path="/estadisticas"
         element={
           <PrivateRoute
-            element={SucursalesPage} //Recordar cambiar
+            element={Estadisticas} //Recordar cambiar
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
@@ -118,6 +120,16 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={CategoriasList} //Recordar cambiar
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
+
+      <Route
+        path="/reportes"
+        element={
+          <PrivateRoute
+            element={Reportes} //Recordar cambiar
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
