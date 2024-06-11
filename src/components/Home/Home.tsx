@@ -6,6 +6,7 @@ import Lista from '../../MioImport/lista';
 import CarouselComponent from '../Carousel/Carousel';
 import { useAuth } from '../../Auth/Auth';
 import logo from '../../assets/images/Buen sabor logo 1.png'; // Importa el logo
+import MultiCardCarousel from '../Carousel/Carousel';
 
 const Home: React.FC = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -77,7 +78,7 @@ const Home: React.FC = () => {
       {/* Carousel and Introduction Box */}
       <div className="row mb-4">
         <div className="col-12">
-          <CarouselComponent products={featuredProducts} />
+          <MultiCardCarousel />
         </div>
       </div>
       

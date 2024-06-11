@@ -4,14 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { Empresa } from '../entities/DTO/Empresa/Empresa';
+import { EmpresaService } from '../services/EmpresaService';
 
-interface Empresa {
-  id: number;
-  nombre: string;
-  razonSocial: string;
-  cuil: string;
- 
-}
 
 interface EmpresaListProps {
   refresh: boolean;
@@ -23,25 +18,21 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const fetchEmpresas = () => {
-    axios.get('http://localhost:8080/api/empresas')
-      .then(response => {
-        if (Array.isArray(response.data)) {
-          setEmpresas(response.data);
-        } else {
-          console.error('Response is not an array:', response.data);
-          setError('Error fetching empresas: Response is not an array');
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching empresas:', error);
-        setError('Error fetching empresas');
-      });
-  };
-
   useEffect(() => {
+    const fetchEmpresas = async () => {
+      try{
+        const empresas = await EmpresaService.getAll();
+      setEmpresas(empresas);
+      }catch(error){
+        if(error instanceof Error){
+          setError(error.message);
+        }
+      }
+    };
+
     fetchEmpresas();
   }, [refresh]);
+  
 
   const handleCardClick = (empresaId: number) => {
     navigate(`/sucursales/${empresaId}`); // Navegar a la página de sucursales de la empresa

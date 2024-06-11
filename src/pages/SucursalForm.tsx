@@ -1,30 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { createSucursal, updateSucursal } from '../services/SucursalService';
-import { SucursalFull } from '../entities/DTO/Sucursal/SucursalFull';
-
-
+import { Sucursal } from '../entities/DTO/Sucursal/Sucursal';
+import { Empresa } from '../entities/DTO/Empresa/Empresa';
 
 interface AddSucursalFormProps {
   onAddSucursal: () => void;
-  sucursalEditando: SucursalFull | null;
-  idEmpresa: number | undefined;
+  sucursalEditando: Sucursal | null;
+  empresa: Empresa;
 }
 
-const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalEditando , idEmpresa}) => {
-  const [sucursal, setSucursal] = useState<SucursalFull>(() => sucursalEditando? sucursalEditando : new SucursalFull(idEmpresa))
+const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalEditando, empresa }) => {
+  
+  const [sucursal, setSucursal] = useState<Sucursal>(() => {
+    console.log(empresa)
+    if (sucursalEditando) {
+      return sucursalEditando;
+    }
+    let s = new Sucursal();
+    s.empresa = empresa;
+    return s;
+  });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (sucursalEditando) {
-      setSucursal(sucursalEditando);
-    }
-  }, [sucursalEditando]);
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setSucursal({ ...sucursal, [name]: value });
+    setSucursal(prevState => ({ ...prevState, [name]: value }));
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -36,7 +38,9 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalE
         await createSucursal(sucursal);
       }
       setSuccess(true);
-      setSucursal(new SucursalFull(idEmpresa)); // Reinicializa el estado de sucursal con el ID de empresa
+      let newSucursal = new Sucursal();
+      newSucursal.empresa = empresa;
+      setSucursal(newSucursal);
       setError(null);
       onAddSucursal();
     } catch (err) {
