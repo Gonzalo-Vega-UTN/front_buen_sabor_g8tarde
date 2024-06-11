@@ -3,55 +3,44 @@ import { Button, Form, Alert } from 'react-bootstrap';
 import { useAuth } from '../../Auth/Auth';
 import Usuario from '../../entities/DTO/Usuario/Usuario';
 import UsuarioService from '../../services/UsuarioService';
-import { Cliente } from '../../entities/DTO/Cliente/Cliente';
+interface LoginProps {
+    closeModal: () => void;
+}
 
-
-const LoginPage: React.FC<LoginProps> = () => {
+const Login: React.FC<LoginProps> = ({ closeModal }) => {
     const { login } = useAuth();
-    const [cliente, setCliente] = useState<Cliente>(new Cliente());
+    const [username, setUsername] = useState<string>('');
+    const [auth0Id, setAuth0Id] = useState<string>('');
     const [mensaje, setMensaje] = useState<string>('');
+    const [mensajeLog, setMensajeLog] = useState<string>('');
 
     const handleSubmit = async (e: React.FormEvent) => {
+        console.log("ingrego")
         e.preventDefault();
-        if (!cliente.usuario.username || !cliente.usuario.auth0Id) {
-            setMensaje('Por favor, ingrese tanto el nombre de usuario como la contraseña.');
+        if (!username || !auth0Id) {
+            setMensaje('Por favor, ingrese tanto el nombre de usuario como la contraseÃ±a.');
             return;
         }
         try {
             const usuario: Usuario = { username, auth0Id };
+            console.log(usuario)
            const data = await UsuarioService.login(usuario);
            
             if (data) {
+                console.log(data)
                 
-                console.log("exitoso");
-                setMensaje('Login exitoso'); // Set the success message
-                setTimeout(() =>{
+                setMensajeLog('Login exitoso');
+                setTimeout(() => {
+                    login(data.username,data.rol); 
                     closeModal();
-                    login(data.username, data.rol);  
-                },1500)
+                  }, 1500);
+               
             }
         } catch (err) {
-            if(err instanceof Error){
-                setMensaje(err.message);
-            }
+            setMensaje('Credenciales incorrectas, por favor vuelva a intentarlo.');
             console.error(err);
         }
     };
-
-    const handleCahnge = (e: React.ChangeEvent) =>{
-        const value = e.target.value
-        setCliente(prev =>(
-            ...prev
-        ))
-    }
-
-    function setUsername(value: string): void {
-        throw new Error('Function not implemented.');
-    }
-
-    function setAuth0Id(value: string): void {
-        throw new Error('Function not implemented.');
-    }
 
     return (
         <Form onSubmit={handleSubmit}>
@@ -59,7 +48,7 @@ const LoginPage: React.FC<LoginProps> = () => {
                 <Form.Label>Nombre de Usuario:</Form.Label>
                 <Form.Control
                     type="text"
-                    value={cliente.usuario.username}
+                    value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Ingrese su nombre de usuario"
                     required
@@ -76,17 +65,13 @@ const LoginPage: React.FC<LoginProps> = () => {
                 />
             <br></br>
             </Form.Group>
-            <Button variant="primary" type="submit" >
+            <Button variant="primary" type="submit">
                 Login
             </Button>
-            {mensaje && <Alert className='mt-2' variant="danger">{mensaje}</Alert>}
-            {mensaje && <Alert  variant="success">{mensaje}</Alert>}
+            {mensajeLog && <Alert variant="success">{mensajeLog}</Alert>}
+            {mensaje && <Alert variant="danger">{mensaje}</Alert>}
         </Form>
     );
 };
 
-export default LoginPage;
-function closeModal() {
-    throw new Error('Function not implemented.');
-}
-
+export default Login;

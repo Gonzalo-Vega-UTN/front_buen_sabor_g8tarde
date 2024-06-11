@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import Register from './Register';
 import { useNavigate } from 'react-router-dom';
+import LoginPage from './LoginPage';
 
 const BotonLogin: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
   
   const navigate = useNavigate()
 
@@ -19,43 +18,31 @@ const BotonLogin: React.FC = () => {
      
   }
 
-  const handleRegisterModalOpen = () => {
+  const handleRegister = () => {
     navigate("/registro")
     // setShowRegisterModal(true);
   };
 
-  const handleRegisterModalClose = () => {
-    setShowRegisterModal(false);
-  };
 
   return (
     <>
       <Button variant="primary" className="me-2" onClick={handleLoginModalOpen}>
         Login
       </Button>
-      <Button variant="secondary" onClick={handleRegisterModalOpen}>
+      <Button variant="secondary" onClick={handleRegister}>
         Registro
       </Button>
       
       {/* Modal de Login */}
-      {/* <Modal show={showLoginModal} onHide={handleLoginModalClose}>
+       <Modal show={showLoginModal} onHide={handleLoginModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>Login</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Login closeModal={handleLoginModalClose}/>
+          <LoginPage closeModal={handleLoginModalClose}/>
         </Modal.Body>
-      </Modal> */}
+      </Modal> 
 
-      {/* Modal de Registro */}
-      {/* <Modal show={showRegisterModal} onHide={handleRegisterModalClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Registro</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Register closeModal={handleRegisterModalClose}/>
-        </Modal.Body>
-      </Modal> */}
     </>
   );
 };

@@ -14,6 +14,7 @@ export class CategoriaService {
   }
 
   static async obtenerCategorias(): Promise<Categoria[]> {
+    
     try {
       const responseData = await this.request('', {
         method: 'GET',
