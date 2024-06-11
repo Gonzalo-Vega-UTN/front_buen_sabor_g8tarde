@@ -14,6 +14,8 @@ interface EmpresaListProps {
 }
 
 const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => {
+
+  const defaultImageUrl = 'https://nortelotiene.com/wp-content/uploads/2023/07/EL-BUEN-SABOR.jpg'; // URL de la imagen predeterminada
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -38,7 +40,6 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
     navigate(`/sucursales/${empresaId}`); // Navegar a la página de sucursales de la empresa
   };
 
-  const defaultImageUrl = 'https://nortelotiene.com/wp-content/uploads/2023/07/EL-BUEN-SABOR.jpg'; // URL de la imagen predeterminada
 
   return (
     <Container>
