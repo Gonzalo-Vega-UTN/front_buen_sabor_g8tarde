@@ -7,6 +7,8 @@ import { createPreferenceMP } from '../../services/MPService';
 import { DetallePedido } from '../../entities/DTO/Pedido/DetallePedido';
 import { Articulo } from '../../entities/DTO/Articulo/Articulo';
 import PedidoService from '../../services/PedidoService';
+import { Cliente } from '../../entities/DTO/Cliente/Cliente';
+import Usuario from '../../entities/DTO/Usuario/Usuario';
 
 interface CartContextType {
   pedido: PedidoFull;
@@ -127,6 +129,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         try {
           console.log(pedido)
           console.log(pedido.detallePedidos)
+          pedido.cliente=new Cliente();
+          pedido.cliente.usuario=new Usuario();
           pedido.cliente.usuario.username=activeUser;
           const data = await PedidoService.agregarPedido({ ...pedido });
           if (data > 0) {
