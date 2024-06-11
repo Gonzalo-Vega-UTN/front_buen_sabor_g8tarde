@@ -2,7 +2,8 @@ import PreferenceMP from "../entities/DTO/MP/PreferenceMP";
 import PedidoFull from "../entities/DTO/Pedido/PedidoFull";
 
 export async function createPreferenceMP(pedido?: PedidoFull) {
-    let urlServer = "http://localhost:8080/api/mercado-pago/crear_preference_mp";
+    let urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/mercado-pago/crear_preference_mp`;;
+    
     let method: string = "POST";
     const response = await fetch(urlServer, {
         method: method,
