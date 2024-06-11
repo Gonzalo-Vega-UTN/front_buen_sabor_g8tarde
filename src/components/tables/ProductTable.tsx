@@ -10,9 +10,9 @@ import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado
 import { useNavigate } from "react-router-dom";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { CategoriaService } from "../../services/CategoriaService";
-import { UnidadMedidaServices } from "../../services/UnidadMedidaServices";
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
 import FiltroProductos from "../Filtrado/FiltroArticulo";
+import UnidadMedidaServices from "../../services/UnidadMedidaServices";
 
 export default function ProductTable() {
   const navigate = useNavigate();
@@ -48,11 +48,11 @@ export default function ProductTable() {
   const handleSave = async (newProduct: ArticuloManufacturado) => {
     try {
       if (newProduct.id === undefined) {
-        const createdProduct = await ProductServices.createProduct(newProduct);
+        const createdProduct = await ProductServices.create(newProduct);
         console.log("Se está creando el producto", createdProduct);
         setProducts(prevProducts => [...prevProducts, createdProduct]);
       } else {
-        const updatedProduct = await ProductServices.updateProduct(newProduct.id, newProduct);
+        const updatedProduct = await ProductServices.update(newProduct.id, newProduct);
         console.log("Se está actualizando el producto", updatedProduct);
         setProducts(prevProducts =>
           prevProducts.map(prod =>
@@ -73,7 +73,7 @@ export default function ProductTable() {
   //El useEffect se ejecuta cada vez que se renderice el componente
 
   const fetchProducts = async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string) => {
-    const productsFiltered = await ProductServices.getProductsFiltered(idCategoria, idUnidadMedida, denominacion)
+    const productsFiltered = await ProductServices.getAllFiltered(idCategoria, idUnidadMedida, denominacion)
     console.log(productsFiltered);
 
     //const products = await ProductServices.getProducts();
@@ -98,7 +98,7 @@ export default function ProductTable() {
 
   useEffect(() => {
     const fetchUnidadadMedida = async () => {
-      const unidadesMedida = await UnidadMedidaServices.getUnidadesMedida();
+      const unidadesMedida = await UnidadMedidaServices.getAll();
       setUnidadesMedida(unidadesMedida);
     };
 

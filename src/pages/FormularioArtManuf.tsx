@@ -9,11 +9,11 @@ import { Categoria } from '../entities/DTO/Categoria/Categoria'
 import { FormGroupSelect } from '../components/formComponents/FormGroupSelect'
 import { CategoriaService } from '../services/CategoriaService'
 import { UnidadMedida } from '../entities/DTO/UnidadMedida/UnidadMedida'
-import { UnidadMedidaServices } from '../services/UnidadMedidaServices'
 import { AgregarInsumosModal } from '../components/modals/AgregarInsumosModal'
 import { ArticuloInsumo } from '../entities/DTO/Articulo/Insumo/ArticuloInsumo'
 import { ArticuloManufacturadoDetalleTable } from '../components/tables/ArtManufacturadoDetalleTable'
 import { ArticuloManufacturadoDetalle } from '../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturadoDetalle'
+import UnidadMedidaServices from '../services/UnidadMedidaServices'
 
 
 export const FormularioArtManuf = () => {
@@ -46,7 +46,7 @@ export const FormularioArtManuf = () => {
         }
         const fetchData = async () => {
             try {
-                const articuloManufacturado = await ProductServices.getProduct(Number(id));
+                const articuloManufacturado = await ProductServices.getOne(Number(id));
                 setArticuloManufacturado(articuloManufacturado);
                 setDetalles(articuloManufacturado.articuloManufacturadoDetalles ? articuloManufacturado.articuloManufacturadoDetalles.filter(detalle => detalle.alta) : [])
             } catch (error: any) {
@@ -69,7 +69,7 @@ export const FormularioArtManuf = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const unidadesMedida = await UnidadMedidaServices.getUnidadesMedida();
+            const unidadesMedida = await UnidadMedidaServices.getAll();
             setUnidadesMedida(unidadesMedida);
         };
         fetchData();
@@ -131,7 +131,7 @@ export const FormularioArtManuf = () => {
         console.log(articuloManufacturado);
 
         if (articuloManufacturado.id === undefined) {
-            ProductServices.createProduct(articuloManufacturado).then(() => {
+            ProductServices.create(articuloManufacturado).then(() => {
                 setExito("ENTIDAD CREADA CON EXITO")
                 setTimeout(() => {
                     navigate('/productos');
@@ -142,7 +142,7 @@ export const FormularioArtManuf = () => {
 
             })
         } else {
-            ProductServices.updateProduct(articuloManufacturado.id, articuloManufacturado).then(() => {
+            ProductServices.update(articuloManufacturado.id, articuloManufacturado).then(() => {
                 setExito("ENTIDAD ACTUALIZADA CON EXITO")
                 setTimeout(() => {
                     navigate('/productos');

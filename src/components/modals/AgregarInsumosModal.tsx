@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Button, Modal, Table } from 'react-bootstrap'
 import { ArticuloInsumo } from '../../entities/DTO/Articulo/Insumo/ArticuloInsumo';
-import { ArticuloInsumosServices } from '../../services/ArticuloInsumoServices';
 import { BsTrashFill } from 'react-icons/bs';
 import CustomButton from '../generic/Button';
 import { FaSave } from 'react-icons/fa';
 import { Categoria } from '../../entities/DTO/Categoria/Categoria';
 import { CategoriaService } from '../../services/CategoriaService';
-import { UnidadMedidaServices } from '../../services/UnidadMedidaServices';
-import { UnidadMedida } from '../../types/UnidadMedida';
 import FiltroProductos from '../Filtrado/FiltroArticulo';
+import ArticuloInsumoService from '../../services/ArticuloInsumoService';
+import { UnidadMedida } from '../../entities/DTO/UnidadMedida/UnidadMedida';
+import UnidadMedidaServices from '../../services/UnidadMedidaServices';
+
 interface AgregarInsumosProps {
     show: boolean;
     onHide: () => void;
@@ -33,7 +34,7 @@ export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulos
 
 
     const fetchDataArticulosInsumo = async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string) => {
-        const articulos = await ArticuloInsumosServices.getArticuloInsumoFiltered(idCategoria, idUnidadMedida, denominacion);
+        const articulos = await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(idCategoria, idUnidadMedida, denominacion);
         setListaFiltrada(articulos);
         setArticulosAgregados([...articulosAgregados])
     };
@@ -55,7 +56,7 @@ export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulos
 
     useEffect(() => {
         const fetchUnidadadMedida = async () => {
-            const unidadesMedida = await UnidadMedidaServices.getUnidadesMedida();
+            const unidadesMedida = await UnidadMedidaServices.getAll();
             setUnidadesMedida(unidadesMedida);
         };
 

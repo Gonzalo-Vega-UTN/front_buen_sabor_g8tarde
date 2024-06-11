@@ -16,7 +16,7 @@ const Lista: React.FC<ListaProps> = ({ selectedCategoryId }) => {
 
   const actualizarLista = async () => {
     try {
-      const datos: ArticuloManufacturado[] = await ProductServices.getProducts();
+      const datos: ArticuloManufacturado[] = await ProductServices.getAll();
       setProductos(datos);
     } catch (error) {
       console.error('Error al cargar productos:', error);
@@ -26,7 +26,7 @@ const Lista: React.FC<ListaProps> = ({ selectedCategoryId }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const datos: ArticuloManufacturado[] = await ProductServices.getProducts();
+        const datos: ArticuloManufacturado[] = await ProductServices.getAll();
         setProductos(datos);
       } catch (error) {
         console.error('Error al cargar productos:', error);
