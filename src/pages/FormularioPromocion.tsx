@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { Form, Button, Row, Col, Container, InputGroup, FormControl } from 'react-bootstrap';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import PromocionService from '../services/PromocionService';
@@ -31,7 +31,7 @@ const PromocionForm: React.FC<FormProps> = ({ promocion, onSave }) => {
     // Fetch articles
     const fetchArticulos = async () => {
       try {
-        const response = await fetch('URL_TO_FETCH_ARTICULOS'); // Replace with actual URL
+        const response = await fetch('api/articulos/manufacturados'); // Replace with actual URL
         const data = await response.json();
         setArticulos(data);
       } catch (error) {
@@ -42,7 +42,7 @@ const PromocionForm: React.FC<FormProps> = ({ promocion, onSave }) => {
     fetchArticulos();
   }, []);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
     setFormState({
       ...formState,
@@ -173,7 +173,7 @@ const PromocionForm: React.FC<FormProps> = ({ promocion, onSave }) => {
               <Form.Select
                 aria-label="Seleccionar Artículo"
                 value={detalle.articulo.id || ''}
-                onChange={(e) => handleDetailChange(index, 'articulo', articulos.find(a => a.id === e.target.value))}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) => handleDetailChange(index, 'articulo', articulos.find(a => a.id === e.target.value))}
               >
                 <option value="">Seleccionar Artículo</option>
                 {articulos.map((articulo) => (
@@ -185,24 +185,25 @@ const PromocionForm: React.FC<FormProps> = ({ promocion, onSave }) => {
               <FormControl
                 type="number"
                 value={detalle.cantidad || 0}
-                onChange={(e) => handleDetailChange(index, 'cantidad', parseInt(e.target.value))}
-              />
-              <Button variant="outline-danger" onClick={() => removeDetail(index)}>
-                <FaMinus />
-              </Button>
-            </InputGroup>
-          ))}
-          <Button variant="outline-primary" onClick={addDetail}>
-            <FaPlus /> Añadir Detalle
+                onChange={(e: ChangeEvent<HTMLInputElement>) => handleDetailChange(index, 'cantidad', parseInt(e.target.value))}
+                />
+                <Button variant="outline-danger" onClick={() => removeDetail(index)}>
+                  <FaMinus />
+                </Button>
+              </InputGroup>
+            ))}
+            <Button variant="outline-primary" onClick={addDetail}>
+              <FaPlus /> Añadir Detalle
+            </Button>
+          </Form.Group>
+  
+          <Button type="submit" variant="primary">
+            Guardar Promoción
           </Button>
-        </Form.Group>
-
-        <Button type="submit" variant="primary">
-          Guardar Promoción
-        </Button>
-      </Form>
-    </Container>
-  );
-};
-
-export default PromocionForm;
+        </Form>
+      </Container>
+    );
+  };
+  
+  export default PromocionForm;
+  
