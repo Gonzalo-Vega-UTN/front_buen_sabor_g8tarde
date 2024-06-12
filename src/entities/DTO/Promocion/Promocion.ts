@@ -1,4 +1,5 @@
 
+import { TipoPromocion } from "../../enums/TipoPromocion";
 import { Articulo } from "../Articulo/Articulo";
 import { Base } from "../Base";
 

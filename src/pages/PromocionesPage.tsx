@@ -19,8 +19,8 @@ export default function PromotionTable() {
   const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
 
   const handleClick = (id: number) => {
-    console.log("Promo",promotion)
-    console.log("Promones",promotions)
+    console.log("Promo a enviar",promotion)
+    console.log("Promociones en la tabla",promotions)
     navigate("/create-promotion/" + id);
   };
 
@@ -76,8 +76,8 @@ export default function PromotionTable() {
             <tr key={promotion.id} className="text-center">
               <td>{promotion.id}</td>
               <td>{promotion.denominacion}</td>
-              <td>{promotion.fechaDesde}</td>
-              <td>{promotion.fechaHasta}</td>
+              <td>{promotion.fechaDesde.toString()}</td>
+              <td>{promotion.fechaHasta.toString()}</td>
               <td>{promotion.horaDesde}</td>
               <td>{promotion.horaHasta}</td>
               <td>{promotion.precioPromocional}</td>

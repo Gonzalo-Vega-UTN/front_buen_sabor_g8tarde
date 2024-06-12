@@ -12,7 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 const PromocionForm: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [formState, setFormState] = useState<Promocion>( {
+  const [promocion, setPromocion] = useState<Promocion>( {
     id: 0,
     alta: true,
     denominacion: '',
@@ -34,8 +34,9 @@ const PromocionForm: React.FC = () => {
 
     if (!isNaN(parsedId) && parsedId !== 0) {
       try {
-        const promocionDetails = await PromocionService.getOne(parsedId);
-        setFormState(promocionDetails);
+        const promocion = await PromocionService.getOne(parsedId);
+        console.log("LO QUE LLEGO", promocion)
+        setPromocion(promocion);
       } catch (error) {
         console.error('Error fetching promocion details:', error);
       }
@@ -53,25 +54,25 @@ const PromocionForm: React.FC = () => {
   }, [id]);
   
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setFormState({
-      ...formState,
+    setPromocion({
+      ...promocion,
       [name]: value
     });
   };
 
   const handleDetailChange = (index: number, field: string, value: any) => {
-    const updatedDetails = formState.detallesPromocion.map((detalle, i) =>
+    const updatedDetails = promocion.detallesPromocion.map((detalle, i) =>
       i === index ? { ...detalle, [field]: value } : detalle
     );
-    setFormState({ ...formState, detallesPromocion: updatedDetails });
+    setPromocion({ ...promocion, detallesPromocion: updatedDetails });
   };
 
   const addDetail = () => {
-    setFormState({
-      ...formState,
-      detallesPromocion: [...formState.detallesPromocion, {
+    setPromocion({
+      ...promocion,
+      detallesPromocion: [...promocion.detallesPromocion, {
           cantidad: 0, articulo: {} as Articulo,
           id: 0,
           alta: false
@@ -80,20 +81,20 @@ const PromocionForm: React.FC = () => {
   };
 
   const removeDetail = (index: number) => {
-    setFormState({
-      ...formState,
-      detallesPromocion: formState.detallesPromocion.filter((_, i) => i !== index)
+    setPromocion({
+      ...promocion,
+      detallesPromocion: promocion.detallesPromocion.filter((_, i) => i !== index)
     });
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      if (promocion) {
-        await PromocionService.update(promocion.id, formState);
+      if (promocion.id !== 0) {
+        await PromocionService.update(promocion.id, promocion);
         navigate("/promociones");
       } else {
-        await PromocionService.create(formState);
+        await PromocionService.create(promocion);
         navigate("/promociones");
       }
       
@@ -113,7 +114,7 @@ const PromocionForm: React.FC = () => {
             <Form.Control
               type="text"
               name="denominacion"
-              value={formState.denominacion}
+              value={promocion.denominacion}
               onChange={handleChange}
             />
           </Form.Group>
@@ -125,8 +126,8 @@ const PromocionForm: React.FC = () => {
             <Form.Control
               type="date"
               name="fechaDesde"
-              value={formState.fechaDesde instanceof Date ? formState.fechaDesde.toISOString().split('T')[0] : ''}
-              onChange={(e) => setFormState({ ...formState, fechaDesde: new Date(e.target.value) })}
+              value={promocion.fechaDesde instanceof Date ? promocion.fechaDesde.toISOString().split('T')[0] : promocion.fechaDesde}
+              onChange={(e) => setPromocion({ ...promocion, fechaDesde: new Date(e.target.value) })}
             />
           </Form.Group>
           <Form.Group as={Col} controlId="fechaHasta">
@@ -134,9 +135,9 @@ const PromocionForm: React.FC = () => {
             <Form.Control
               type="date"
               name="fechaHasta"
-              value={formState.fechaHasta instanceof Date ? formState.fechaHasta.toISOString().split('T')[0] : ''}
+              value={promocion.fechaHasta instanceof Date ? promocion.fechaHasta.toISOString().split('T')[0] : promocion.fechaHasta}
   
-              onChange={(e) => setFormState({ ...formState, fechaHasta: new Date(e.target.value) })}
+              onChange={(e) => setPromocion({ ...promocion, fechaHasta: new Date(e.target.value) })}
             />
           </Form.Group>
         </Row>
@@ -147,7 +148,7 @@ const PromocionForm: React.FC = () => {
             <Form.Control
               type="time"
               name="horaDesde"
-              value={formState.horaDesde}
+              value={promocion.horaDesde}
               onChange={handleChange}
             />
           </Form.Group>
@@ -156,7 +157,7 @@ const PromocionForm: React.FC = () => {
             <Form.Control
               type="time"
               name="horaHasta"
-              value={formState.horaHasta}
+              value={promocion.horaHasta}
               onChange={handleChange}
             />
           </Form.Group>
@@ -167,7 +168,7 @@ const PromocionForm: React.FC = () => {
           <Form.Control
             type="text"
             name="descripcionDescuento"
-            value={formState.descripcionDescuento}
+            value={promocion.descripcionDescuento}
             onChange={handleChange}
           />
         </Form.Group>
@@ -177,14 +178,14 @@ const PromocionForm: React.FC = () => {
           <Form.Control
             type="number"
             name="precioPromocional"
-            value={formState.precioPromocional}
+            value={promocion.precioPromocional}
             onChange={handleChange}
           />
         </Form.Group>
 
         <Form.Group className="mb-3">
           <Form.Label>Detalles de la Promoción</Form.Label>
-          {formState.detallesPromocion.map((detalle, index) => (
+          {promocion.detallesPromocion.map((detalle, index) => (
             <InputGroup key={index} className="mb-2">
               <Form.Select
                 aria-label="Seleccionar Artículo"
