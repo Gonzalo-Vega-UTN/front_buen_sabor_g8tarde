@@ -12,6 +12,8 @@ import { PedidosList } from "../pages/PedidosList";
 import { CategoriasList } from "../pages/CategoriasList";
 import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
 import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
+import PromocionesPage from "../pages/PromocionesPage";
+import FormularioPromocion from "../MioImport/FormularioPromocion";
 
 
 export default function AppRoutes() {
@@ -46,6 +48,15 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={DashboardPage}
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
+      <Route
+        path="/create-promotion/:id"
+        element={
+          <PrivateRoute
+            element={FormularioPromocion}
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
@@ -118,6 +129,15 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={CategoriasList} //Recordar cambiar
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
+      <Route
+        path="/promociones"
+        element={
+          <PrivateRoute
+            element={PromocionesPage  } //Recordar cambiar
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
