@@ -1,6 +1,6 @@
 
+import { Articulo } from "../Articulo/Articulo";
 import { Base } from "../Base";
-import { PromocionDetalle } from "./PromocionDetalle";
 
 export class Promocion extends Base {
     denominacion: string = '';
@@ -8,9 +8,13 @@ export class Promocion extends Base {
     fechaHasta: Date = new Date();
     horaDesde: string  = ''; 
     horaHasta: string  = ''; 
-    descripcionDescuento:string = '';
+    descripcionDescuento: string = '';
     precioPromocional: number = 0;
-    tipoPromocion?: TipoPromocion ;
-    detallesPromocion: PromocionDetalle[] =[];
+    tipoPromocion?: TipoPromocion;
+    detallesPromocion: PromocionDetalle[] = [];
+  }
+export class PromocionDetalle extends Base {
+    cantidad: number | null = 0;
+    articulo: Articulo = new Articulo();
 }
 
