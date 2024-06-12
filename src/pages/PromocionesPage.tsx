@@ -5,9 +5,7 @@ import { CiCirclePlus } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import { Promocion } from "../entities/DTO/Promocion/Promocion";
 import { ModalType } from "../types/ModalType";
-import { Categoria } from "../entities/DTO/Categoria/Categoria";
 import PromocionService from "../services/PromocionService";
-import { CategoriaService } from "../services/CategoriaService";
 import CustomButton from "../components/generic/Button";
 
 export default function PromotionTable() {
@@ -31,21 +29,7 @@ export default function PromotionTable() {
     setPromotion(promo);
   };
 
-  const handleSave = async (newPromotion: Promocion) => {
-    try {
-      if (!newPromotion.id) {
-        const createdPromotion = await PromocionService.create(newPromotion);
-        setPromotions((prevPromotions) => [...prevPromotions, createdPromotion]);
-      } else {
-        const updatedPromotion = await PromocionService.update(newPromotion.id, newPromotion);
-        setPromotions((prevPromotions) =>
-          prevPromotions.map((promo) => (promo.id === updatedPromotion.id ? updatedPromotion : promo))
-        );
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  
 
   const fetchPromotions = async (idCategoria?: number, denominacion?: string) => {
     const promotionsFiltered = await PromocionService.getAll(/*idCategoria, denominacion*/);

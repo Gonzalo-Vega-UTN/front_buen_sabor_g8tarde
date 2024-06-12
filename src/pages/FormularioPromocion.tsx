@@ -2,16 +2,17 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import { Form, Button, Row, Col, Container, InputGroup, FormControl } from 'react-bootstrap';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import PromocionService from '../services/PromocionService';
-import { Promocion, PromocionDetalle } from '../entities/DTO/Promocion/Promocion';
+import { Promocion } from '../entities/DTO/Promocion/Promocion';
 import { Articulo } from '../entities/DTO/Articulo/Articulo';
+import { ProductServices } from '../services/ProductServices';
+import { useNavigate, useParams } from 'react-router-dom';
 
-interface FormProps {
-  promocion?: Promocion;
-  onSave: (promocion: Promocion) => void;
-}
 
-const PromocionForm: React.FC<FormProps> = ({ promocion, onSave }) => {
-  const [formState, setFormState] = useState<Promocion>(promocion || {
+
+const PromocionForm: React.FC = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [formState, setFormState] = useState<Promocion>( {
     id: 0,
     alta: true,
     denominacion: '',
@@ -28,19 +29,29 @@ const PromocionForm: React.FC<FormProps> = ({ promocion, onSave }) => {
   const [articulos, setArticulos] = useState<Articulo[]>([]);
 
   useEffect(() => {
-    // Fetch articles
-    const fetchArticulos = async () => {
+    const fetchData = async () => {
+      const parsedId = Number(id);
+
+    if (!isNaN(parsedId) && parsedId !== 0) {
       try {
-        const response = await fetch('api/articulos/manufacturados'); // Replace with actual URL
-        const data = await response.json();
-        setArticulos(data);
+        const promocionDetails = await PromocionService.getOne(parsedId);
+        setFormState(promocionDetails);
+      } catch (error) {
+        console.error('Error fetching promocion details:', error);
+      }
+    }
+  
+      try {
+        const articulos = await ProductServices.getAllFiltered();
+        setArticulos(articulos);
       } catch (error) {
         console.error('Error fetching articles:', error);
       }
     };
-
-    fetchArticulos();
-  }, []);
+  
+    fetchData();
+  }, [id]);
+  
 
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
@@ -80,11 +91,15 @@ const PromocionForm: React.FC<FormProps> = ({ promocion, onSave }) => {
     try {
       if (promocion) {
         await PromocionService.update(promocion.id, formState);
+        navigate("/promociones");
       } else {
         await PromocionService.create(formState);
+        navigate("/promociones");
       }
-      onSave(formState);
+      
     } catch (error) {
+      
+    navigate("/promociones");
       console.error('Error saving promotion:', error);
     }
   };
@@ -110,8 +125,8 @@ const PromocionForm: React.FC<FormProps> = ({ promocion, onSave }) => {
             <Form.Control
               type="date"
               name="fechaDesde"
-              value={formState.fechaDesde.toISOString().split('T')[0]}
-              onChange={handleChange}
+              value={formState.fechaDesde instanceof Date ? formState.fechaDesde.toISOString().split('T')[0] : ''}
+              onChange={(e) => setFormState({ ...formState, fechaDesde: new Date(e.target.value) })}
             />
           </Form.Group>
           <Form.Group as={Col} controlId="fechaHasta">
@@ -119,8 +134,9 @@ const PromocionForm: React.FC<FormProps> = ({ promocion, onSave }) => {
             <Form.Control
               type="date"
               name="fechaHasta"
-              value={formState.fechaHasta.toISOString().split('T')[0]}
-              onChange={handleChange}
+              value={formState.fechaHasta instanceof Date ? formState.fechaHasta.toISOString().split('T')[0] : ''}
+  
+              onChange={(e) => setFormState({ ...formState, fechaHasta: new Date(e.target.value) })}
             />
           </Form.Group>
         </Row>
@@ -173,12 +189,12 @@ const PromocionForm: React.FC<FormProps> = ({ promocion, onSave }) => {
               <Form.Select
                 aria-label="Seleccionar Artículo"
                 value={detalle.articulo.id || ''}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) => handleDetailChange(index, 'articulo', articulos.find(a => a.id === e.target.value))}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) => handleDetailChange(index, 'articulo', articulos.find(a => a.id === parseInt(e.target.value)) || {} as Articulo)}
               >
                 <option value="">Seleccionar Artículo</option>
                 {articulos.map((articulo) => (
                   <option key={articulo.id} value={articulo.id}>
-                    {articulo.nombre}
+                    {articulo.denominacion}
                   </option>
                 ))}
               </Form.Select>
@@ -206,4 +222,3 @@ const PromocionForm: React.FC<FormProps> = ({ promocion, onSave }) => {
   };
   
   export default PromocionForm;
-  
