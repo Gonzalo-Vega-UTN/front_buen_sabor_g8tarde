@@ -12,11 +12,13 @@
     font-size: 16px;
   }
   
-  /* Carrusel */
-  .carousel {
-    margin-bottom: 30px;
+  .carousel-container {
+    margin-left: auto; /* Coloca el margen izquierdo automáticamente */
+    margin-right: auto; /* Coloca el margen derecho automáticamente */
   }
   
+
+
   /* Categoría */
   .category {
     cursor: pointer;

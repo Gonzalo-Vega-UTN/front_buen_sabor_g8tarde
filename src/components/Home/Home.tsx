@@ -91,18 +91,17 @@ const Home: React.FC = () => {
         </div>
       </div>
       
-      {/* Carrusel */}
-      {/* <div className="row mb-4">
-        <div className="col-12">
-          <Slider {...settings}>
-            {featuredProducts.map((product, index) => (
-              <div key={index}>
-                <img src={product.imageUrl} alt={product.name} className="carousel-image" />
-              </div>
-            ))}
-          </Slider>
+      <div className="row mb-4 justify-content-center"> {/* Agrega la clase justify-content-center para centrar horizontalmente */}
+  <div className="col-10"> {/* Ajusta el ancho del contenedor del carrusel según tus necesidades */}
+    <Slider {...settings}>
+      {featuredProducts.map((product, index) => (
+        <div key={index}>
+          <img src={product.imageUrl} alt={product.name} className="carousel-image" />
         </div>
-      </div> */}
+      ))}
+    </Slider>
+  </div>
+</div>
       
       {/* Categorías */}
       <div className="row mb-4">
