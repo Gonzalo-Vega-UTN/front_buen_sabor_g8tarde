@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
@@ -41,8 +40,10 @@ const Header: React.FC = () => {
                 </NavDropdown.Item>
                 <NavDropdown.Divider />
               </>
-            )}
+            )}  
+            <NavDropdown.Item>
             {isAuthenticated ? <BotonLogout /> : <BotonLogin />}
+          </NavDropdown.Item>
           </NavDropdown>
         </Nav>
       </Navbar.Collapse>

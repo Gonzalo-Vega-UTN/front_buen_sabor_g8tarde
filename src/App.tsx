@@ -3,7 +3,6 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppRoutes from './routes/AppRoutes';
-import 'react-toastify/dist/ReactToastify.css';
 import Footer from './components/Footer/Footer';
 import Sidebar from './components/Sidebar/Sidebar';
 import { useAuth } from './Auth/Auth';

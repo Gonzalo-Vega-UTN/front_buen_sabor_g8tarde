@@ -35,7 +35,7 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={DashboardPage}
-            roles={[Rol.Admin]} // Ejemplo: accesible para admin y user
+            roles={[Rol.Admin]} 
           />
         }
       />

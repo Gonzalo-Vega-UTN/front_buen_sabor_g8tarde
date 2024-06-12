@@ -92,7 +92,7 @@ const Home: React.FC = () => {
       </div>
       
       {/* Carrusel */}
-      <div className="row mb-4">
+      {/* <div className="row mb-4">
         <div className="col-12">
           <Slider {...settings}>
             {featuredProducts.map((product, index) => (
@@ -102,7 +102,7 @@ const Home: React.FC = () => {
             ))}
           </Slider>
         </div>
-      </div>
+      </div> */}
       
       {/* Categorías */}
       <div className="row mb-4">
