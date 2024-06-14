@@ -1,0 +1,53 @@
+/* Home.css */
+
+/* Logo */
+.logo {
+    max-height: 120px;
+  }
+  
+  /* Barra de búsqueda */
+  .search-bar {
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+  
+  .carousel-container {
+    margin-left: auto; /* Coloca el margen izquierdo automáticamente */
+    margin-right: auto; /* Coloca el margen derecho automáticamente */
+  }
+  
+
+
+  /* Categoría */
+  .category {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  .category:hover {
+    transform: translateY(-5px);
+  }
+  
+  .category-image {
+    border: 2px solid #fff;
+    transition: border-color 0.3s ease;
+  }
+  
+  .category:hover .category-image {
+    border-color: #eaeaea;
+  }
+  
+  /* Categoría seleccionada */
+  .selected {
+    border: 2px solid #ff8c00 !important;
+  }
+  
+  /* Título de sección */
+  .section-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #343a40;
+    margin-bottom: 30px; /* Aumenta el margen inferior */
+  }
+  

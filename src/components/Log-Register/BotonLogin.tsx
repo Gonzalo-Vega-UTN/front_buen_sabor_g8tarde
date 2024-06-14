@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import LoginPage from './LoginPage';
+import Login from './LoginPage';
 
 const BotonLogin: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -9,18 +9,19 @@ const BotonLogin: React.FC = () => {
   const navigate = useNavigate()
 
   const handleLoginModalOpen = () => {
+    console.log("Hola Open")
     setShowLoginModal(true);
   };
 
   const handleLoginModalClose = () => {
   
+    console.log("Hola Close")
       setShowLoginModal(false);
      
   }
 
   const handleRegister = () => {
     navigate("/registro")
-    // setShowRegisterModal(true);
   };
 
 
@@ -39,7 +40,7 @@ const BotonLogin: React.FC = () => {
           <Modal.Title>Login</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <LoginPage closeModal={handleLoginModalClose}/>
+          <Login closeModal={handleLoginModalClose}/>
         </Modal.Body>
       </Modal> 
 

@@ -1,17 +1,21 @@
 
-/*
+import { TipoPromocion } from "../../enums/TipoPromocion";
+import { Articulo } from "../Articulo/Articulo";
 import { Base } from "../Base";
 
-class Promocion extends Base {
+export class Promocion extends Base {
     denominacion: string = '';
-    fechaDesde: string | null = ''; 
-    fechaHasta: string | null = '';
-    horaDesde: string | null = ''; 
-    horaHasta: string | null = ''; 
+    fechaDesde: Date = new Date(); 
+    fechaHasta: Date = new Date();
+    horaDesde: string  = ''; 
+    horaHasta: string  = ''; 
     descripcionDescuento: string = '';
-    precioPromocional: number | null = 0;
-    tipoPromocion: TipoPromocion | null = null;
-    detallesPromocion: PromocionDetalle[] | null = null;
+    precioPromocional: number = 0;
+    tipoPromocion?: TipoPromocion;
+    detallesPromocion: PromocionDetalle[] = [];
+  }
+export class PromocionDetalle extends Base {
+    cantidad: number | null = 0;
+    articulo: Articulo = new Articulo();
 }
 
-*/

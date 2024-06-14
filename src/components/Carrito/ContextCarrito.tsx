@@ -1,5 +1,4 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 import PedidoFull from '../../entities/DTO/Pedido/PedidoFull';
 import { useAuth } from '../../Auth/Auth';
 import ModalConfirm from '../modals/ModalConfirm';
@@ -39,6 +38,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [showModal, setShowModal] = useState(false);
   const [modalConfig, setModalConfig] = useState({ title: '', text: '', onConfirm: () => {}, onCancel: () => {} });
   const [preferenceId, setPreferenceId] = useState<string>('');
+  
+  const [msjPedido, setMsjPedido] = useState<string>('');
 
   const agregarAlCarrito = (articulo: Articulo | undefined) => {
     if (articulo) {
@@ -135,12 +136,12 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           const data = await PedidoService.agregarPedido({ ...pedido });
           if (data > 0) {
             await getPreferenceMP(data);
-            toast.success('Compra realizada con éxito');
+            setMsjPedido('Compra realizada con éxito');
           } else {
             setError('Error al realizar el pedido');
           }
         } catch (error) {
-          toast.error('Error al realizar el pedido');
+          setMsjPedido('Error al realizar el pedido');
           console.error(error);
         }
       },
@@ -170,7 +171,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setPreferenceId(response.id);
       }
     } catch (error) {
-      toast.error('Error al crear la preferencia de pago');
+      setMsjPedido('Error al crear la preferencia de pago');
       console.error(error);
     }
   };

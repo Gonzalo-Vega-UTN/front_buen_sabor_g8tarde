@@ -1,10 +1,9 @@
 
-/*
+import { Articulo } from "../Articulo/Articulo";
 import { Base } from "../Base";
 
-class PromocionDetalle extends Base {
+export class PromocionDetalle extends Base {
     cantidad: number | null = 0;
-    articulo: string = '';
+    articulo: Articulo = new Articulo();
 }
 
-*/

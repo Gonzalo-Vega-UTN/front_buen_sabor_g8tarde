@@ -3,6 +3,7 @@ import { Button, Form, Alert } from 'react-bootstrap';
 import { useAuth } from '../../Auth/Auth';
 import Usuario from '../../entities/DTO/Usuario/Usuario';
 import UsuarioService from '../../services/UsuarioService';
+
 interface LoginProps {
     closeModal: () => void;
 }
@@ -15,26 +16,23 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
     const [mensajeLog, setMensajeLog] = useState<string>('');
 
     const handleSubmit = async (e: React.FormEvent) => {
-        console.log("ingrego")
+        console.log("Ingresando al handleSubmit"); // Log de depuración
         e.preventDefault();
         if (!username || !auth0Id) {
-            setMensaje('Por favor, ingrese tanto el nombre de usuario como la contraseÃ±a.');
+            setMensaje('Por favor, ingrese tanto el nombre de usuario como la contraseña.');
             return;
         }
         try {
             const usuario: Usuario = { username, auth0Id };
-            console.log(usuario)
-           const data = await UsuarioService.login(usuario);
-           
+            console.log(usuario);
+            const data = await UsuarioService.login(usuario);
             if (data) {
-                console.log(data)
-                
+                console.log(data);
                 setMensajeLog('Login exitoso');
                 setTimeout(() => {
-                    login(data.username,data.rol); 
+                    login(data.username, data.rol);
                     closeModal();
-                  }, 1500);
-               
+                }, 1500);
             }
         } catch (err) {
             setMensaje('Credenciales incorrectas, por favor vuelva a intentarlo.');
@@ -49,7 +47,10 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
                 <Form.Control
                     type="text"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) => {
+                        setUsername(e.target.value);
+                        setMensaje('');
+                    }}
                     placeholder="Ingrese su nombre de usuario"
                     required
                 />
@@ -59,13 +60,15 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
                 <Form.Control
                     type="password"
                     value={auth0Id}
-                    onChange={(e) => setAuth0Id(e.target.value)}
+                    onChange={(e) => {
+                        setAuth0Id(e.target.value);
+                        setMensaje('');
+                    }}
                     placeholder="Ingrese su clave"
                     required
                 />
-            <br></br>
             </Form.Group>
-            <Button variant="primary" type="submit">
+            <Button variant="primary" onClick={handleSubmit}>
                 Login
             </Button>
             {mensajeLog && <Alert variant="success">{mensajeLog}</Alert>}

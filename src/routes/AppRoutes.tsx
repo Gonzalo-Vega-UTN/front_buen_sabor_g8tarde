@@ -12,8 +12,12 @@ import { PedidosList } from "../pages/PedidosList";
 import { CategoriasList } from "../pages/CategoriasList";
 import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
 import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
+
 import { Reportes } from "../pages/Reportes";
 import { Estadisticas } from "../pages/Estadisticas";
+import PromocionesPage from "../pages/PromocionesPage";
+import PromocionForm from "../pages/FormularioPromocion";
+
 
 
 export default function AppRoutes() {
@@ -24,20 +28,13 @@ export default function AppRoutes() {
         <CartProvider>
           <Home />
         </CartProvider>} />
-      { /* <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/productos" element={<DashboardPage />} />
-      <Route path="/create-product/:id" element={<FormularioArtManuf />} />
-      <Route path="/ingredientes" element={<ArticuloInsumoPage />} />
-      <Route path="/empresas" element={<EmpresasPage />} />
-      <Route path="/sucursales" element={<SucursalesPage />} />
-      <Route path="/sucursales/:id" element={<SucursalesPage />} /> */}
 
       <Route
         path="/dashboard"
         element={
           <PrivateRoute
             element={DashboardPage}
-            roles={[Rol.Admin]} // Ejemplo: accesible para admin y user
+            roles={[Rol.Admin]} 
           />
         }
       />
@@ -52,6 +49,7 @@ export default function AppRoutes() {
           />
         }
       />
+      
       <Route
         path="/create-product/:id"
         element={
@@ -120,6 +118,24 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={CategoriasList} //Recordar cambiar
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
+      <Route
+        path="/promociones"
+        element={
+          <PrivateRoute
+            element={PromocionesPage  } //Recordar cambiar
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
+       <Route
+        path="/create-promotion/:id"
+        element={
+          <PrivateRoute
+            element={PromocionForm}
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
