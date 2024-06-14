@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BsFillPeopleFill, BsBuilding, BsShop, BsBox, BsBasket, BsPercent, BsCart, BsGraphUp } from 'react-icons/bs';
+import { BsFillPeopleFill, BsBuilding, BsShop, BsBox, BsBasket, BsPercent, BsCart, BsGraphUp, BsReverseLayoutTextSidebarReverse } from 'react-icons/bs';
 import { Link, useLocation } from 'react-router-dom';
 import './style.css';
 import { useAuth } from '../../Auth/Auth';
@@ -147,15 +147,27 @@ const Sidebar = () => {
                         </li>
                         <li className="nav-item">
                             <Link 
-                                to="/estadisticas" 
-                                className={`nav-link text-white ${location.pathname === '/estadisticas' || selected === '/estadisticas' ? 'active' : ''}`}
-                                onClick={() => handleClick('/estadisticas')}
+                              to="/estadisticas" 
+                              className={`nav-link text-white ${location.pathname === '/estadisticas' || selected === '/estadisticas' ? 'active' : ''}`}
+                              onClick={() => handleClick('/estadisticas')}
                             >
-                                <BsGraphUp size={24} className="me-2" />
-                                <span className="nav-text">Estadísticas</span>
+                              <BsGraphUp size={24} className="me-2" />
+                              <span className="nav-text">Estadísticas</span>
                             </Link>
                         </li>
-                    </>
+
+                        <li className="nav-item">
+                            <Link 
+                                to="/reportes" 
+                                className={`nav-link text-white ${location.pathname === '/reportes' || selected === '/reportes' ? 'active' : ''}`}
+                                onClick={() => handleClick('/reportes')}
+                            >
+                                <BsReverseLayoutTextSidebarReverse size={24} className="me-2" />
+                                <span className="nav-text">Reportes</span>
+                            </Link>
+                        </li>
+
+
                 )}
             </ul>
 
