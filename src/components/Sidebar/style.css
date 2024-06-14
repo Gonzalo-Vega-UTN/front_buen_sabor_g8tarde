@@ -1,6 +1,7 @@
 .sidebar {
-    transition: width 0.3s;
+    transition: width 0.3s, height 0.3s; /* Agrega transición para la altura */
     overflow: hidden;
+    height: 100vh;
 }
 
 .sidebar.collapsed {
@@ -37,4 +38,8 @@
 
 .submenu .nav-item {
     padding-left: 10px;
+}
+
+.sidebar .logo {
+    margin-left: -20px; /* Ajusta el margen izquierdo del logo */
 }

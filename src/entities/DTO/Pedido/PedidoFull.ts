@@ -1,6 +1,6 @@
 import { TipoEnvio } from "../../enums/TipoEnvio";
 import { Base } from "../Base";
-import { ClienteFull } from "../Cliente/ClienteFull";
+import { Cliente } from "../Cliente/Cliente";
 import { DomicilioShort } from "../Domicilio/DomicilioShort";
 import { DetallePedido } from "./DetallePedido";
 
@@ -13,6 +13,6 @@ export default class PedidoFull extends Base {
     formaDePago: string = '';
     fechaPedido: Date = new Date();
     domicilioShort: DomicilioShort = new DomicilioShort();
-    cliente: ClienteFull = new ClienteFull();
+    cliente: Cliente = new Cliente();
     detallePedidos: DetallePedido[] = [];
 }

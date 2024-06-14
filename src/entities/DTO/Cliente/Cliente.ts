@@ -1,7 +1,7 @@
 import { Base } from "../Base";
 import { DomicilioFull } from "../Domicilio/DomicilioFull";
 import Usuario from "../Usuario/Usuario";
-export class ClienteFull extends Base {
+export class Cliente extends Base {
     nombre: string = '';
     apellido: string = '';
     telefono: string = '';

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Form, Alert } from 'react-bootstrap';
 import { Rol } from '../../entities/enums/Rol';
 import Usuario from '../../entities/DTO/Usuario/Usuario';
-import { UsuarioService } from '../../services/UsuarioService';
+import UsuarioService from '../../services/UsuarioService';
 
 interface RegisterProps {
     closeModal: () => void;
@@ -13,6 +13,8 @@ const Register: React.FC<RegisterProps> = ({ closeModal }) => {
     const [auth0Id, setAuth0Id] = useState<string>('');
     const [rol, setRol] = useState<Rol>(Rol.Cliente);
     const [mensaje, setMensaje] = useState<string>('');
+    
+    const [Registromensaje, setRegistromensaje] = useState<string>('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,18 +29,15 @@ const Register: React.FC<RegisterProps> = ({ closeModal }) => {
         try {
             const usuario: Usuario = { username, auth0Id, rol };
             
-            // Verificar si el usuario ya existe antes de intentar registrarlo
-            const usuarioExistente = await UsuarioService.validarExistenciaUsuario(username);
-            if (usuarioExistente) {
-                setMensaje('El nombre de usuario ya está en uso');
-                return;
-            }
-
             await UsuarioService.register(usuario);
-            setMensaje('Usuario registrado con éxito');
-            closeModal();
+            setRegistromensaje('Usuario registrado con éxito');
+            setTimeout(() =>{
+                closeModal(); 
+            },1500)
         } catch (err) {
-            setMensaje('Error al registrar el usuario');
+            if(err instanceof Error){
+                setMensaje(err.message);
+            }
             console.error(err);
         }
     };
@@ -78,6 +77,7 @@ const Register: React.FC<RegisterProps> = ({ closeModal }) => {
                 Registrar
             </Button>
             {mensaje && <Alert variant="danger">{mensaje}</Alert>}
+            {Registromensaje && <Alert variant="success">{Registromensaje}</Alert>}
         </Form>
     );
 };

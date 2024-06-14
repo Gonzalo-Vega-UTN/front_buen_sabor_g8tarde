@@ -9,11 +9,11 @@ import { Categoria } from '../entities/DTO/Categoria/Categoria'
 import { FormGroupSelect } from '../components/formComponents/FormGroupSelect'
 import { CategoriaService } from '../services/CategoriaService'
 import { UnidadMedida } from '../entities/DTO/UnidadMedida/UnidadMedida'
-import { UnidadMedidaServices } from '../services/UnidadMedidaServices'
 import { AgregarInsumosModal } from '../components/modals/AgregarInsumosModal'
 import { ArticuloInsumo } from '../entities/DTO/Articulo/Insumo/ArticuloInsumo'
 import { ArticuloManufacturadoDetalleTable } from '../components/tables/ArtManufacturadoDetalleTable'
 import { ArticuloManufacturadoDetalle } from '../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturadoDetalle'
+import UnidadMedidaServices from '../services/UnidadMedidaServices'
 
 
 export const FormularioArtManuf = () => {
@@ -46,7 +46,7 @@ export const FormularioArtManuf = () => {
         }
         const fetchData = async () => {
             try {
-                const articuloManufacturado = await ProductServices.getProduct(Number(id));
+                const articuloManufacturado = await ProductServices.getOne(Number(id));
                 setArticuloManufacturado(articuloManufacturado);
                 setDetalles(articuloManufacturado.articuloManufacturadoDetalles ? articuloManufacturado.articuloManufacturadoDetalles.filter(detalle => detalle.alta) : [])
             } catch (error: any) {
@@ -61,7 +61,7 @@ export const FormularioArtManuf = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const categorias = await CategoriaService.getCategorias();
+            const categorias = await CategoriaService.obtenerCategorias();
             setCategorias(categorias);
         };
         fetchData();
@@ -69,7 +69,7 @@ export const FormularioArtManuf = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const unidadesMedida = await UnidadMedidaServices.getUnidadesMedida();
+            const unidadesMedida = await UnidadMedidaServices.getAll();
             setUnidadesMedida(unidadesMedida);
         };
         fetchData();
@@ -98,40 +98,40 @@ export const FormularioArtManuf = () => {
     };
 
     const handleSubmit = (event: React.FormEvent) => {
-        
+
         event.preventDefault();
-        
+
         if (!articuloManufacturado) {
             setSubmitError("El artículo manufacturado no está definido");
             return;
         }
-    
+
         const { unidadMedida, categoria, denominacion, descripcion, precioVenta } = articuloManufacturado;
         articuloManufacturado.articuloManufacturadoDetalles = detalles;
 
-    
+
         if (!unidadMedida || !categoria || !denominacion || !descripcion || precioVenta === 0) {
             setSubmitError("Completa todos los campos");
             return;
         }
         const detallesConCero = articuloManufacturado.articuloManufacturadoDetalles?.filter(detalle => detalle.cantidad === 0);
-        
+
         if (detallesConCero && detallesConCero.length > 0) {
             setSubmitError("Agrega cantidad a los insumos agregados");
             return;
         }
-    
+
         if (!articuloManufacturado.articuloManufacturadoDetalles || articuloManufacturado.articuloManufacturadoDetalles.length === 0) {
             setSubmitError("Agrega insumos");
             return;
         }
-    
-       
+
+
 
         console.log(articuloManufacturado);
 
-        if (articuloManufacturado.id ===undefined) {
-            ProductServices.createProduct(articuloManufacturado).then(() => {
+        if (articuloManufacturado.id === undefined) {
+            ProductServices.create(articuloManufacturado).then(() => {
                 setExito("ENTIDAD CREADA CON EXITO")
                 setTimeout(() => {
                     navigate('/productos');
@@ -142,10 +142,10 @@ export const FormularioArtManuf = () => {
 
             })
         } else {
-            ProductServices.updateProduct(articuloManufacturado.id, articuloManufacturado).then(() => {
+            ProductServices.update(articuloManufacturado.id, articuloManufacturado).then(() => {
                 setExito("ENTIDAD ACTUALIZADA CON EXITO")
                 setTimeout(() => {
-                   navigate('/productos');
+                    navigate('/productos');
                 }, 1500); // 1.5 segundos de delay
             }
             ).catch(error => {
@@ -207,7 +207,7 @@ export const FormularioArtManuf = () => {
 
         // Actualizar el estado con los nuevos detalles
         setDetalles(detallesActualizados);
-        
+
         setShowModal(false)
     }
 
@@ -329,16 +329,16 @@ export const FormularioArtManuf = () => {
                         </Row>
 
                         {showModal && (
-                        <Row>
-                        <AgregarInsumosModal
-                            show={showModal}
-                            onHide={() => setShowModal(false)}
-                            title={title}
-                            articulosExistentes={detalles ? detalles.filter(detalle => detalle.articuloInsumo !== null).map(detalle => detalle.articuloInsumo as ArticuloInsumo) : []}
-                            handleSave={handleSeleccionInsumos}
-                        />
-                    </Row>
-                    
+                            <Row>
+                                <AgregarInsumosModal
+                                    show={showModal}
+                                    onHide={() => setShowModal(false)}
+                                    title={title}
+                                    articulosExistentes={detalles ? detalles.filter(detalle => detalle.articuloInsumo !== null).map(detalle => detalle.articuloInsumo as ArticuloInsumo) : []}
+                                    handleSave={handleSeleccionInsumos}
+                                />
+                            </Row>
+
                         )}
 
                         <Row className='p-5'>

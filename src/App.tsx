@@ -1,26 +1,26 @@
-import { BrowserRouter as Router } from "react-router-dom"
-import AppRoutes from "./routes/AppRoutes"
-import "react-toastify/dist/ReactToastify.css";
-import Footer from "./components/Footer/Footer"
-import Sidebar from "./components/Sidebar/Sidebar"
-import { useAuth } from "./Auth/Auth";
+// App.tsx
 
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes';
+import Footer from './components/Footer/Footer';
+import Sidebar from './components/Sidebar/Sidebar';
+import { useAuth } from './Auth/Auth';
+import Layout from './components/Layout/Layout';
 
-export default function App() {
-  const {isAuthenticated}=useAuth();
+const App: React.FC = () => {
+  const { isAuthenticated } = useAuth();
 
   return (
-    <>
-      <Router>
+    <Router>
+      <Layout>
         <div className="container-fluid p-0">
           <div className="row">
-          {isAuthenticated && (
-                <>
-            <div className="col-md-2">
-              <Sidebar />
-            </div>
-            </>
-          )}
+            {isAuthenticated && (
+              <div className="col-md-2">
+                <Sidebar />
+              </div>
+            )}
             <div className="col-md-10 d-flex flex-column justify-content-between p-0 m-0">
               <div className="row">
                 <div className="col-md-12">
@@ -33,35 +33,11 @@ export default function App() {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
-      </Router>
-
-
-    </>
-  )
-}
-
-/*
-<ToastContainer />
-      <Router>
-      <Container fluid>
-        <Row>
-          <Col sm={3} md={2} lg={2}>
-            <Sidebar />
-          </Col>
-          <Col sm={9} md={10} lg={10}>
-            <Container>
-              <AppRoutes />
-            </Container>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Footer />
-          </Col>
-        </Row>
-      </Container>
+      </Layout>
     </Router>
-*/
+  );
+};
+
+export default App;

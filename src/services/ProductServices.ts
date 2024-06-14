@@ -1,68 +1,117 @@
 import { ArticuloManufacturado } from "../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
 
-const BASE_URL = "http://localhost:8080/api/articulos/manufacturados";
+export class ProductServices {
 
-export const ProductServices = {
-  getProducts: async (): Promise<ArticuloManufacturado[]> => {
-    const response = await fetch(`${BASE_URL}`);
-    const data = await response.json();
+  private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/articulos/manufacturados`;
 
-    return data;
-  },
-
-  getProductsFiltered: async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string): Promise<ArticuloManufacturado[]> => {
-    const params = new URLSearchParams();
-    if (idCategoria !== undefined) params.append("categoria_id", idCategoria.toString());
-    if (idUnidadMedida !== undefined) params.append("unidad_id", idUnidadMedida.toString());
-    if (denominacion !== undefined) params.append("denominacion", denominacion);
-
-    const response = await fetch(`${BASE_URL}/search?${params}`);
-    const data = await response.json();
-    return data;
-  },
-
-  getProduct: async (id: number): Promise<ArticuloManufacturado> => {
-    const response = await fetch(`${BASE_URL}/${id}`);
+  private static async request(endpoint: string, options: RequestInit) {
+    const response = await fetch(`${this.urlServer}${endpoint}`, options);
+    const responseData = await response.json();
     if (!response.ok) {
-      throw new Error("No se puede encontrar el Articulo " + id);
+      throw new Error(responseData.message || 'Error al procesar la solicitud');
+    }
+    return responseData;
   }
-    const data = await response.json();
 
-    return data;
-  },
+  static async getAll(): Promise<ArticuloManufacturado[]> {
+    try {
+      const responseData = await this.request('', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      });
+      return responseData as ArticuloManufacturado[];
+    } catch (error) {
+      console.error('Error al obtener todas los ArticuloManufacturados:', error);
+      throw error;
+    }
+  }
 
-  createProduct: async (product: ArticuloManufacturado): Promise<ArticuloManufacturado> => {
-    console.log("art mandado"+ArticuloManufacturado)
-    const response = await fetch(`${BASE_URL}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(product),
-    });
-    const data = await response.json();
+  static async getOne(id: number): Promise<ArticuloManufacturado> {
+    try {
+      return await this.request(`/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      }) as ArticuloManufacturado;
+    } catch (error) {
+      console.error(`Error al obtener el ArticuloManufacturado con ID ${id}:`, error);
+      throw error;
+    }
+  }
 
-    return data;
-  },
+  static async create(ArticuloManufacturado: ArticuloManufacturado): Promise<ArticuloManufacturado> {
+    try {
+      const responseData = await this.request(``, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ArticuloManufacturado),
+        mode: 'cors'
+      });
+      return responseData;
+    } catch (error) {
+      console.error('Error al agregar el ArticuloManufacturado:', error);
+      throw error;
+    }
+  }
 
-  updateProduct: async (id: number, product: ArticuloManufacturado): Promise<ArticuloManufacturado> => {
-    console.log("update",product);
-    
-    const response = await fetch(`${BASE_URL}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(product),
-    });
-    const data = await response.json();
+  static async update(id: number, ArticuloManufacturado: ArticuloManufacturado): Promise<ArticuloManufacturado> {
+    try {
+      const responseData = await this.request(`/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ArticuloManufacturado),
+        mode: 'cors'
+      });
+      return responseData;
+    } catch (error) {
+      console.error('Error al actualizar el ArticuloManufacturado:', error);
+      throw error;
+    }
+  }
 
-    return data;
-  },
+  static async delete(id: number): Promise<ArticuloManufacturado> {
+    try {
+      return await this.request(`/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      }) as ArticuloManufacturado;
+    } catch (error) {
+      console.error(`Error al dar de baja el ArticuloManufacturado con ID ${id}:`, error);
+      throw error;
+    }
+  }
 
-  deleteProduct: async (id: number): Promise<void> => {
-    await fetch(`${BASE_URL}/${id}`, {
-      method: "DELETE",
-    });
-  },
+  static async getAllFiltered(idCategoria?: number, idUnidadMedida?: number, denominacion?: string): Promise<ArticuloManufacturado[]> {
+    try {
+      const params = new URLSearchParams();
+      if (idCategoria !== undefined) params.append("categoria_id", idCategoria.toString());
+      if (idUnidadMedida !== undefined) params.append("unidad_id", idUnidadMedida.toString());
+      if (denominacion !== undefined) params.append("denominacion", denominacion);
+
+      const responseData = await this.request(`/search?${params}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      });
+      return responseData as ArticuloManufacturado[];
+    } catch (error) {
+      console.error('Error al obtener todas los ArticuloManufacturados:', error);
+      throw error;
+    }
+  }
+
 };

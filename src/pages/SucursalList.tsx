@@ -4,26 +4,27 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { fetchSucursales, fetchSucursalesByEmpresaId } from '../services/SucursalService';
 import SucursalForm from './SucursalForm';
-import { SucursalFull } from '../entities/DTO/Sucursal/SucursalFull';
+import { Sucursal } from '../entities/DTO/Sucursal/Sucursal';
+import { Empresa } from '../entities/DTO/Empresa/Empresa';
 
 
 interface SucursalListProps {
   refresh: boolean;
-  empresaId?: number;
+  empresa?: Empresa;
 }
 
-const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresaId }) => {
-  const [sucursales, setSucursales] = useState<SucursalFull[]>([]);
+const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
+  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [sucursalEditando, setSucursalEditando] = useState<SucursalFull | null>(null);
+  const [sucursalEditando, setSucursalEditando] = useState<Sucursal | null>(null);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const getSucursales = async () => {
       try {
         let data;
-        if (empresaId) {
-          data = await fetchSucursalesByEmpresaId(empresaId);
+        if (empresa) {
+          data = await fetchSucursalesByEmpresaId(empresa.id);
         } else {
           data = await fetchSucursales();
         }
@@ -38,9 +39,9 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresaId }) => {
     };
 
     getSucursales();
-  }, [refresh, empresaId]);
+  }, [refresh, empresa]);
 
-  const handleEdit = (sucursal: SucursalFull) => {
+  const handleEdit = (sucursal: Sucursal) => {
     setSucursalEditando(sucursal);
     setShowModal(true);
   };
@@ -87,7 +88,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresaId }) => {
           <Modal.Title>{sucursalEditando ? 'Editar Sucursal' : 'Agregar Sucursal'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <SucursalForm onAddSucursal={handleCloseModal} sucursalEditando={sucursalEditando} idEmpresa={empresaId} />
+          {empresa && <SucursalForm onAddSucursal={handleCloseModal} sucursalEditando={sucursalEditando} empresa={empresa} />}
         </Modal.Body>
       </Modal>
     </Container>

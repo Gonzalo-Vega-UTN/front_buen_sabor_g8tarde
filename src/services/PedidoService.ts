@@ -1,13 +1,9 @@
 import PedidoFull from "../entities/DTO/Pedido/PedidoFull";
-import { obtenerPedidosMock } from "./mocks";
 
 class PedidoService {
     private static  urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/pedidos`;
 
     private static async request(endpoint: string, options: RequestInit) {
-        console.log("URL: ", this.urlServer);
-        console.log("ENPOINT", endpoint );
-        
         const response = await fetch(`${this.urlServer}${endpoint}`, options);
         const responseData = await response.json();
         if (!response.ok) {
@@ -18,7 +14,8 @@ class PedidoService {
 
     static async agregarPedido(pedido: PedidoFull): Promise<number> {
         try {
-            const responseData = await this.request('/guardar', {
+            console.log(pedido);
+            const responseData = await this.request('', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,7 +46,6 @@ class PedidoService {
     }
 
     static async obtenerPedidos(fecha : string, flag? : boolean): Promise<PedidoFull[]> {
-        if(flag) return obtenerPedidosMock() 
         try {
             return await this.request('/fecha/' + fecha , {
                 method: 'GET',
@@ -62,12 +58,7 @@ class PedidoService {
             console.error('Error al obtener los pedidos:', error);
             throw error;
         }
-
     }
-
-    
-    
 }
-
 
 export default PedidoService;

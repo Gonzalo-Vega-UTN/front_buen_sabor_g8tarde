@@ -1,56 +1,98 @@
 import { UnidadMedida } from "../entities/DTO/UnidadMedida/UnidadMedida";
 
-const BASE_URL = "http://localhost:8080/api/unidades-medida";
 
-export const UnidadMedidaServices = {
-  getUnidadesMedida: async (): Promise<UnidadMedida[]> => {
-    const response = await fetch(`${BASE_URL}`);
-    const data = response.json();
+class UnidadMedidaService {
+  private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/unidades-medida`;
 
-    return data;
-  },
+  private static async request(endpoint: string, options: RequestInit) {
+    const response = await fetch(`${this.urlServer}${endpoint}`, options);
+    const responseData = await response.json();
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Error al procesar la solicitud');
+    }
+    return responseData;
+  }
 
-  getUnidadMedidaById: async (id : number): Promise<UnidadMedida> => {
-    const response = await fetch(`${BASE_URL}/${id}`);
-    const data = response.json();
+  static async getAll(): Promise<UnidadMedida[]> {
+    try {
+      const responseData = await this.request('', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      });
+      return responseData as UnidadMedida[];
+    } catch (error) {
+      console.error('Error al obtener Unidades Medida:', error);
+      throw error;
+    }
+  }
 
-    return data;
-  },
+  static async getOne(id: number): Promise<UnidadMedida> {
+    try {
+      const responseData = await this.request(`/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      });
+      return responseData as UnidadMedida;
+    } catch (error) {
+      console.error(`Error al obtener Unidad Medida: de ID ${id}`, error);
+      throw error;
+    }
+  }
 
-  createUnidadMedida: async (
-    unidadMedida: UnidadMedida
-  ): Promise<UnidadMedida> => {
-    const response = await fetch(`${BASE_URL}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(unidadMedida),
-    });
-    const data = await response.json();
+  static async create(unidadMedida: UnidadMedida): Promise<UnidadMedida> {
+    try {
+      const responseData = await this.request(``, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(unidadMedida),
+        mode: 'cors'
+      });
+      return responseData as UnidadMedida;
+    } catch (error) {
+      console.error(`Error al agregar Unidad Medida`, error);
+      throw error;
+    }
+  }
 
-    return data;
-  },
+  static async update(id: number, unidadMedida: UnidadMedida): Promise<UnidadMedida> {
+    try {
+      const responseData = await this.request(`/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(unidadMedida),
+        mode: 'cors'
+      });
+      return responseData as UnidadMedida;
+    } catch (error) {
+      console.error(`Error al actualizar Unidad Medida: de ID ${id}`, error);
+      throw error;
+    }
+  }
 
-  updateUnidadMedida: async (
-    id: number,
-    unidadMedida: UnidadMedida
-  ): Promise<UnidadMedida> => {
-    const response = await fetch(`${BASE_URL}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(unidadMedida),
-    });
-    const data = await response.json();
-
-    return data;
-  },
-
-  deleteUnidadMedida: async (id: number): Promise<void> => {
-    await fetch(`${BASE_URL}/${id}`, {
-      method: "DELETE",
-    });
-  },
-};
+  static async eliminarUnidadMedidaById(id: number): Promise<UnidadMedida> {
+    try {
+      const responseData = await this.request(`/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      });
+      return responseData as UnidadMedida;
+    } catch (error) {
+      console.error(`Error al obtener Unidad Medida: de ID ${id}`, error);
+      throw error;
+    }
+  }
+}
+export default UnidadMedidaService;

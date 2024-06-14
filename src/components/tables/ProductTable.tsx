@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ProductServices } from "../../services/ProductServices";
-import {  Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import CustomButton from "../generic/Button"
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
@@ -10,9 +10,9 @@ import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado
 import { useNavigate } from "react-router-dom";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { CategoriaService } from "../../services/CategoriaService";
-import { UnidadMedidaServices } from "../../services/UnidadMedidaServices";
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
 import FiltroProductos from "../Filtrado/FiltroArticulo";
+import UnidadMedidaServices from "../../services/UnidadMedidaServices";
 
 export default function ProductTable() {
   const navigate = useNavigate();
@@ -48,11 +48,11 @@ export default function ProductTable() {
   const handleSave = async (newProduct: ArticuloManufacturado) => {
     try {
       if (newProduct.id === undefined) {
-        const createdProduct = await ProductServices.createProduct(newProduct);
+        const createdProduct = await ProductServices.create(newProduct);
         console.log("Se está creando el producto", createdProduct);
         setProducts(prevProducts => [...prevProducts, createdProduct]);
       } else {
-        const updatedProduct = await ProductServices.updateProduct(newProduct.id, newProduct);
+        const updatedProduct = await ProductServices.update(newProduct.id, newProduct);
         console.log("Se está actualizando el producto", updatedProduct);
         setProducts(prevProducts =>
           prevProducts.map(prod =>
@@ -73,7 +73,7 @@ export default function ProductTable() {
   //El useEffect se ejecuta cada vez que se renderice el componente
 
   const fetchProducts = async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string) => {
-    const productsFiltered = await ProductServices.getProductsFiltered(idCategoria, idUnidadMedida, denominacion)
+    const productsFiltered = await ProductServices.getAllFiltered(idCategoria, idUnidadMedida, denominacion)
     console.log(productsFiltered);
 
     //const products = await ProductServices.getProducts();
@@ -89,7 +89,7 @@ export default function ProductTable() {
 
   useEffect(() => {
     const fetchCategorias = async () => {
-      const categorias = await CategoriaService.getCategorias();
+      const categorias = await CategoriaService.obtenerCategorias();
       setCategorias(categorias);
     };
 
@@ -98,7 +98,7 @@ export default function ProductTable() {
 
   useEffect(() => {
     const fetchUnidadadMedida = async () => {
-      const unidadesMedida = await UnidadMedidaServices.getUnidadesMedida();
+      const unidadesMedida = await UnidadMedidaServices.getAll();
       setUnidadesMedida(unidadesMedida);
     };
 
@@ -109,7 +109,7 @@ export default function ProductTable() {
   const handleChangeCategoria = (id: number) => {
     setCategoriaSeleccionada(id > 0 ? id : undefined);
   }
-  
+
   const handleChangeUnidadMedida = (id: number) => {
     setUnidadMedidaSeleccionada(id > 0 ? id : undefined);
   }
@@ -119,22 +119,22 @@ export default function ProductTable() {
   }
   useEffect(() => {
     fetchProducts(categoriaSeleccionada, unidadMedidaSeleccionada, searchedDenominacion);
-  }, [categoriaSeleccionada, unidadMedidaSeleccionada,searchedDenominacion]);
+  }, [categoriaSeleccionada, unidadMedidaSeleccionada, searchedDenominacion]);
 
-  
+
   return (
     <div className="container">
       <CustomButton classes="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Producto" onClick={() =>
         handleClick(0)}
       />
-      
-       <FiltroProductos
-      categorias={categorias}
-      unidadesMedida={unidadesMedida}
-      handleChangeText={handleChangeText}
-      handleChangeCategoria={handleChangeCategoria}
-      handleChangeUnidadMedida={handleChangeUnidadMedida}
-    />
+
+      <FiltroProductos
+        categorias={categorias}
+        unidadesMedida={unidadesMedida}
+        handleChangeText={handleChangeText}
+        handleChangeCategoria={handleChangeCategoria}
+        handleChangeUnidadMedida={handleChangeUnidadMedida}
+      />
       <Table hover>
         <thead>
           <tr className="text-center">

@@ -4,12 +4,12 @@ import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { CategoriaService } from "../../services/CategoriaService";
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
-import { UnidadMedidaServices } from "../../services/UnidadMedidaServices";
 import { BsTrashFill } from "react-icons/bs";
 import CustomButton from "../generic/CustomButton";
 import { ArticuloManufacturadoDetalle } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturadoDetalle";
 import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
-import { ArticuloInsumosServices } from "../../services/ArticuloInsumoServices";
+import ArticuloInsumosService from "../../services/ArticuloInsumoService";
+import UnidadMedidaServices from "../../services/UnidadMedidaServices";
 
 interface FormProps {
   onHide: () => void;
@@ -46,7 +46,7 @@ const Formulario = ({ articuloExistente, onHide, handleSave }: FormProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const ingredientes = await ArticuloInsumosServices.getArticuloInsumo();
+      const ingredientes = await ArticuloInsumosService.obtenerArticulosInsumo();
       setIngredientes(ingredientes);
     };
     fetchData();
@@ -54,7 +54,7 @@ const Formulario = ({ articuloExistente, onHide, handleSave }: FormProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const categorias = await CategoriaService.getCategorias();
+      const categorias = await CategoriaService.obtenerCategorias();
       setCategorias(categorias);
     };
     fetchData();
@@ -62,7 +62,7 @@ const Formulario = ({ articuloExistente, onHide, handleSave }: FormProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const unidadesMedida = await UnidadMedidaServices.getUnidadesMedida();
+      const unidadesMedida = await UnidadMedidaServices.getAll();
       setUnidadesMedida(unidadesMedida);
     };
     fetchData();
@@ -197,7 +197,7 @@ const Formulario = ({ articuloExistente, onHide, handleSave }: FormProps) => {
       });
     }
     if (Object.values(errors).every(error => !error)) {
-      console.log("en form",articulo)
+      console.log("en form", articulo)
       handleSave(articulo);
       onHide();
     }

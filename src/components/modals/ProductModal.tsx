@@ -2,11 +2,10 @@ import { useState, useEffect } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { ModalType } from "../../types/ModalType";
 import { ProductServices } from "../../services/ProductServices";
-import { ArticuloInsumosServices } from "../../services/ArticuloInsumoServices";
-import { toast } from "react-toastify";
 import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
 import Formulario from "../formComponents/Formulario";
+import ArticuloInsumoService from "../../services/ArticuloInsumoService";
 
 type ProductModalProps = {
   show: boolean;
@@ -15,7 +14,7 @@ type ProductModalProps = {
   modalType: ModalType;
   prod: ArticuloManufacturado;
   products: React.Dispatch<React.SetStateAction<ArticuloManufacturado[]>>;
-  handleSave : (producto :ArticuloManufacturado) => void;
+  handleSave: (producto: ArticuloManufacturado) => void;
 };
 
 export default function ProductModal({
@@ -32,26 +31,26 @@ export default function ProductModal({
 
   useEffect(() => {
     const fetchArticuloInsumo = async () => {
-      const ArticuloInsumo = await ArticuloInsumosServices.getArticuloInsumo();
+      const ArticuloInsumo = await ArticuloInsumoService.obtenerArticulosInsumo();
       setIngredients(ArticuloInsumo);
     };
     fetchArticuloInsumo();
   }, []);
 
-  
+
 
   const handleDelete = async () => {
     try {
-      await ProductServices.deleteProduct(prod.id);
+      await ProductServices.delete(prod.id);
       products((prevProducts) =>
         prevProducts.filter((products) => products.id !== prod.id)
       );
-      toast.success("Producto eliminado con exito", {
-        position: "top-center",
-      });
+      // toast.success("Producto eliminado con exito", {
+      //   position: "top-center",
+      // });
     } catch (error) {
       console.error(error);
-      toast.error("Ha ocurrido un error");
+      // toast.error("Ha ocurrido un error");
     }
   };
 
