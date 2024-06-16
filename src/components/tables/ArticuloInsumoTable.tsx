@@ -14,7 +14,7 @@ interface TableProps {
     categorias: Categoria[];
     unidadesMedida: UnidadMedida[];
     articulosInsumo: ArticuloInsumo[];
-    handleSubmit: (art: ArticuloInsumo) => void;
+    handleSubmit: (art: ArticuloInsumo, file : File) => void;
     handleDelete: (idArt: number) => void;
 }
 

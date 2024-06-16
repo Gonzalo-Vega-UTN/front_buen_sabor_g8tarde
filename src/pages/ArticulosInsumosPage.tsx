@@ -52,7 +52,7 @@ export default function ArticuloInsumoPage() {
 
 
 
-  const handleSaveUpdate = async (art: ArticuloInsumo) => {
+  const handleSaveUpdate = async (art: ArticuloInsumo, file : File) => {
     try {
       let response: ArticuloInsumo;
 
@@ -65,6 +65,10 @@ export default function ArticuloInsumoPage() {
         setArticuloInsumo(prevArticulos => [...prevArticulos.filter(a => a.id !== art.id), response]); //Quita primero el articulo y luego lo agrega al final
         setError("");
         fetchDataArticulosInsumo(); // Llama a fetchDataArticulosInsumo después de actualizar el estado
+      }
+
+      if (response.id) {
+        const uploadResponse = await ArticuloInsumoService.uploadFile(response.id, file )
       }
     } catch (error) {
       if (error instanceof Error) {

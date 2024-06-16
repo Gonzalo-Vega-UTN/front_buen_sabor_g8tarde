@@ -4,6 +4,7 @@ import { ModalType } from "../../types/ModalType";
 import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
+import ImagenCarousel from "../carousel/ImagenCarousel";
 
 interface ArticuloInsumoModalProps {
     articulo: ArticuloInsumo | undefined;
@@ -12,7 +13,7 @@ interface ArticuloInsumoModalProps {
     unidadesMedida: UnidadMedida[];
     categorias: Categoria[]
     onHide: () => void;
-    handleSubmit: (art: ArticuloInsumo) => void;
+    handleSubmit: (art: ArticuloInsumo, file: File) => void;
     handleDelete: (idArt: number) => void;
 };
 
@@ -20,7 +21,7 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
 
     const [articuloInsumo, setArticuloInsumo] = useState<ArticuloInsumo>(articulo ? articulo : new ArticuloInsumo());
     const [error, setError] = useState<string>("");
-
+    const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
 
 
@@ -45,6 +46,11 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
         }
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setFile(e.target.files[0]);
+        }
+    };
     const validarFormulario = (): boolean => {
         if (!articuloInsumo.denominacion || !articuloInsumo.denominacion.trim()) {
             setError('La denominación es obligatoria.');
@@ -128,10 +134,10 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                             <Modal.Title>{titulo}</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <Form onSubmit={(e) => {
+                            <Form autoComplete="off" onSubmit={(e) => {
                                 e.preventDefault();
-                                if (articuloInsumo && validarFormulario()) {
-                                    handleSubmit(articuloInsumo)
+                                if (articuloInsumo && validarFormulario() && file != null) {
+                                    handleSubmit(articuloInsumo, file)
                                 }
                             }}>
                                 <Row>
@@ -204,6 +210,8 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                                         />
                                     </Form.Group>
                                 </Row>
+
+
                                 <Row>
                                     <Form.Group as={Col} controlId="formStockActual">
                                         <Form.Label>Stock Actual</Form.Label>
@@ -226,7 +234,28 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                                         />
                                     </Form.Group>
                                 </Row>
+                                <Row>
+                                    <ImagenCarousel imagenesGuardadas={articuloInsumo.imagenes}></ImagenCarousel>
+                                    <Form.Group as={Col} controlId="formImagenes">
+                                        <Form.Label>Imagenes</Form.Label>
+                                        <Form.Control
+                                            name="imagenes"
+                                            type="file"
+                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                const files = event.target.files;
+                                                if (files && files.length > 0) {
+                                                    // Si se selecciona una imagen nueva, maneja el cambio de archivo
+                                                    handleFileChange(event);
+                                                } else {
 
+                                                    // Si no se selecciona ninguna imagen nueva, no hagas nada para mantener las imágenes existentes
+                                                }
+                                            }}
+                                            min={0}
+
+                                        />
+                                    </Form.Group>
+                                </Row>
                                 {error && <h5 className="text-danger my-2">{error}</h5>}
 
                                 <Modal.Footer>
@@ -240,12 +269,15 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                                     ) : (
                                         <Button variant="primary" onClick={() => {
                                             if (articuloInsumo && validarFormulario()) {
-                                                setLoading(true); // Activar indicador de carga
-                                                // Agregar un pequeño retraso antes de procesar la eliminación
-                                                setTimeout(async () => {
-                                                    await handleSubmit(articuloInsumo);
-                                                    onHide(); // Ocultar el modal después de eliminar
-                                                }, 1000); // 1000 milisegundos (1 segundo) de retraso
+                                                if (file != null) {
+
+                                                    setLoading(true); // Activar indicador de carga
+                                                    // Agregar un pequeño retraso antes de procesar la eliminación
+                                                    setTimeout(async () => {
+                                                        await handleSubmit(articuloInsumo, file);
+                                                        onHide(); // Ocultar el modal después de eliminar
+                                                    }, 1000); // 1000 milisegundos (1 segundo) de retraso
+                                                }
                                             }
                                         }}>
                                             Guardar

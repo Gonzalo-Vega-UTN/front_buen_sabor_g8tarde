@@ -1,3 +1,4 @@
+import { Imagen } from "../entities/DTO/Articulo/Imagen";
 import { ArticuloInsumo } from "../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 
 
@@ -97,6 +98,22 @@ class ArticuloInsumoService {
       }) as ArticuloInsumo;
     } catch (error) {
       console.error(`Error al dar de baja el Articulo Insumo con ID ${id}:`, error);
+      throw error;
+    }
+  }
+
+  static async uploadFile(id: number, file: File): Promise<Imagen> {
+    const formData = new FormData();
+    formData.append('uploads', file);
+    formData.append('id', String(id));
+    try {
+      return await this.request(`/uploads`, {
+        method: 'POST',
+        body: formData,
+        mode: 'cors'
+      }) as Imagen;
+    } catch (error) {
+      console.error(`Error al subir una imagen ${id}:`, error);
       throw error;
     }
   }
