@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ProductServices } from "../../services/ProductServices";
 import { Table } from "react-bootstrap";
-import CustomButton from "../generic/Button"
+import CustomButton from "../generic/GenericButton"
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { ModalType } from "../../types/ModalType";
@@ -124,7 +124,7 @@ export default function ProductTable() {
 
   return (
     <div className="container">
-      <CustomButton classes="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Producto" onClick={() =>
+      <CustomButton className="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Producto" onClick={() =>
         handleClick(0)}
       />
 

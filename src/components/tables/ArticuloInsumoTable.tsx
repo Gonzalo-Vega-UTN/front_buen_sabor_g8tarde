@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Table } from "react-bootstrap";
-import Button from "../generic/Button";
+import Button from "../generic/GenericButton";
 import { ModalType } from "../../types/ModalType";
 import ArticuloInsumoModal from "../modals/ArticuloInsumoModal";
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
@@ -15,7 +15,7 @@ interface TableProps {
     unidadesMedida: UnidadMedida[];
     articulosInsumo: ArticuloInsumo[];
     handleSubmit: (art: ArticuloInsumo) => void;
-    handleDelete: (idArt : number) => void;
+    handleDelete: (idArt: number) => void;
 }
 
 const ArticuloInsumoTable = ({ categorias, unidadesMedida, articulosInsumo, handleSubmit, handleDelete }: TableProps) => {

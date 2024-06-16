@@ -10,6 +10,7 @@ import { ArticuloManufacturadoDetalle } from "../../entities/DTO/Articulo/ManuFa
 import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 import ArticuloInsumosService from "../../services/ArticuloInsumoService";
 import UnidadMedidaServices from "../../services/UnidadMedidaServices";
+import GenericButton from "../generic/GenericButton";
 
 interface FormProps {
   onHide: () => void;
@@ -339,7 +340,7 @@ const Formulario = ({ articuloExistente, onHide, handleSave }: FormProps) => {
                   />
                 </td>
                 <td>
-                  <CustomButton
+                  <GenericButton
                     color="#D32F2F"
                     size={20}
                     icon={BsTrashFill}

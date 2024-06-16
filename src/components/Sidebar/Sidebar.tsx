@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BsFillPeopleFill, BsBuilding, BsShop, BsBox, BsBasket, BsPercent, BsCart, BsGraphUp, BsReverseLayoutTextSidebarReverse } from 'react-icons/bs';
+import { MdOutlineCategory } from "react-icons/md";
 import { Link, useLocation } from 'react-router-dom';
 import './style.css';
 import { useAuth } from '../../Auth/Auth';
@@ -10,7 +11,7 @@ const Sidebar = () => {
     const [expanded, setExpanded] = useState(false);
     const [selected, setSelected] = useState('');
     const [submenuOpen, setSubmenuOpen] = useState(false);
-    const location = useLocation(); 
+    const location = useLocation();
     const { userRol } = useAuth();
 
     const handleMouseEnter = () => setExpanded(true);
@@ -25,7 +26,7 @@ const Sidebar = () => {
     };
 
     return (
-        <div 
+        <div
             className={`bg-dark text-white min-vh-100 d-flex flex-column sidebar ${expanded ? 'expanded' : 'collapsed'}`}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -33,12 +34,12 @@ const Sidebar = () => {
             <div className="ms-4 my-3">
                 <img src={logo} alt="Logo" className="logo" /> {/* Muestra el logo en lugar de "Buen Sabor" */}
             </div>
-            
+
             <hr className="text-white" />
             <ul className="nav flex-column flex-grow-1"> {/* Aplica flex-grow-1 para que ocupe todo el espacio vertical disponible */}
                 <li className="nav-item">
-                    <Link 
-                        to="/" 
+                    <Link
+                        to="/"
                         className={`nav-link text-white ${location.pathname === '/' || selected === '/' ? 'active' : ''}`}
                         onClick={() => handleClick('/')}
                     >
@@ -49,8 +50,8 @@ const Sidebar = () => {
                 {userRol === Rol.Admin && (
                     <>
                         <li className="nav-item">
-                            <Link 
-                                to="/empresas" 
+                            <Link
+                                to="/empresas"
                                 className={`nav-link text-white ${location.pathname === '/empresas' || selected === '/empresas' ? 'active' : ''}`}
                                 onClick={() => handleClick('/empresas')}
                             >
@@ -60,8 +61,8 @@ const Sidebar = () => {
                         </li>
 
                         <li className="nav-item">
-                            <Link 
-                                to="/sucursales" 
+                            <Link
+                                to="/sucursales"
                                 className={`nav-link text-white ${location.pathname === '/sucursal' || selected === '/sucursal' ? 'active' : ''}`}
                                 onClick={() => handleClick('/sucursales')}
                             >
@@ -71,8 +72,8 @@ const Sidebar = () => {
                         </li>
 
                         <li className="nav-item">
-                            <span 
-                                className={`nav-link text-white ${location.pathname.startsWith('/productos') || selected.startsWith('/productos') ? 'active' : ''}`} 
+                            <span
+                                className={`nav-link text-white ${location.pathname.startsWith('/productos') || selected.startsWith('/productos') ? 'active' : ''}`}
                                 onClick={toggleSubmenu}
                             >
                                 <BsBox size={24} className="me-2" />
@@ -81,17 +82,17 @@ const Sidebar = () => {
                             {submenuOpen && (
                                 <ul className="nav flex-column submenu">
                                     <li className="nav-item">
-                                        <Link 
-                                            to="/productos" 
-                                            className={`nav-link text-white ${location.pathname === '/productos' || selected === '/productos/lista' ? 'active' : ''}`} 
+                                        <Link
+                                            to="/productos"
+                                            className={`nav-link text-white ${location.pathname === '/productos' || selected === '/productos/lista' ? 'active' : ''}`}
                                             onClick={() => handleClick('/productos')}
                                         >
                                             Lista Productos
                                         </Link>
                                     </li>
                                     <li className="nav-item">
-                                        <Link 
-                                            to="/create-product/0" 
+                                        <Link
+                                            to="/create-product/0"
                                             className={`nav-link text-white ${location.pathname === '/create-product/0' || selected === '/create-product/0' ? 'active' : ''}`}
                                             onClick={() => handleClick('/create-product/0')}
                                         >
@@ -103,8 +104,8 @@ const Sidebar = () => {
                         </li>
 
                         <li className="nav-item">
-                            <Link 
-                                to="/ingredientes" 
+                            <Link
+                                to="/ingredientes"
                                 className={`nav-link text-white ${location.pathname === '/ingredientes' || selected === '/ingredientes' ? 'active' : ''}`}
                                 onClick={() => handleClick('/ingredientes')}
                             >
@@ -114,8 +115,8 @@ const Sidebar = () => {
                         </li>
 
                         <li className="nav-item">
-                            <Link 
-                                to="/promociones" 
+                            <Link
+                                to="/promociones"
                                 className={`nav-link text-white ${location.pathname === '/promociones' || selected === '/promociones' ? 'active' : ''}`}
                                 onClick={() => handleClick('/promociones')}
                             >
@@ -125,8 +126,8 @@ const Sidebar = () => {
                         </li>
 
                         <li className="nav-item">
-                            <Link 
-                                to="/pedidos" 
+                            <Link
+                                to="/pedidos"
                                 className={`nav-link text-white ${location.pathname === '/pedidos' || selected === '/pedidos' ? 'active' : ''}`}
                                 onClick={() => handleClick('/pedidos')}
                             >
@@ -136,8 +137,8 @@ const Sidebar = () => {
                         </li>
 
                         <li className="nav-item">
-                            <Link 
-                                to="/clientes" 
+                            <Link
+                                to="/clientes"
                                 className={`nav-link text-white ${location.pathname === '/clientes' || selected === '/clientes' ? 'active' : ''}`}
                                 onClick={() => handleClick('/clientes')}
                             >
@@ -146,19 +147,29 @@ const Sidebar = () => {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link 
-                              to="/estadisticas" 
-                              className={`nav-link text-white ${location.pathname === '/estadisticas' || selected === '/estadisticas' ? 'active' : ''}`}
-                              onClick={() => handleClick('/estadisticas')}
+                            <Link
+                                to="/categorias"
+                                className={`nav-link text-white ${location.pathname === '/categorias' || selected === '/categorias' ? 'active' : ''}`}
+                                onClick={() => handleClick('/categorias')}
                             >
-                              <BsGraphUp size={24} className="me-2" />
-                              <span className="nav-text">Estadísticas</span>
+                                <MdOutlineCategory size={24} className="me-2" />
+                                <span className="nav-text">Categorias</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link
+                                to="/estadisticas"
+                                className={`nav-link text-white ${location.pathname === '/estadisticas' || selected === '/estadisticas' ? 'active' : ''}`}
+                                onClick={() => handleClick('/estadisticas')}
+                            >
+                                <BsGraphUp size={24} className="me-2" />
+                                <span className="nav-text">Estadísticas</span>
                             </Link>
                         </li>
 
                         <li className="nav-item">
-                            <Link 
-                                to="/reportes" 
+                            <Link
+                                to="/reportes"
                                 className={`nav-link text-white ${location.pathname === '/reportes' || selected === '/reportes' ? 'active' : ''}`}
                                 onClick={() => handleClick('/reportes')}
                             >
@@ -167,7 +178,7 @@ const Sidebar = () => {
                             </Link>
                         </li>
 
-
+                    </>
                 )}
             </ul>
 

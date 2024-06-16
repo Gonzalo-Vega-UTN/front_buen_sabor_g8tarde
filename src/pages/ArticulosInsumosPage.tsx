@@ -1,7 +1,7 @@
 import { CiCirclePlus } from "react-icons/ci";
 import ArticuloInsumoTable from "../components/tables/ArticuloInsumoTable";
 import { ModalType } from "../types/ModalType";
-import Button from "../components/generic/Button";
+import Button from "../components/generic/GenericButton";
 import { useEffect, useState } from "react";
 import ArticuloInsumoModal from "../components/modals/ArticuloInsumoModal";
 import { ArticuloInsumo } from "../entities/DTO/Articulo/Insumo/ArticuloInsumo";
@@ -96,7 +96,7 @@ export default function ArticuloInsumoPage() {
 
   return (
     <>
-      <Button classes="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Ingrediente" onClick={() => setShowModalCrear(true)}
+      <Button className="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Ingrediente" onClick={() => setShowModalCrear(true)}
       />
 
       <ArticuloInsumoTable

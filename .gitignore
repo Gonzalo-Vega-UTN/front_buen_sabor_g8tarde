@@ -10,7 +10,7 @@ dist-ssr/
 .cache/
 .build/
 *.local
-
+.vs/
 # Archivos de configuración y entorno
 
 .env

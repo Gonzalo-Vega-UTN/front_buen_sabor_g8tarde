@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Button, Modal, Table } from 'react-bootstrap'
 import { ArticuloInsumo } from '../../entities/DTO/Articulo/Insumo/ArticuloInsumo';
 import { BsTrashFill } from 'react-icons/bs';
-import CustomButton from '../generic/Button';
+import CustomButton from '../generic/GenericButton';
 import { FaSave } from 'react-icons/fa';
 import { Categoria } from '../../entities/DTO/Categoria/Categoria';
 import { CategoriaService } from '../../services/CategoriaService';
