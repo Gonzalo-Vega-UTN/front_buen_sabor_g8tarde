@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Promocion } from "../entities/DTO/Promocion/Promocion";
 import { ModalType } from "../types/ModalType";
 import PromocionService from "../services/PromocionService";
-import CustomButton from "../components/generic/Button";
+import CustomButton from "../components/generic/GenericButton";
 
 export default function PromotionTable() {
   const navigate = useNavigate();
@@ -19,17 +19,17 @@ export default function PromotionTable() {
   const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
 
   const handleClick = (id: number) => {
-    console.log("Promo a enviar",promotion)
-    console.log("Promociones en la tabla",promotions)
+    console.log("Promo a enviar", promotion)
+    console.log("Promociones en la tabla", promotions)
     navigate("/create-promotion/" + id);
   };
 
   const handleClickEliminar = (newTitle: string, promo: Promocion, modal: ModalType) => {
-    
+
     setPromotion(promo);
   };
 
-  
+
 
   const fetchPromotions = async (idCategoria?: number, denominacion?: string) => {
     const promotionsFiltered = await PromocionService.getAll(/*idCategoria, denominacion*/);
@@ -40,7 +40,7 @@ export default function PromotionTable() {
     fetchPromotions();
   }, []);
 
- 
+
 
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function PromotionTable() {
   return (
     <div className="container">
       <CustomButton
-        classes="mt-4 mb-3"
+        className="mt-4 mb-3"
         color="#4CAF50"
         size={25}
         icon={CiCirclePlus}
@@ -104,7 +104,7 @@ export default function PromotionTable() {
         </tbody>
       </Table>
 
-     
+
     </div>
   );
 }

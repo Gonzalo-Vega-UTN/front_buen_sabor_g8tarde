@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { ListGroup, Button, Collapse, Modal, Form } from 'react-bootstrap';
 import { Categoria } from '../entities/DTO/Categoria/Categoria';
 import { CategoriaService } from '../services/CategoriaService';
+import { BsFillPencilFill, BsPlusCircleFill } from 'react-icons/bs';
+import GenericButton from '../components/generic/GenericButton';
 
 export const CategoriasList = () => {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -13,6 +15,7 @@ export const CategoriasList = () => {
     const fetchCategorias = async () => {
         try {
             const categorias = await CategoriaService.obtenerCategoriasPadre();
+            console.log(categorias)
             setCategorias(categorias);
         } catch (error) {
             console.log(error);
@@ -46,11 +49,12 @@ export const CategoriasList = () => {
     };
 
     const renderCategorias = (categorias: Categoria[]) => {
-        return categorias.map((categoria, index) => (
-            <div key={categoria.id}>
+        return categorias.map((categoria, index) => {
+            const baja = categoria.alta ? 'text=primary text-opacity-25' : ""
+            return <div key={categoria.id}>
                 <ListGroup>
                     <ListGroup.Item
-                        className='d-flex justify-content-between me-5'
+                        className={'d-flex justify-content-between me-5' + baja}
                         active={activeItems.includes(categoria.id)}
                         onClick={() => handleItemClick(categoria.id)}
                         aria-controls={`subcategoria-collapse-${categoria.id}`}
@@ -58,20 +62,34 @@ export const CategoriasList = () => {
                     >
                         <p>{index + 1}</p>
                         <h4>{categoria.denominacion}</h4>
-                        <Button onClick={(event) => handleButtonClick(event, categoria.id)}>+</Button>
+                        <div className='d-flex gap-3'>
+                            <GenericButton
+                                color="#FBC02D"
+                                size={20}
+                                icon={BsFillPencilFill}
+                                onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => console.log("EDITAR")}
+                            />
+                            <GenericButton
+                                color="#0080FF"
+                                size={20}
+                                icon={BsPlusCircleFill}
+                                onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleButtonClick(e, categoria.id)}
+                            />
+                        </div>
                     </ListGroup.Item>
                 </ListGroup>
                 <Collapse in={collapsedItems.includes(categoria.id)}>
                     <ListGroup >
                         {categoria.subCategorias.length > 0 &&
-                            <ListGroup.Item className='d-flex flex-direction gap-3'>
+                            <ListGroup.Item className=''>
                                 {renderCategorias(categoria.subCategorias)}
                             </ListGroup.Item>
                         }
                     </ListGroup>
                 </Collapse>
             </div>
-        ));
+
+        })
     };
 
     return (
@@ -100,8 +118,11 @@ function MyVerticallyCenteredModal(props) {
             console.log(categoria);
 
             const data = await CategoriaService.agregarCategoria(props.idpadre, { ...categoria, alta: true });
-            props.onHide()
-            setCategoria(new Categoria());
+            if (data) {
+                props.onHide()
+                setCategoria(new Categoria());
+            }
+
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);
