@@ -27,11 +27,11 @@ export default function ClientTable() {
   }, [searchedNombre, searchedApellido]);
 
   const handleChangeNombre = (nombre: string) => {
-    setSearchedNombre(nombre ? nombre : undefined);
+    setSearchedNombre(nombre.trim() ? nombre : undefined);
   };
 
   const handleChangeApellido = (apellido: string) => {
-    setSearchedApellido(apellido ? apellido : undefined);
+    setSearchedApellido(apellido.trim() ? apellido : undefined);
   };
 
   return (
