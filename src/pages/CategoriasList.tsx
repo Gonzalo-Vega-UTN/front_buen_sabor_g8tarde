@@ -97,7 +97,9 @@ export const CategoriasList = () => {
     return (
         <Container className="text-center">
             <h1>Lista de Categorias</h1>
-            <Button className='my-3 mx-auto' onClick={(e) => handleButtonClick(e, 0)}>Crear Categoria</Button>
+            <div className="d-flex justify-content-center my-3">
+                <Button onClick={(e) => handleButtonClick(e, 0)}>Crear Categoria</Button>
+            </div>
             {categorias ? renderCategorias(categorias) : <p>No hay categorias</p>}
             <MyVerticallyCenteredModal
                 show={modalShow}
