@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { ListGroup, Button, Collapse, Modal, Form } from 'react-bootstrap';
+import { Container, ListGroup, Button, Collapse, Modal, Form, ModalProps } from 'react-bootstrap';
 import { Categoria } from '../entities/DTO/Categoria/Categoria';
 import { CategoriaService } from '../services/CategoriaService';
 import { BsFillPencilFill, BsPlusCircleFill } from 'react-icons/bs';
 import GenericButton from '../components/generic/GenericButton';
+import { Omit, BsPrefixProps } from 'react-bootstrap/esm/helpers';
+import { JSX } from 'react/jsx-runtime';
 
 export const CategoriasList = () => {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -51,7 +53,7 @@ export const CategoriasList = () => {
     const renderCategorias = (categorias: Categoria[]) => {
         return categorias.map((categoria, index) => {
             const baja = categoria.alta ? 'text=primary text-opacity-25' : ""
-            return <div key={categoria.id}>
+            return <div key={categoria.id} className="w-100">
                 <ListGroup>
                     <ListGroup.Item
                         className={'d-flex justify-content-between me-5' + baja}
@@ -79,7 +81,7 @@ export const CategoriasList = () => {
                     </ListGroup.Item>
                 </ListGroup>
                 <Collapse in={collapsedItems.includes(categoria.id)}>
-                    <ListGroup >
+                    <ListGroup>
                         {categoria.subCategorias.length > 0 &&
                             <ListGroup.Item className=''>
                                 {renderCategorias(categoria.subCategorias)}
@@ -93,9 +95,9 @@ export const CategoriasList = () => {
     };
 
     return (
-        <>
+        <Container className="text-center">
             <h1>Lista de Categorias</h1>
-            <Button className='my-3' onClick={(e) => handleButtonClick(e, 0)}>Crear Categoria</Button>
+            <Button className='my-3 mx-auto' onClick={(e) => handleButtonClick(e, 0)}>Crear Categoria</Button>
             {categorias ? renderCategorias(categorias) : <p>No hay categorias</p>}
             <MyVerticallyCenteredModal
                 show={modalShow}
@@ -105,11 +107,11 @@ export const CategoriasList = () => {
                 }}
                 idpadre={clickedCategoria}
             />
-        </>
+        </Container>
     );
 };
 
-function MyVerticallyCenteredModal(props) {
+function MyVerticallyCenteredModal(props: JSX.IntrinsicAttributes & Omit<Omit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, "ref"> & { ref?: ((instance: HTMLDivElement | null) => void | React.DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES[keyof React.DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES]) | React.RefObject<HTMLDivElement> | null | undefined; }, BsPrefixProps<"div"> & ModalProps> & BsPrefixProps<"div"> & ModalProps & { children?: React.ReactNode | undefined; }) {
     const [error, setError] = useState<string>("");
     const [categoria, setCategoria] = useState<Categoria>(new Categoria());
     const handleSave = async (e: React.FormEvent) => {
