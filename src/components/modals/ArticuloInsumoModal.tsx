@@ -237,23 +237,8 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                                 <Row>
                                     <ImagenCarousel imagenesGuardadas={articuloInsumo.imagenes}></ImagenCarousel>
                                     <Form.Group as={Col} controlId="formImagenes">
-                                        <Form.Label>Imagenes</Form.Label>
-                                        <Form.Control
-                                            name="imagenes"
-                                            type="file"
-                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                const files = event.target.files;
-                                                if (files && files.length > 0) {
-                                                    // Si se selecciona una imagen nueva, maneja el cambio de archivo
-                                                    handleFileChange(event);
-                                                } else {
-
-                                                    // Si no se selecciona ninguna imagen nueva, no hagas nada para mantener las imágenes existentes
-                                                }
-                                            }}
-                                            min={0}
-
-                                        />
+                                       
+                                      
                                     </Form.Group>
                                 </Row>
                                 {error && <h5 className="text-danger my-2">{error}</h5>}

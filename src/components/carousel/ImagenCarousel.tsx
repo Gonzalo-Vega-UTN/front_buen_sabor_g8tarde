@@ -1,9 +1,8 @@
-// src/components/ImageCarousel.tsx
-
 import React, { useState } from 'react';
 import Carousel from 'react-bootstrap/esm/Carousel';
 import { Imagen } from '../../entities/DTO/Articulo/Imagen';
 import { Button } from 'react-bootstrap';
+
 interface Props {
     imagenesGuardadas: Imagen[];
 }
@@ -11,7 +10,6 @@ interface Props {
 const ImagenCarousel: React.FC<Props> = ({ imagenesGuardadas }) => {
     const [index, setIndex] = useState<number>(0);
     const [imagenes, setImagenes] = useState<Imagen[]>(imagenesGuardadas);
-
 
     const handleSelect = (selectedIndex: number) => {
         setIndex(selectedIndex);
@@ -26,7 +24,6 @@ const ImagenCarousel: React.FC<Props> = ({ imagenesGuardadas }) => {
             });
         }
     };
-
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
@@ -49,24 +46,28 @@ const ImagenCarousel: React.FC<Props> = ({ imagenesGuardadas }) => {
     };
 
     return (
-        <div className='align-items- center'>
-            <Carousel activeIndex={index} onSelect={handleSelect} style={{ maxWidth: '400px', maxHeight: '400px' }} wrap={false}
+        <div className='align-items-center' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Carousel
+                activeIndex={index}
+                onSelect={handleSelect}
+                style={{ width: '400px', height: '400px' }}
+                wrap={false}
                 prevIcon={<Button>Atras</Button>}
-                nextIcon={index === imagenes.length - 1 ? <Button>Agregar</Button> : <Button>Siguiente</Button>} variant='dark'>
+                nextIcon={index === imagenes.length - 1 ? <Button>Agregar</Button> : <Button>Siguiente</Button>}
+                variant='dark'
+            >
                 {imagenes.map((imagen, index) => (
                     <Carousel.Item key={index}>
                         <img
                             src={imagen.url}
                             alt={`Slide ${index}`}
-                            style={{ maxWidth: '300px', maxHeight: '300px', objectFit: 'contain' }}
+                            style={{ width: '80%', height: '80%', objectFit: 'contain' }}
                         />
                     </Carousel.Item>
-                ))
-                }
-            </Carousel >
+                ))}
+            </Carousel>
             <input type="file" multiple onChange={handleFileChange} />
-
-        </div >
+        </div>
     );
 };
 
