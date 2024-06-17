@@ -15,8 +15,8 @@ import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
 
 import { Reportes } from "../pages/Reportes";
 import { Estadisticas } from "../pages/Estadisticas";
-import PromocionesPage from "../pages/PromocionesPage";
-import PromocionForm from "../pages/FormularioPromocion";
+import PromocionesPage from "../pages/Promocion/PromocionesPage";
+import PromocionForm from "../pages/Promocion/FormularioPromocion";
 
 
 
@@ -34,7 +34,7 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={DashboardPage}
-            roles={[Rol.Admin]} 
+            roles={[Rol.Admin]}
           />
         }
       />
@@ -49,7 +49,7 @@ export default function AppRoutes() {
           />
         }
       />
-      
+
       <Route
         path="/create-product/:id"
         element={
@@ -126,12 +126,12 @@ export default function AppRoutes() {
         path="/promociones"
         element={
           <PrivateRoute
-            element={PromocionesPage  } //Recordar cambiar
+            element={PromocionesPage} //Recordar cambiar
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
       />
-       <Route
+      <Route
         path="/create-promotion/:id"
         element={
           <PrivateRoute

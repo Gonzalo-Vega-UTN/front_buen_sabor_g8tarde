@@ -3,10 +3,10 @@ import { Table } from "react-bootstrap";
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
-import { Promocion } from "../entities/DTO/Promocion/Promocion";
-import { ModalType } from "../types/ModalType";
-import PromocionService from "../services/PromocionService";
-import CustomButton from "../components/generic/GenericButton";
+import { Promocion } from "../../entities/DTO/Promocion/Promocion";
+import { ModalType } from "../../types/ModalType";
+import PromocionService from "../../services/PromocionService";
+import CustomButton from "../../components/generic/GenericButton";
 
 export default function PromotionTable() {
   const navigate = useNavigate();
@@ -19,8 +19,6 @@ export default function PromotionTable() {
   const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
 
   const handleClick = (id: number) => {
-    console.log("Promo a enviar", promotion)
-    console.log("Promociones en la tabla", promotions)
     navigate("/create-promotion/" + id);
   };
 

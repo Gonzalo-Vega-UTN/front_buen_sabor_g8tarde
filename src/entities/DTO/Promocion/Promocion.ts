@@ -11,7 +11,7 @@ export class Promocion extends Base {
     horaHasta: string  = ''; 
     descripcionDescuento: string = '';
     precioPromocional: number = 0;
-    tipoPromocion?: TipoPromocion;
+    tipoPromocion: TipoPromocion | undefined = undefined;
     detallesPromocion: PromocionDetalle[] = [];
   }
 export class PromocionDetalle extends Base {

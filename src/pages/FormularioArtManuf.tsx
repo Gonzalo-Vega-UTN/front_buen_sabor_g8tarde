@@ -14,6 +14,7 @@ import { ArticuloInsumo } from '../entities/DTO/Articulo/Insumo/ArticuloInsumo'
 import { ArticuloManufacturadoDetalleTable } from '../components/tables/ArtManufacturadoDetalleTable'
 import { ArticuloManufacturadoDetalle } from '../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturadoDetalle'
 import UnidadMedidaServices from '../services/UnidadMedidaServices'
+import { ValidationResult } from '../utils/ValidationUtil'
 
 
 export const FormularioArtManuf = () => {
@@ -32,6 +33,7 @@ export const FormularioArtManuf = () => {
     const [error, setError] = useState<string | null>(null);
     const [exito, setExito] = useState<string>("")
     const [submitError, setSubmitError] = useState<string>("");
+    const [fieldErrors, setFieldErrors] = useState<Record<string, Record<string, ValidationResult>>>({});
 
     const [showModal, setShowModal] = useState(false);
     const [title, setTitle] = useState("");
@@ -97,6 +99,13 @@ export const FormularioArtManuf = () => {
         );
     };
 
+    const handleSetFieldErrors = (name: string, errors: Record<string, ValidationResult>) => {
+        setFieldErrors(prev => ({
+            ...prev,
+            [name]: errors
+        }));
+    };
+
     const handleSubmit = (event: React.FormEvent) => {
 
         event.preventDefault();
@@ -106,12 +115,19 @@ export const FormularioArtManuf = () => {
             return;
         }
 
-        const { unidadMedida, categoria, denominacion, descripcion, precioVenta } = articuloManufacturado;
+        const { unidadMedida, categoria } = articuloManufacturado;
         articuloManufacturado.articuloManufacturadoDetalles = detalles;
 
 
-        if (!unidadMedida || !categoria || !denominacion || !descripcion || precioVenta === 0) {
+        if (!unidadMedida || !categoria) {
             setSubmitError("Completa todos los campos");
+            return;
+        }
+        const hasErrors = Object.values(fieldErrors).some(errors =>
+            Object.values(errors).some(error => !error.isValid)
+        );
+        if (hasErrors) {
+            setSubmitError('Completa todos los campos');
             return;
         }
         const detallesConCero = articuloManufacturado.articuloManufacturadoDetalles?.filter(detalle => detalle.cantidad === 0);
@@ -237,7 +253,7 @@ export const FormularioArtManuf = () => {
                     <Form onSubmit={handleSubmit}>
                         <Row className="m-4">
                             <MyFormGroupInput
-                                update={update}
+                                onChange={update}
                                 name={"denominacion"}
                                 label={'Denominacion'}
                                 orientation={Col}
@@ -247,9 +263,10 @@ export const FormularioArtManuf = () => {
                                     { rule: ValidationEnum.Empty, errorMessage: 'El campo no puede estar vacío' },
                                     { rule: ValidationEnum.MinLength, errorMessage: `El campo debe tener al menos ${5} caracteres`, min: 5 },
                                 ]}
+                                setFieldErrors={handleSetFieldErrors}
                             />
                             <MyFormGroupInput
-                                update={update}
+                                onChange={update}
                                 name={"descripcion"}
                                 label={'Descripcion'}
                                 orientation={Row}
@@ -259,9 +276,10 @@ export const FormularioArtManuf = () => {
                                     { rule: ValidationEnum.Empty, errorMessage: 'El campo no puede estar vacío' },
                                     { rule: ValidationEnum.MinLength, errorMessage: `El campo debe tener al menos ${10} caracteres`, min: 25 },
                                 ]}
+                                setFieldErrors={handleSetFieldErrors}
                             />
                             <MyFormGroupInput
-                                update={update}
+                                onChange={update}
                                 name={"preparacion"}
                                 label={'Preparacion'}
                                 orientation={Row}
@@ -271,10 +289,11 @@ export const FormularioArtManuf = () => {
                                     { rule: ValidationEnum.Empty, errorMessage: 'El campo no puede estar vacío' },
                                     { rule: ValidationEnum.MinLength, errorMessage: `El campo debe tener al menos ${10} caracteres`, min: 30 },
                                 ]}
+                                setFieldErrors={handleSetFieldErrors}
                             />
 
                             <MyFormGroupInput
-                                update={update}
+                                onChange={update}
                                 name={"tiempoEstimadoMinutos"}
                                 label={'Tiempo de Preparacion (minutos)'}
                                 orientation={Col}
@@ -284,9 +303,10 @@ export const FormularioArtManuf = () => {
                                     { rule: ValidationEnum.Empty, errorMessage: 'El campo no puede estar vacío' },
                                     { rule: ValidationEnum.Positive, errorMessage: "El campo debe ser un numero positivo" },
                                 ]}
+                                setFieldErrors={handleSetFieldErrors}
                             />
                             <MyFormGroupInput
-                                update={update}
+                                onChange={update}
                                 name={"precioVenta"}
                                 label={'Precio Venta'}
                                 orientation={Col}
@@ -296,6 +316,7 @@ export const FormularioArtManuf = () => {
                                     { rule: ValidationEnum.Empty, errorMessage: 'El campo no puede estar vacío' },
                                     { rule: ValidationEnum.Positive, errorMessage: "El campo debe ser un numero positivo" },
                                 ]}
+                                setFieldErrors={handleSetFieldErrors}
                             />
                             <FormGroupSelect<Categoria>
                                 orientation={Col}
