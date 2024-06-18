@@ -5,4 +5,5 @@ export class ArticuloInsumo extends Articulo {
     stockActual: number = 0;
     stockMaximo: number = 0;
     esParaElaborar: boolean | null = false;
+    imagenes: Imagen[];
 }
