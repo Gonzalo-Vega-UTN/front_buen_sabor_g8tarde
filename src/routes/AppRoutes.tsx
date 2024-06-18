@@ -18,6 +18,9 @@ import { Estadisticas } from "../pages/Estadisticas";
 import PromocionesPage from "../pages/PromocionesPage";
 import PromocionForm from "../pages/FormularioPromocion";
 import ClientTable from "../pages/ClientesList";
+import { PedidosCajero } from "../components/PedidosXEstado/PedidosCajero";
+import { PedidosCocinero } from "../components/PedidosXEstado/PedidosCocinero";
+import { PedidosDelivery } from "../components/PedidosXEstado/PedidosDelivery";
 
 
 
@@ -160,7 +163,33 @@ export default function AppRoutes() {
           />
         }
       />
-
+      <Route
+        path="/PedidosCajero"
+        element={
+          <PrivateRoute
+            element={PedidosCajero} //Recordar cambiar
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
+      <Route
+        path="/PedidosCocinero"
+        element={
+          <PrivateRoute
+            element={PedidosCocinero} //Recordar cambiar
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
+      <Route
+        path="/PedidosDelivery"
+        element={
+          <PrivateRoute
+            element={PedidosDelivery} //Recordar cambiar
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
     </Routes>
   );
 }
