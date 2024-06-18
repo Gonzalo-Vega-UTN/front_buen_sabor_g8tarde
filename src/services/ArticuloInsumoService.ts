@@ -102,21 +102,27 @@ class ArticuloInsumoService {
     }
   }
 
-  static async uploadFile(id: number, file: File): Promise<Imagen> {
-    const formData = new FormData();
-    formData.append('uploads', file);
-    formData.append('id', String(id));
-    try {
-      return await this.request(`/uploads`, {
+  static async uploadFiles(id: number, files: File[]): Promise<Imagen[]> {
+    const uploadPromises = files.map(file => {
+      const formData = new FormData();
+      formData.append('uploads', file);
+      formData.append('id', String(id));
+
+      return this.request(`/uploads`, {
         method: 'POST',
         body: formData,
         mode: 'cors'
-      }) as Imagen;
+      }) as Promise<Imagen>;
+    });
+
+    try {
+      return await Promise.all(uploadPromises);
     } catch (error) {
-      console.error(`Error al subir una imagen ${id}:`, error);
+      console.error(`Error al subir imágenes para el id ${id}:`, error);
       throw error;
     }
   }
+
 };
 
 export default ArticuloInsumoService;
