@@ -19,8 +19,8 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
   const [error, setError] = useState<string | null>(null);
   const [sucursalEditando, setSucursalEditando] = useState<Sucursal | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedSucursalId, setSelectedSucursalId] = useState<number | null>(null);
-  const { selectSucursal } = useAuth();
+ 
+  const { selectSucursal ,activeSucursal} = useAuth();
 
   useEffect(() => {
     const getSucursales = async () => {
@@ -43,6 +43,8 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
 
     getSucursales();
   }, [refresh, empresa]);
+
+
 
   const handleEdit = (sucursal: Sucursal) => {
     setSucursalEditando(sucursal);
@@ -74,7 +76,6 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
   };
 
   const handleCardClick = (sucursalId: number) => {
-    setSelectedSucursalId(sucursalId);
     selectSucursal(sucursalId);
   };
 
@@ -114,7 +115,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
           <Col key={sucursal.id} sm={12} md={6} lg={4} className="mb-4">
             <Card 
               onClick={() => handleCardClick(sucursal.id)}
-              className={selectedSucursalId === sucursal.id ? "selected-card" : ""}
+              className={activeSucursal === String(sucursal.id) ? "selected-card" : ""}
               style={{ backgroundColor: sucursal.alta ? 'white' : 'darkgrey' }}
             >
               <Card.Img variant="top" src={defaultImageUrl} />
