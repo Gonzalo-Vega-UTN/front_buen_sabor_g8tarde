@@ -1,4 +1,3 @@
-// SucursalList.tsx
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Dropdown, DropdownButton, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,6 +7,7 @@ import SucursalForm from './SucursalForm';
 import { Sucursal } from '../entities/DTO/Sucursal/Sucursal';
 import { Empresa } from '../entities/DTO/Empresa/Empresa';
 import { useAuth } from '../Auth/Auth';
+import './styles.css'; // Importar tu archivo de estilos
 
 interface SucursalListProps {
   refresh: boolean;
@@ -19,7 +19,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
   const [error, setError] = useState<string | null>(null);
   const [sucursalEditando, setSucursalEditando] = useState<Sucursal | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedSucursal, setSelectedSucursal] = useState<Sucursal | null>(null);
+  const [selectedSucursalId, setSelectedSucursalId] = useState<number | null>(null);
   const { selectSucursal } = useAuth();
 
   useEffect(() => {
@@ -74,9 +74,8 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
   };
 
   const handleCardClick = (sucursalId: number) => {
+    setSelectedSucursalId(sucursalId);
     selectSucursal(sucursalId);
-    const selected = sucursales.find(s => s.id === sucursalId) || null;
-    setSelectedSucursal(selected);
   };
 
   const handleStatusChange = async (sucursalId: number, alta: boolean) => {
@@ -115,6 +114,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
           <Col key={sucursal.id} sm={12} md={6} lg={4} className="mb-4">
             <Card 
               onClick={() => handleCardClick(sucursal.id)}
+              className={selectedSucursalId === sucursal.id ? "selected-card" : ""}
               style={{ backgroundColor: sucursal.alta ? 'white' : 'darkgrey' }}
             >
               <Card.Img variant="top" src={defaultImageUrl} />
@@ -151,16 +151,6 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
           {empresa && <SucursalForm onAddSucursal={handleCloseModal} sucursalEditando={sucursalEditando} empresa={empresa} />}
         </Modal.Body>
       </Modal>
-      {selectedSucursal && (
-        <Card className="mt-3">
-          <Card.Body>
-            <Card.Title>Sucursal Actual</Card.Title>
-            <Card.Text>
-              <strong>Nombre:</strong> {selectedSucursal.nombre} <br />
-            </Card.Text>
-          </Card.Body>
-        </Card>
-      )}
     </Container>
   );
 };

@@ -10,12 +10,14 @@ import ArticuloInsumoService from "../services/ArticuloInsumoService";
 import { CategoriaService } from "../services/CategoriaService";
 import { UnidadMedida } from "../entities/DTO/UnidadMedida/UnidadMedida";
 import UnidadMedidaServices from "../services/UnidadMedidaServices";
+import { useAuth } from "../Auth/Auth";
 
 export default function ArticuloInsumoPage() {
 
   //Estados
   const [showModalCrear, setShowModalCrear] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const{activeSucursal}=useAuth();
 
   //Estados Listas Entidades
   const [categorias, setCategorias] = useState<Categoria[]>([])
@@ -24,7 +26,7 @@ export default function ArticuloInsumoPage() {
 
   useEffect(() => {
     const fetchCategorias = async () => {
-      const categorias = await CategoriaService.obtenerCategorias();
+      const categorias = await CategoriaService.obtenerCategorias(activeSucursal);
       setCategorias(categorias);
     };
 

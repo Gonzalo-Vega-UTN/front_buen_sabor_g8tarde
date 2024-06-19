@@ -16,7 +16,7 @@ export class CategoriaService {
   static async obtenerCategorias(id:number): Promise<Categoria[]> {
     
     try {
-      const responseData = await this.request(`${id}`, {
+      const responseData = await this.request(`/all/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
