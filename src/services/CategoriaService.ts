@@ -13,10 +13,10 @@ export class CategoriaService {
     return responseData;
   }
 
-  static async obtenerCategorias(): Promise<Categoria[]> {
+  static async obtenerCategorias(id:number): Promise<Categoria[]> {
     
     try {
-      const responseData = await this.request('', {
+      const responseData = await this.request(`${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -30,9 +30,9 @@ export class CategoriaService {
     }
   }
 
-  static async obtenerCategoriasPadre(): Promise<Categoria[]> {
+  static async obtenerCategoriasPadre(id:string): Promise<Categoria[]> {
     try {
-      const responseData = await this.request('/padres', {
+      const responseData = await this.request(`/padres/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

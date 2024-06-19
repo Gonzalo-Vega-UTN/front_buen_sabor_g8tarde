@@ -16,7 +16,7 @@ export const CategoriasList = () => {
 
     const fetchCategorias = async () => {
         try {
-            const categorias = await CategoriaService.obtenerCategoriasPadre();
+            const categorias = await CategoriaService.obtenerCategoriasPadre(activeSucursal);
             console.log(categorias)
             setCategorias(categorias);
         } catch (error) {

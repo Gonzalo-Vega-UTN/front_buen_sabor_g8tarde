@@ -7,7 +7,7 @@ interface Empresa {
   nombre: string;
   razonSocial: string;
   cuil: string;
-  imagenUrl: string;  // Nuevo campo para la URL de la imagen
+  imagenUrl: string;
 }
 
 interface AddEmpresaFormProps {
@@ -16,7 +16,7 @@ interface AddEmpresaFormProps {
 }
 
 const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEditando }) => {
-  const [empresa, setEmpresa] = useState<Empresa>({ nombre: '', razonSocial: '', cuil: '', imagenUrl: '' });  // Inicializamos el nuevo campo
+  const [empresa, setEmpresa] = useState<Empresa>({ nombre: '', razonSocial: '', cuil: '', imagenUrl: '' });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
@@ -28,7 +28,15 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEd
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setEmpresa({ ...empresa, [name]: value });
+    if (name === 'cuil') {
+      // Validamos que el valor sea mayor o igual a cero antes de actualizar
+      const newValue = parseInt(value, 10);
+      if (!isNaN(newValue) && newValue >= 0) {
+        setEmpresa({ ...empresa, [name]: newValue.toString() });
+      }
+    } else {
+      setEmpresa({ ...empresa, [name]: value });
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -40,7 +48,7 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEd
         await axios.post('http://localhost:8080/api/empresas', empresa);
       }
       setSuccess(true);
-      setEmpresa({ nombre: '', razonSocial: '', cuil: '', imagenUrl: '' });  // Limpiamos el nuevo campo
+      setEmpresa({ nombre: '', razonSocial: '', cuil: '', imagenUrl: '' });
       setError(null);
       onAddEmpresa();
     } catch (err) {
@@ -80,6 +88,7 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEd
             name="cuil"
             value={empresa.cuil}
             onChange={handleChange}
+            min="0" // Establecemos el mínimo a cero
             required
           />
         </Form.Group>
