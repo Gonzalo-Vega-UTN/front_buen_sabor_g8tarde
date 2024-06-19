@@ -4,6 +4,7 @@ import { Categoria } from '../entities/DTO/Categoria/Categoria';
 import { CategoriaService } from '../services/CategoriaService';
 import { BsFillPencilFill, BsPlusCircleFill } from 'react-icons/bs';
 import GenericButton from '../components/generic/GenericButton';
+import { useAuth } from '../Auth/Auth';
 
 export const CategoriasList = () => {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -11,6 +12,7 @@ export const CategoriasList = () => {
     const [activeItems, setActiveItems] = useState<number[]>([]);
     const [collapsedItems, setCollapsedItems] = useState<number[]>([]);
     const [modalShow, setModalShow] = useState(false);
+    const{activeSucursal}=useAuth();
 
     const fetchCategorias = async () => {
         try {
@@ -104,6 +106,7 @@ export const CategoriasList = () => {
                     fetchCategorias();
                 }}
                 idpadre={clickedCategoria}
+                activeSucursal={activeSucursal}
             />
         </>
     );
@@ -117,7 +120,7 @@ function MyVerticallyCenteredModal(props) {
         try {
             console.log(categoria);
 
-            const data = await CategoriaService.agregarCategoria(props.idpadre, { ...categoria, alta: true });
+            const data = await CategoriaService.agregarCategoria(props.idpadre ,props.activeSucursal,{ ...categoria, alta: true });
             if (data) {
                 props.onHide()
                 setCategoria(new Categoria());

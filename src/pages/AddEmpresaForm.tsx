@@ -3,10 +3,11 @@ import { Form, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
 
 interface Empresa {
-  id?: number; // ID opcional porque no se necesita al crear una nueva empresa
+  id?: number;
   nombre: string;
   razonSocial: string;
   cuil: string;
+  imagenUrl: string;  // Nuevo campo para la URL de la imagen
 }
 
 interface AddEmpresaFormProps {
@@ -15,7 +16,7 @@ interface AddEmpresaFormProps {
 }
 
 const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEditando }) => {
-  const [empresa, setEmpresa] = useState<Empresa>({ nombre: '', razonSocial: '', cuil: '' });
+  const [empresa, setEmpresa] = useState<Empresa>({ nombre: '', razonSocial: '', cuil: '', imagenUrl: '' });  // Inicializamos el nuevo campo
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
@@ -39,7 +40,7 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEd
         await axios.post('http://localhost:8080/api/empresas', empresa);
       }
       setSuccess(true);
-      setEmpresa({ nombre: '', razonSocial: '', cuil: '' });
+      setEmpresa({ nombre: '', razonSocial: '', cuil: '', imagenUrl: '' });  // Limpiamos el nuevo campo
       setError(null);
       onAddEmpresa();
     } catch (err) {
@@ -78,6 +79,16 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEd
             type="number"
             name="cuil"
             value={empresa.cuil}
+            onChange={handleChange}
+            required
+          />
+        </Form.Group>
+        <Form.Group controlId="imagenUrl">
+          <Form.Label>URL de la Imagen</Form.Label>
+          <Form.Control
+            type="text"
+            name="imagenUrl"
+            value={empresa.imagenUrl}
             onChange={handleChange}
             required
           />

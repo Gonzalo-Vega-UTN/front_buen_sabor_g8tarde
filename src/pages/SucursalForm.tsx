@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// SucursalForm.tsx
+import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { createSucursal, updateSucursal } from '../services/SucursalService';
 import { Sucursal } from '../entities/DTO/Sucursal/Sucursal';
@@ -13,7 +14,6 @@ interface AddSucursalFormProps {
 const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalEditando, empresa }) => {
   
   const [sucursal, setSucursal] = useState<Sucursal>(() => {
-    console.log(empresa)
     if (sucursalEditando) {
       return sucursalEditando;
     }
@@ -42,7 +42,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalE
       newSucursal.empresa = empresa;
       setSucursal(newSucursal);
       setError(null);
-      onAddSucursal();
+      onAddSucursal(); // Llama a la función para actualizar la lista en SucursalList
     } catch (err) {
       setError('Error al crear o actualizar la sucursal');
       setSuccess(false);

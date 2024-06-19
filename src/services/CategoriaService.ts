@@ -61,11 +61,12 @@ export class CategoriaService {
     }
   }
 
-  static async agregarCategoria(idPadre: number, categoria: Categoria): Promise<Categoria> {
+  static async agregarCategoria(idPadre: number, idSucursal:number,categoria: Categoria): Promise<Categoria> {
     try {
-      console.log("SERVICE," , "PADRE", idPadre, "CATEGORIA", categoria );
+      console.log("Sucursal",idSucursal);
       
-      const responseData = await this.request(`/${idPadre}`, {
+      
+      const responseData = await this.request(`/${idSucursal}/${idPadre}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
