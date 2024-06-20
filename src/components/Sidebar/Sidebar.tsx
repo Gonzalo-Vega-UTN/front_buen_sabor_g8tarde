@@ -102,7 +102,16 @@ const Sidebar = () => {
                                 </ul>
                             )}
                         </li>
-
+                        <li className="nav-item">
+                            <Link
+                                to="/unidadmedida"
+                                className={`nav-link text-white ${location.pathname === '/unidadmedida' || selected === '/unidadmedida' ? 'active' : ''}`}
+                                onClick={() => handleClick('/unidadmedida')}
+                            >
+                                <MdOutlineCategory size={24} className="me-2" />
+                                <span className="nav-text">unidades de medidas</span>
+                            </Link>
+                        </li>
                         <li className="nav-item">
                             <Link
                                 to="/ingredientes"

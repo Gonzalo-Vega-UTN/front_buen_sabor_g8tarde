@@ -21,6 +21,7 @@ import ClientTable from "../pages/ClientesList";
 import { PedidosCajero } from "../components/PedidosXEstado/PedidosCajero";
 import { PedidosCocinero } from "../components/PedidosXEstado/PedidosCocinero";
 import { PedidosDelivery } from "../components/PedidosXEstado/PedidosDelivery";
+import { UnidadesMedidaList } from "../pages/UnidadMedidaList";
 
 
 
@@ -43,13 +44,24 @@ export default function AppRoutes() {
           />
         }
       />
-      <Route path="/registro" element={<RegistroUsuarioCliente />} />
+      <Route path="/registro" element={<RegistroUsuarioCliente closeModal={function (): void {
+        throw new Error("Function not implemented.");
+      } } />} />
       <Route path="/perfil" element={<ClienteFormulario />} />
       <Route
         path="/productos"
         element={
           <PrivateRoute
             element={DashboardPage}
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
+       <Route
+        path="/unidadmedida"
+        element={
+          <PrivateRoute
+            element={UnidadesMedidaList}
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
