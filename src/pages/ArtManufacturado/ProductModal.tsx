@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Spinner } from "react-bootstrap";
 import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
 import ArticuloInsumoService from "../../services/ArticuloInsumoService";
@@ -21,7 +21,7 @@ export default function ProductModal({
   handleDelete
 
 }: ProductModalProps) {
-
+    const [loading, setLoading] = useState(false);
   const [, setIngredients] = useState<ArticuloInsumo[]>([]);
   const {activeSucursal} = useAuth();
 
@@ -46,15 +46,31 @@ export default function ProductModal({
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {"¿Esta seguro que desea eliminar el producto?"}
+            {product.alta ? "¿Esta seguro que desea eliminar el producto?" : "¿Esta seguro que desea dar de alta el producto?"}
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onHide}>
                 Cancelar
                 </Button>
-                <Button variant="danger" onClick={() => handleDelete(product.id)}>
-                Eliminar
-                </Button>
+                {loading ? (
+                            <Button variant={product.alta ? "danger" : "success"} disabled>
+                                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> {product.alta ? "Dando de Baja..." : "Dando de Alta..."}
+                            </Button>
+                        ) : (
+                            <Button variant={product.alta ? "danger" : "success"} onClick={async () => {
+                                setLoading(true); // Activar indicador de carga
+                                try {
+                                    await handleDelete(product.id);
+                                    onHide(); // Ocultar el modal después de eliminar
+                                } catch (error) {
+                                    console.error("Error al dar de baja/alta el artículo insumo:", error);
+                                } finally {
+                                    setLoading(false);
+                                }
+                            }}>
+                                {product.alta ? "Dar de Baja" : "Dar de Alta"}
+                            </Button>
+                        )}
             </Modal.Footer>
         </Modal>
     </>

@@ -155,7 +155,7 @@ export default function ProductTable() {
               <td className={product.alta ? "" : "bg-secondary"}>
                 <GenericButton color={product.alta ? "#D32F2F" : "#50C878"} size={23} icon={product.alta ? BsTrashFill : FaSave} onClick={() =>
                   handleClickEliminar(
-                    "Eliminar Producto",
+                    "Alta/Baja Articulo",
                     product,
                     
                   )
