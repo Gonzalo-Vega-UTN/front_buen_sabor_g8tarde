@@ -1,3 +1,4 @@
+import { Imagen } from "../entities/DTO/Articulo/Imagen";
 import { ArticuloInsumo } from "../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 
 
@@ -100,6 +101,28 @@ class ArticuloInsumoService {
       throw error;
     }
   }
+
+  static async uploadFiles(id: number, files: File[]): Promise<Imagen[]> {
+    const uploadPromises = files.map(file => {
+      const formData = new FormData();
+      formData.append('uploads', file);
+      formData.append('id', String(id));
+
+      return this.request(`/uploads`, {
+        method: 'POST',
+        body: formData,
+        mode: 'cors'
+      }) as Promise<Imagen>;
+    });
+
+    try {
+      return await Promise.all(uploadPromises);
+    } catch (error) {
+      console.error(`Error al subir imágenes para el id ${id}:`, error);
+      throw error;
+    }
+  }
+
 };
 
 export default ArticuloInsumoService;

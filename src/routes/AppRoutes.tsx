@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import DashboardPage from "../pages/DashboardPage";
-import ArticuloInsumoPage from "../pages/ArticulosInsumosPage";
+import ArticuloInsumoPage from "../pages/ArticuloInsumo/ArticulosInsumosPage";
 import { FormularioArtManuf } from "../pages/FormularioArtManuf";
 import EmpresasPage from '../pages/EmpresasPage';
 import SucursalesPage from "../pages/SucursalPage";
@@ -15,12 +15,14 @@ import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
 
 import { Reportes } from "../pages/Reportes";
 import { Estadisticas } from "../pages/Estadisticas";
-import PromocionesPage from "../pages/PromocionesPage";
-import PromocionForm from "../pages/FormularioPromocion";
+
+import PromocionesPage from "../pages/Promocion/PromocionesPage";
+import PromocionForm from "../pages/Promocion/FormularioPromocion";
 import ClientTable from "../pages/ClientesList";
 import { PedidosCajero } from "../components/PedidosXEstado/PedidosCajero";
 import { PedidosCocinero } from "../components/PedidosXEstado/PedidosCocinero";
 import { PedidosDelivery } from "../components/PedidosXEstado/PedidosDelivery";
+
 
 
 
@@ -38,7 +40,7 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={DashboardPage}
-            roles={[Rol.Admin]} 
+            roles={[Rol.Admin]}
           />
         }
       />
@@ -53,7 +55,7 @@ export default function AppRoutes() {
           />
         }
       />
-      
+
       <Route
         path="/create-product/:id"
         element={
@@ -139,12 +141,12 @@ export default function AppRoutes() {
         path="/promociones"
         element={
           <PrivateRoute
-            element={PromocionesPage  } //Recordar cambiar
+            element={PromocionesPage} //Recordar cambiar
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
       />
-       <Route
+      <Route
         path="/create-promotion/:id"
         element={
           <PrivateRoute

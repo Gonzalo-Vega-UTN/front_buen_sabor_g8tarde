@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Table } from "react-bootstrap";
-import Button from "../generic/GenericButton";
+import Button from "../../components/generic/GenericButton";
 import { ModalType } from "../../types/ModalType";
-import ArticuloInsumoModal from "../modals/ArticuloInsumoModal";
+import ArticuloInsumoModal from "./ArticuloInsumoModal";
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 import { FaSave } from "react-icons/fa";
-import FiltroProductos from "../Filtrado/FiltroArticulo";
+import FiltroProductos from "../../components/Filtrado/FiltroArticulo";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
 
@@ -14,11 +14,12 @@ interface TableProps {
     categorias: Categoria[];
     unidadesMedida: UnidadMedida[];
     articulosInsumo: ArticuloInsumo[];
-    handleSubmit: (art: ArticuloInsumo) => void;
-    handleDelete: (idArt: number) => void;
+    handleSubmit: (art: ArticuloInsumo, files: File[]) => Promise<void>;
+    handleDelete: (idArt: number) => Promise<void>;
+    onFileChange: (newFiles: File[]) => void;
 }
 
-const ArticuloInsumoTable = ({ categorias, unidadesMedida, articulosInsumo, handleSubmit, handleDelete }: TableProps) => {
+const ArticuloInsumoTable = ({ categorias, unidadesMedida, articulosInsumo, handleSubmit, handleDelete, onFileChange }: TableProps) => {
     //Entidades de la Tabla
     const [articuloInsumo, setArticuloInsumo] = useState<ArticuloInsumo>();
 
@@ -112,6 +113,7 @@ const ArticuloInsumoTable = ({ categorias, unidadesMedida, articulosInsumo, hand
                     unidadesMedida={unidadesMedida}
                     categorias={categorias}
                     handleDelete={handleDelete}
+                    onFileChange={onFileChange}
                 />
             )}
         </div>
