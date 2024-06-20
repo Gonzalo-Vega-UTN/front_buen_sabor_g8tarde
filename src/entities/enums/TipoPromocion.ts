@@ -1,4 +1,4 @@
 export enum TipoPromocion {
-    HappyHour,
-    Promocion
+    HappyHour="HappyHour",
+    Promocion="Promocion"
 }
