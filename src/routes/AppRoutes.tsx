@@ -15,8 +15,11 @@ import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
 
 import { Reportes } from "../pages/Reportes";
 import { Estadisticas } from "../pages/Estadisticas";
+
 import PromocionesPage from "../pages/Promocion/PromocionesPage";
 import PromocionForm from "../pages/Promocion/FormularioPromocion";
+import ClientTable from "../pages/ClientesList";
+
 
 
 
@@ -109,6 +112,15 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={PedidosList} //Recordar cambiar
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
+      <Route
+        path="/clientes"
+        element={
+          <PrivateRoute
+            element={ClientTable}
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
