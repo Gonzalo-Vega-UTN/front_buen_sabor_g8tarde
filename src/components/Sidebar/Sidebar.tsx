@@ -177,6 +177,36 @@ const Sidebar = () => {
                                 <span className="nav-text">Reportes</span>
                             </Link>
                         </li>
+                        <li className="nav-item">
+                            <Link
+                                to="/PedidosCajero"
+                                className={`nav-link text-white ${location.pathname === '/PedidosCajero' || selected === '/PedidosCajero' ? 'active' : ''}`}
+                                onClick={() => handleClick('/PedidosCajero')}
+                            >
+                                <BsReverseLayoutTextSidebarReverse size={24} className="me-2" />
+                                <span className="nav-text">Cajero</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link
+                                to="/PedidosDelivery"
+                                className={`nav-link text-white ${location.pathname === '/PedidosDelivery' || selected === '/PedidosDelivery' ? 'active' : ''}`}
+                                onClick={() => handleClick('/PedidosDelivery')}
+                            >
+                                <BsReverseLayoutTextSidebarReverse size={24} className="me-2" />
+                                <span className="nav-text">Delivery</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link
+                                to="/PedidosCocinero"
+                                className={`nav-link text-white ${location.pathname === '/PedidosCocinero' || selected === '/PedidosCocinero' ? 'active' : ''}`}
+                                onClick={() => handleClick('/PedidosCocinero')}
+                            >
+                                <BsReverseLayoutTextSidebarReverse size={24} className="me-2" />
+                                <span className="nav-text">Cocinero</span>
+                            </Link>
+                        </li>
 
                     </>
                 )}

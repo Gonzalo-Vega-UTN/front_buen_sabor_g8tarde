@@ -77,6 +77,8 @@ class PedidoService {
     static async actualizarEstado(id: number, estado: Estado): Promise<PedidoFull> {
         try {
             const url = `/estado/actualizar/${id}/${estado}`;
+            console.log(this.urlServer+url);
+            
             return await this.request(url, {
                 method: 'PUT',
                 headers: {

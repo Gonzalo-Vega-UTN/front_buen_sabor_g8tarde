@@ -58,7 +58,7 @@ export const PedidosCajero = () => {
                         </Accordion.Body>
                     </Accordion.Item>
                 </Accordion>
-            ) : <p>No hay pedidos en preparación</p>}
+            ) : <p>No hay pedidos pendientes</p>}
         </>
     );
 };
