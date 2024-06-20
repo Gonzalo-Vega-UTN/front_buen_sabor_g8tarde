@@ -1,6 +1,6 @@
 import { Row, Col, Form } from "react-bootstrap";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
-import { UnidadMedida } from "../../types/UnidadMedida";
+import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
 
 type FiltroProductosProps = {
     categorias: Categoria[];

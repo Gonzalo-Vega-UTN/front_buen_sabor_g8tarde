@@ -43,7 +43,29 @@ class ClienteService {
             throw error;
         }
     }
-
+    
+      static async obtenerClientes(nombre?: string, apellido?: string): Promise<Cliente[]> {
+        try {
+            const queryParams = new URLSearchParams();
+            console.log(nombre,apellido);
+            
+            if (nombre) queryParams.append('nombre', nombre);
+            if (apellido) queryParams.append('apellido', apellido);
+            const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
+            
+            const responseData = await this.request(`/${queryString}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                mode: 'cors'
+            });
+            return responseData as Cliente[];
+        } catch (error) {
+            console.error('Error al obtener los Clientes:', error);
+            throw error;
+        }
+    }
    
 }
 
