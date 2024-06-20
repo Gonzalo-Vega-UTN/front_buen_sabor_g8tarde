@@ -13,7 +13,6 @@ import { CategoriasList } from "../pages/CategoriasList";
 import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
 import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
 
-import { Reportes } from "../pages/Reportes";
 import { Estadisticas } from "../pages/Estadisticas";
 
 import PromocionesPage from "../pages/Promocion/PromocionesPage";
@@ -151,16 +150,6 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={PromocionForm}
-            roles={[Rol.Admin]} // Solo admin puede acceder
-          />
-        }
-      />
-
-      <Route
-        path="/reportes"
-        element={
-          <PrivateRoute
-            element={Reportes} //Recordar cambiar
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }

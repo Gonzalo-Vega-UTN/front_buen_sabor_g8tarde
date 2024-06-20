@@ -166,17 +166,7 @@ const Sidebar = () => {
                                 <span className="nav-text">Estadísticas</span>
                             </Link>
                         </li>
-
-                        <li className="nav-item">
-                            <Link
-                                to="/reportes"
-                                className={`nav-link text-white ${location.pathname === '/reportes' || selected === '/reportes' ? 'active' : ''}`}
-                                onClick={() => handleClick('/reportes')}
-                            >
-                                <BsReverseLayoutTextSidebarReverse size={24} className="me-2" />
-                                <span className="nav-text">Reportes</span>
-                            </Link>
-                        </li>
+                        
                         <li className="nav-item">
                             <Link
                                 to="/PedidosCajero"

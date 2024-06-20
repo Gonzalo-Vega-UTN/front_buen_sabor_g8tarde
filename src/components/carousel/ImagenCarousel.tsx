@@ -11,7 +11,7 @@ interface Props {
 const ImagenCarousel: React.FC<Props> = ({ imagenesGuardadas, onFileChange }) => {
     const [index, setIndex] = useState<number>(0);
     const [imagenes, setImagenes] = useState<Imagen[]>(imagenesGuardadas);
-    const [isHovered, setIsHovered] = useState<boolean[]>(Array(imagenesGuardadas.length).fill(false));
+    const [isHovered, setIsHovered] = useState<boolean[]>(imagenesGuardadas ? Array(imagenesGuardadas.length).fill(false) : []);
     const timeoutRefs = useRef<(number | null)[]>(Array(imagenesGuardadas.length).fill(null));
 
     const handleSelect = (selectedIndex: number) => {

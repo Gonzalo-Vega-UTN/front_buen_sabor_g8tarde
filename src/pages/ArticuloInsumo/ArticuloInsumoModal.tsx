@@ -235,10 +235,13 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                                 </Form.Group>
                             </Row>
                             <Row className="my-2">
+                                
                                 <ImagenCarousel
                                     imagenesGuardadas={articuloInsumo.imagenes}
                                     onFileChange={handleFileChange}
                                 />
+                                
+                                
                             </Row>
                             {error && <h5 className="text-danger my-2">{error}</h5>}
 
