@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import DashboardPage from "../pages/DashboardPage";
-import ArticuloInsumoPage from "../pages/ArticulosInsumosPage";
+import ArticuloInsumoPage from "../pages/ArticuloInsumo/ArticulosInsumosPage";
 import { FormularioArtManuf } from "../pages/FormularioArtManuf";
 import EmpresasPage from '../pages/EmpresasPage';
 import SucursalesPage from "../pages/SucursalPage";

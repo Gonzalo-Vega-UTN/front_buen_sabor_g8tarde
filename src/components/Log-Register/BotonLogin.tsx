@@ -1,49 +1,50 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Login from './LoginPage';
 
 const BotonLogin: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
-  
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLoginModalOpen = () => {
-    console.log("Hola Open")
     setShowLoginModal(true);
   };
 
   const handleLoginModalClose = () => {
-  
-    console.log("Hola Close")
-      setShowLoginModal(false);
-     
-  }
-
-  const handleRegister = () => {
-    navigate("/registro")
+    setShowLoginModal(false);
   };
 
+  const handleRegister = () => {
+    navigate("/registro");
+  };
+
+  // Mostrar el botón solo en la página principal
+  const showButton = location.pathname === "/";
 
   return (
     <>
-      <Button variant="primary" className="me-2" onClick={handleLoginModalOpen}>
-        Login
-      </Button>
-      <Button variant="secondary" onClick={handleRegister}>
-        Registro
-      </Button>
-      
+      {showButton && (
+        <>
+          <Button variant="primary" className="me-2" onClick={handleLoginModalOpen}>
+            Login
+          </Button>
+          <Button variant="secondary" onClick={handleRegister}>
+            Registro
+          </Button>
+        </>
+      )}
+
       {/* Modal de Login */}
-       <Modal show={showLoginModal} onHide={handleLoginModalClose}>
+      <Modal show={showLoginModal} onHide={handleLoginModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>Login</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Login closeModal={handleLoginModalClose}/>
+          <Login closeModal={handleLoginModalClose} />
         </Modal.Body>
-      </Modal> 
-
+      </Modal>
     </>
   );
 };

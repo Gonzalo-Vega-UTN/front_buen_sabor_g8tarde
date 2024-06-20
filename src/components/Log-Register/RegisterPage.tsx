@@ -8,7 +8,7 @@ interface RegisterProps {
     closeModal: () => void;
 }
 
-const Register: React.FC<RegisterProps> = ({ closeModal }) => {
+const RegisterPage: React.FC<RegisterProps> = ({ closeModal }) => {
     const [username, setUsername] = useState<string>('');
     const [auth0Id, setAuth0Id] = useState<string>('');
     const [rol, setRol] = useState<Rol>(Rol.Cliente);
