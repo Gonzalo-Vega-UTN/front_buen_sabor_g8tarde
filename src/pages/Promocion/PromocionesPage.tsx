@@ -4,9 +4,11 @@ import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import { Promocion } from "../../entities/DTO/Promocion/Promocion";
-import { ModalType } from "../../types/ModalType";
 import PromocionService from "../../services/PromocionService";
 import CustomButton from "../../components/generic/GenericButton";
+import GenericButton from "../../components/generic/GenericButton";
+import { FaSave } from "react-icons/fa";
+import PromModal from "./ModalPromocion";
 
 export default function PromotionTable() {
   const navigate = useNavigate();
@@ -17,17 +19,29 @@ export default function PromotionTable() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<number>();
 
   const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
+   //const para manejar el estado del modal
+   const [showModal, setShowModal] = useState(false);
+   const [title, setTitle] = useState("");
 
   const handleClick = (id: number) => {
     navigate("/create-promotion/" + id);
   };
 
-  const handleClickEliminar = (newTitle: string, promo: Promocion, modal: ModalType) => {
-
+  const handleClickEliminar = (newTitle: string, promo: Promocion) => {
+    setTitle(newTitle);
+    setShowModal(true);
     setPromotion(promo);
   };
 
-
+  const handleDelete = async (id :number) => {
+    try {
+      await PromocionService.delete(id);
+      setShowModal(false)
+      fetchPromotions();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchPromotions = async (idCategoria?: number, denominacion?: string) => {
     const promotionsFiltered = await PromocionService.getAll(/*idCategoria, denominacion*/);
@@ -38,6 +52,7 @@ export default function PromotionTable() {
     fetchPromotions();
   }, []);
 
+ 
 
 
 
@@ -88,19 +103,28 @@ export default function PromotionTable() {
                 />
               </td>
               <td>
-                <CustomButton
-                  color="#D32F2F"
-                  size={23}
-                  icon={BsTrashFill}
-                  onClick={() =>
-                    handleClickEliminar("Eliminar Promoción", promotion, ModalType.DELETE)
-                  }
-                />
+              <GenericButton color={promotion.alta ? "#D32F2F" : "#50C878"} size={23} icon={promotion.alta ? BsTrashFill : FaSave} onClick={() =>
+                  handleClickEliminar(
+                    "Alta/Baja Articulo",
+                    promotion,
+                    
+                  )
+                } />
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
+
+      {showModal && (
+        <PromModal
+          show={showModal}
+          onHide={() => setShowModal(false)}
+          title={title}
+          handleDelete={handleDelete}
+          promo={promotion}
+        />
+      )}
 
 
     </div>

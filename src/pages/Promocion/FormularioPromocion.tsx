@@ -8,6 +8,7 @@ import { TipoPromocion } from '../../entities/enums/TipoPromocion';
 import { ProductServices } from '../../services/ProductServices';
 import PromocionService from '../../services/PromocionService';
 import ArticuloInsumoService from '../../services/ArticuloInsumoService';
+import { useAuth } from '../../Auth/Auth';
 
 
 
@@ -18,6 +19,7 @@ const PromocionForm: React.FC = () => {
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [tipoPromocion, setTipoPromocion] = useState<string>("");
   const [submitError, setSubmitError] = useState<string>("");
+  const{activeSucursal}=useAuth()
 
 
 
@@ -35,8 +37,8 @@ const PromocionForm: React.FC = () => {
       }
 
       try {
-        const manufacturados = await ProductServices.getAll();
-        const insumos = (await ArticuloInsumoService.obtenerArticulosInsumo()).filter(articulos => !articulos.esParaElaborar);
+        const manufacturados = await ProductServices.getAllFiltered(activeSucursal);
+        const insumos = (await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(activeSucursal)).filter(articulos => !articulos.esParaElaborar);
         const idsArticulosExistentes = promocion.detallesPromocion.map(detalle => detalle.articulo.id);
         const articulos = [...manufacturados, ...insumos].filter(articulo => !idsArticulosExistentes.includes(articulo.id))
         console.log(articulos)
