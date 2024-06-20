@@ -13,7 +13,7 @@ export class CategoriaService {
     return responseData;
   }
 
-  static async obtenerCategorias(id:number): Promise<Categoria[]> {
+  static async obtenerCategorias(id:string): Promise<Categoria[]> {
     
     try {
       const responseData = await this.request(`/all/${id}`, {
