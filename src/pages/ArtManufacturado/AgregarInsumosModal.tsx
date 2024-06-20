@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react'
 import { Button, Modal, Table } from 'react-bootstrap'
 import { ArticuloInsumo } from '../../entities/DTO/Articulo/Insumo/ArticuloInsumo';
 import { BsTrashFill } from 'react-icons/bs';
-import CustomButton from '../generic/GenericButton';
-import { FaSave } from 'react-icons/fa';
 import { Categoria } from '../../entities/DTO/Categoria/Categoria';
 import { CategoriaService } from '../../services/CategoriaService';
-import FiltroProductos from '../Filtrado/FiltroArticulo';
 import ArticuloInsumoService from '../../services/ArticuloInsumoService';
 import { UnidadMedida } from '../../entities/DTO/UnidadMedida/UnidadMedida';
 import UnidadMedidaServices from '../../services/UnidadMedidaServices';
+import { useAuth } from '../../Auth/Auth';
+import FiltroProductos from '../../components/Filtrado/FiltroArticulo';
+import GenericButton from '../../components/generic/GenericButton';
+import { FaSave } from 'react-icons/fa';
 
 interface AgregarInsumosProps {
     show: boolean;
@@ -32,9 +33,10 @@ export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulos
     const [unidadMedidaSeleccionada, setUnidadMedidaSeleccionada] = useState<number>();
     const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
 
+    const {activeSucursal} = useAuth();
 
     const fetchDataArticulosInsumo = async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string) => {
-        const articulos = await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(idCategoria, idUnidadMedida, denominacion);
+        const articulos = await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(activeSucursal, idCategoria, idUnidadMedida, denominacion);
         setListaFiltrada(articulos);
         setArticulosAgregados([...articulosAgregados])
     };
@@ -47,7 +49,7 @@ export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulos
 
     useEffect(() => {
         const fetchCategorias = async () => {
-            const categorias = await CategoriaService.obtenerCategorias();
+            const categorias = await CategoriaService.obtenerCategorias(activeSucursal);
             setCategorias(categorias);
         };
 
@@ -114,15 +116,18 @@ export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulos
                         </tr>
                     </thead>
                     <tbody>
-                        {listaFiltrada.map((articulo) => (
-                            <tr key={articulo.id} className="text-center">
-                                <td>{articulo.id}</td>
-                                <td>{articulo.denominacion}</td>
-                                <td>{articulo.unidadMedida?.denominacion}</td>
-                                <td>{articulo.categoria?.denominacion}</td>
-                                <td><CustomButton color={articulosAgregados.find(selected => selected.id === articulo.id) ? "#D32F2F" : "#50C878"} size={20} icon={articulosAgregados.find(selected => selected.id === articulo.id) ? BsTrashFill : FaSave} onClick={() => handleClick(articulo)} /></td>
-                            </tr>
-                        ))}
+                        {listaFiltrada.map((articulo) =>{
+                            const agregado = articulosAgregados.find(selected => selected.id === articulo.id);
+                            return <tr key={articulo.id} className="text-center">
+                                    <td>{articulo.id}</td>
+                                    <td>{articulo.denominacion}</td>
+                                    <td>{articulo.unidadMedida?.denominacion}</td>
+                                    <td>{articulo.categoria?.denominacion}</td>
+                                    <td><GenericButton color={agregado ? "#D32F2F" : "#50C878"} size={20} 
+                                        icon={agregado ? BsTrashFill : FaSave} onClick={() => handleClick(articulo)} /></td>
+                                </tr>
+                            
+                        })}
                     </tbody>
                 </Table>
             </Modal.Body>

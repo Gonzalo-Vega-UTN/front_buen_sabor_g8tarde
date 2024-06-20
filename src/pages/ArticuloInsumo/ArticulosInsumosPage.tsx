@@ -70,7 +70,7 @@ export default function ArticuloInsumoPage() {
     try {
       let response: ArticuloInsumo;
       if (art.id === 0) { // Articulo Nuevo
-        response = await ArticuloInsumoService.crearArticuloInsumo(art);
+        response = await ArticuloInsumoService.crearArticuloInsumo(art,activeSucursal);
       } else { // Actualizar Articulo
         response = await ArticuloInsumoService.actualizarArticuloInsumo(art.id, art);
       }

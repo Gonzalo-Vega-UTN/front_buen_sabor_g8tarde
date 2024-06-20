@@ -13,13 +13,13 @@ export class ProductServices {
     return responseData;
   }
 
-  static async getAll(): Promise<ArticuloManufacturado[]> {
+  static async getAll(idSucursal : string): Promise<ArticuloManufacturado[]> {
     try {
-      const responseData = await this.request('', {
+      const responseData = await this.request(`/${idSucursal}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        },
+        },  
         mode: 'cors'
       });
       return responseData as ArticuloManufacturado[];
@@ -44,9 +44,9 @@ export class ProductServices {
     }
   }
 
-  static async create(ArticuloManufacturado: ArticuloManufacturado): Promise<ArticuloManufacturado> {
+  static async create(ArticuloManufacturado: ArticuloManufacturado,idSucursal:string): Promise<ArticuloManufacturado> {
     try {
-      const responseData = await this.request(``, {
+      const responseData = await this.request(`/${idSucursal}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,14 +93,14 @@ export class ProductServices {
     }
   }
 
-  static async getAllFiltered(idCategoria?: number, idUnidadMedida?: number, denominacion?: string): Promise<ArticuloManufacturado[]> {
+  static async getAllFiltered(idSucursal : string ,idCategoria?: number, idUnidadMedida?: number, denominacion?: string): Promise<ArticuloManufacturado[]> {
     try {
       const params = new URLSearchParams();
       if (idCategoria !== undefined) params.append("categoria_id", idCategoria.toString());
       if (idUnidadMedida !== undefined) params.append("unidad_id", idUnidadMedida.toString());
       if (denominacion !== undefined) params.append("denominacion", denominacion);
 
-      const responseData = await this.request(`/search?${params}`, {
+      const responseData = await this.request(`/${idSucursal}/search?${params}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

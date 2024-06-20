@@ -1,26 +1,29 @@
 import React, { useEffect, useState } from 'react'
-import { ArticuloManufacturado } from '../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado'
-import { useNavigate, useParams } from 'react-router-dom'
-import { MyFormGroupInput } from '../components/formComponents/FormGroupInput'
-import { Alert, Button, Col, Form, Row } from 'react-bootstrap'
-import { ValidationEnum } from '../utils/ValidationEnum'
-import { ProductServices } from '../services/ProductServices'
-import { Categoria } from '../entities/DTO/Categoria/Categoria'
-import { FormGroupSelect } from '../components/formComponents/FormGroupSelect'
-import { CategoriaService } from '../services/CategoriaService'
-import { UnidadMedida } from '../entities/DTO/UnidadMedida/UnidadMedida'
-import { AgregarInsumosModal } from '../components/modals/AgregarInsumosModal'
-import { ArticuloInsumo } from '../entities/DTO/Articulo/Insumo/ArticuloInsumo'
-import { ArticuloManufacturadoDetalleTable } from '../components/tables/ArtManufacturadoDetalleTable'
-import { ArticuloManufacturadoDetalle } from '../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturadoDetalle'
-import UnidadMedidaServices from '../services/UnidadMedidaServices'
-import { ValidationResult } from '../utils/ValidationUtil'
+
+import { useAuth } from '../../Auth/Auth'
+import { useNavigate, useParams } from 'react-router-dom';
+import { ArticuloManufacturado } from '../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado';
+import { UnidadMedida } from '../../entities/DTO/UnidadMedida/UnidadMedida';
+import { Categoria } from '../../entities/DTO/Categoria/Categoria';
+import { ArticuloManufacturadoDetalle } from '../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturadoDetalle';
+import { ValidationResult } from '../../utils/ValidationUtil';
+import { ProductServices } from '../../services/ProductServices';
+import { CategoriaService } from '../../services/CategoriaService';
+import UnidadMedidaService from '../../services/UnidadMedidaServices';
+import { Alert, Button, Col, Form, Row } from 'react-bootstrap';
+import { MyFormGroupInput } from '../../components/formComponents/FormGroupInput';
+import { FormGroupSelect } from '../../components/formComponents/FormGroupSelect';
+import { ArticuloManufacturadoDetalleTable } from '../../components/tables/ArtManufacturadoDetalleTable';
+import { ArticuloInsumo } from '../../entities/DTO/Articulo/Insumo/ArticuloInsumo';
+import { ValidationEnum } from '../../utils/ValidationEnum';
+import { AgregarInsumosModal } from './AgregarInsumosModal';
 
 
 export const FormularioArtManuf = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [articuloManufacturado, setArticuloManufacturado] = useState<ArticuloManufacturado | null>(null)
+    
 
     const [categorias, setCategorias] = useState<Categoria[]>([])
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([])
@@ -37,6 +40,8 @@ export const FormularioArtManuf = () => {
 
     const [showModal, setShowModal] = useState(false);
     const [title, setTitle] = useState("");
+
+    const{activeSucursal} = useAuth()
 
 
     useEffect(() => {
@@ -63,7 +68,7 @@ export const FormularioArtManuf = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const categorias = await CategoriaService.obtenerCategorias();
+            const categorias = await CategoriaService.obtenerCategorias(activeSucursal);
             setCategorias(categorias);
         };
         fetchData();
@@ -71,7 +76,7 @@ export const FormularioArtManuf = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const unidadesMedida = await UnidadMedidaServices.getAll();
+            const unidadesMedida = await UnidadMedidaService.getAll();
             setUnidadesMedida(unidadesMedida);
         };
         fetchData();
@@ -144,10 +149,8 @@ export const FormularioArtManuf = () => {
 
 
 
-        console.log(articuloManufacturado);
-
-        if (articuloManufacturado.id === undefined) {
-            ProductServices.create(articuloManufacturado).then(() => {
+        if (articuloManufacturado.id === 0) {
+            ProductServices.create(articuloManufacturado, activeSucursal).then(() => {
                 setExito("ENTIDAD CREADA CON EXITO")
                 setTimeout(() => {
                     navigate('/productos');

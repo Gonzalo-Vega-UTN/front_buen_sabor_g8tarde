@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import { ProductServices } from "../../services/ProductServices";
 import { Table } from "react-bootstrap";
-import CustomButton from "../generic/GenericButton"
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
-import { ModalType } from "../../types/ModalType";
-import ProductModal from "../modals/ProductModal";
 import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
 import { useNavigate } from "react-router-dom";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { CategoriaService } from "../../services/CategoriaService";
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
-import FiltroProductos from "../Filtrado/FiltroArticulo";
 import UnidadMedidaServices from "../../services/UnidadMedidaServices";
+import GenericButton from "../../components/generic/GenericButton";
+import FiltroProductos from "../../components/Filtrado/FiltroArticulo";
+import { useAuth } from "../../Auth/Auth";
+import ProductModal from "./ProductModal";
+import { FaSave } from "react-icons/fa";
 
 export default function ProductTable() {
   const navigate = useNavigate();
@@ -22,7 +23,6 @@ export default function ProductTable() {
 
   //const para manejar el estado del modal
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<ModalType>(ModalType.NONE);
   const [title, setTitle] = useState("");
 
   const [categorias, setCategorias] = useState<Categoria[]>([])
@@ -32,40 +32,19 @@ export default function ProductTable() {
   const [unidadMedidaSeleccionada, setUnidadMedidaSeleccionada] = useState<number>();
   const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
 
+  const {activeSucursal} =  useAuth();
+
 
   //Logica del modal
   const handleClick = (id: number) => {
     navigate("/create-product/" + id)
   };
 
-  const handleClickEliminar = (newTitle: string, prod: ArticuloManufacturado, modal: ModalType) => {
+  const handleClickEliminar = (newTitle: string, prod: ArticuloManufacturado) => {
     setTitle(newTitle);
-    setModalType(modal);
     setProduct(prod);
     setShowModal(true);
   };
-
-  const handleSave = async (newProduct: ArticuloManufacturado) => {
-    try {
-      if (newProduct.id === undefined) {
-        const createdProduct = await ProductServices.create(newProduct);
-        console.log("Se está creando el producto", createdProduct);
-        setProducts(prevProducts => [...prevProducts, createdProduct]);
-      } else {
-        const updatedProduct = await ProductServices.update(newProduct.id, newProduct);
-        console.log("Se está actualizando el producto", updatedProduct);
-        setProducts(prevProducts =>
-          prevProducts.map(prod =>
-            prod.id === updatedProduct.id ? updatedProduct : prod
-          )
-        );
-      }
-    } catch (error) {
-      console.error(error);
-    }
-    setShowModal(false); // Ocultar el modal después de guardar
-  };
-  //Estado que contiene los productos recibidos de nuestra API
 
   //Variable que muestra el componente Loader
   const [, setIsLoading] = useState(true);
@@ -73,7 +52,7 @@ export default function ProductTable() {
   //El useEffect se ejecuta cada vez que se renderice el componente
 
   const fetchProducts = async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string) => {
-    const productsFiltered = await ProductServices.getAllFiltered(idCategoria, idUnidadMedida, denominacion)
+    const productsFiltered = await ProductServices.getAllFiltered(activeSucursal, idCategoria, idUnidadMedida, denominacion)
     console.log(productsFiltered);
 
     //const products = await ProductServices.getProducts();
@@ -89,7 +68,7 @@ export default function ProductTable() {
 
   useEffect(() => {
     const fetchCategorias = async () => {
-      const categorias = await CategoriaService.obtenerCategorias();
+      const categorias = await CategoriaService.obtenerCategorias(activeSucursal);
       setCategorias(categorias);
     };
 
@@ -122,9 +101,19 @@ export default function ProductTable() {
   }, [categoriaSeleccionada, unidadMedidaSeleccionada, searchedDenominacion]);
 
 
+  const handleDelete = async (id :number) => {
+    try {
+      await ProductServices.delete(id);
+      setShowModal(false)
+      fetchProducts();
+    } catch (error) {
+      console.error(error);
+      // toast.error("Ha ocurrido un error");
+    }
+  };
   return (
     <div className="container">
-      <CustomButton className="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Producto" onClick={() =>
+      <GenericButton className="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Producto" onClick={() =>
         handleClick(0)}
       />
 
@@ -151,24 +140,24 @@ export default function ProductTable() {
         </thead>
         <tbody>
           {products.map((product) => (
-            <tr key={product.id} className="text-center">
-              <td>{product.id}</td>
-              <td>{product.denominacion}</td>
-              <td>{product.tiempoEstimadoMinutos} min</td>
-              <td>$ {(product.precioVenta)}</td>
-              <td>{product.categoria?.denominacion}</td>
-              <td>{product.alta ? "Activo" : "Inactivo"}</td>
-              <td>
-                <CustomButton color="#FBC02D" size={23} icon={BsFillPencilFill} onClick={() =>
+            <tr  key={product.id} className={"text-center" + product.alta ? "" : "bg-secondary"} >
+              <td className={product.alta ? "" : "bg-secondary"}>{product.id}</td>
+              <td className={product.alta ? "" : "bg-secondary"}>{product.denominacion}</td>
+              <td className={product.alta ? "" : "bg-secondary"}>{product.tiempoEstimadoMinutos} min</td>
+              <td className={product.alta ? "" : "bg-secondary"}>$ {(product.precioVenta)}</td>
+              <td className={product.alta ? "" : "bg-secondary"}>{product.categoria?.denominacion}</td>
+              <td className={product.alta ? "" : "bg-secondary"}>{product.alta ? "Activo" : "Inactivo"}</td>
+              <td className={product.alta ? "" : "bg-secondary"}>
+                <GenericButton color="#FBC02D" size={23} icon={BsFillPencilFill} onClick={() =>
                   handleClick(product.id)
                 } />
               </td>
-              <td>
-                <CustomButton color="#D32F2F" size={23} icon={BsTrashFill} onClick={() =>
+              <td className={product.alta ? "" : "bg-secondary"}>
+                <GenericButton color={product.alta ? "#D32F2F" : "#50C878"} size={23} icon={product.alta ? BsTrashFill : FaSave} onClick={() =>
                   handleClickEliminar(
                     "Eliminar Producto",
                     product,
-                    ModalType.DELETE
+                    
                   )
                 } />
 
@@ -183,10 +172,8 @@ export default function ProductTable() {
           show={showModal}
           onHide={() => setShowModal(false)}
           title={title}
-          modalType={modalType}
-          prod={product}
-          products={setProducts}
-          handleSave={handleSave}
+          handleDelete={handleDelete}
+          product={product}
         />
       )}
     </div>

@@ -1,7 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import DashboardPage from "../pages/DashboardPage";
 import ArticuloInsumoPage from "../pages/ArticuloInsumo/ArticulosInsumosPage";
-import { FormularioArtManuf } from "../pages/FormularioArtManuf";
 import EmpresasPage from '../pages/EmpresasPage';
 import SucursalesPage from "../pages/SucursalPage";
 import Home from "../components/Home/Home";
@@ -22,6 +20,8 @@ import { PedidosCajero } from "../components/PedidosXEstado/PedidosCajero";
 import { PedidosCocinero } from "../components/PedidosXEstado/PedidosCocinero";
 import { PedidosDelivery } from "../components/PedidosXEstado/PedidosDelivery";
 import { UnidadesMedidaList } from "../pages/UnidadMedidaList";
+import { FormularioArtManuf } from "../pages/ArtManufacturado/FormularioArtManuf";
+import DashboardPage from "../pages/ArtManufacturado/DashBoard";
 
 
 
@@ -35,15 +35,7 @@ export default function AppRoutes() {
           <Home />
         </CartProvider>} />
 
-      <Route
-        path="/dashboard"
-        element={
-          <PrivateRoute
-            element={DashboardPage}
-            roles={[Rol.Admin]}
-          />
-        }
-      />
+      
       <Route path="/registro" element={<RegistroUsuarioCliente closeModal={function (): void {
         throw new Error("Function not implemented.");
       } } />} />

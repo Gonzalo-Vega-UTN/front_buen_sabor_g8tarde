@@ -14,9 +14,9 @@ class ArticuloInsumoService {
     return responseData;
   }
 
-  static async obtenerArticulosInsumo(): Promise<ArticuloInsumo[]> {
+  static async obtenerArticulosInsumo(idSucursal:string): Promise<ArticuloInsumo[]> {
     try {
-      const responseData = await this.request('', {
+      const responseData = await this.request(`/${idSucursal}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ class ArticuloInsumoService {
     if (denominacion !== undefined) params.append("denominacion", denominacion);
 
     try {
-      const responseData = await this.request(`/${Number(idSucursal)}/search?${params}`, {
+      const responseData = await this.request(`/${idSucursal}/search?${params}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -53,10 +53,10 @@ class ArticuloInsumoService {
 
   }
 
-  static async crearArticuloInsumo(articuloInsumo: ArticuloInsumo): Promise<ArticuloInsumo> {
+  static async crearArticuloInsumo(articuloInsumo: ArticuloInsumo,idSucursal:string): Promise<ArticuloInsumo> {
 
     try {
-      const responseData = await this.request(``, {
+      const responseData = await this.request(`/${idSucursal}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
