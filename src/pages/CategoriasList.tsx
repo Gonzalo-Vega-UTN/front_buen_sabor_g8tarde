@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, ListGroup, Button, Collapse, Modal, Form, ModalProps } from 'react-bootstrap';
 import { Categoria } from '../entities/DTO/Categoria/Categoria';
 import { CategoriaService } from '../services/CategoriaService';
-import { BsFillPencilFill, BsPlusCircleFill } from 'react-icons/bs';
+import {  BsPlusCircleFill, BsTrash } from 'react-icons/bs';
 import GenericButton from '../components/generic/GenericButton';
 import { useAuth } from '../Auth/Auth';
 
@@ -44,6 +44,10 @@ export const CategoriasList = () => {
         }
     };
 
+    const handleButtonClickDelete = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, idPadre: number) =>{
+        console.log("ASD")
+    }
+
     const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, idPadre: number) => {
         event.stopPropagation();
         setClickedCategoria(idPadre);
@@ -68,8 +72,8 @@ export const CategoriasList = () => {
                             <GenericButton
                                 color="#FBC02D"
                                 size={20}
-                                icon={BsFillPencilFill}
-                                onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => console.log("EDITAR")}
+                                icon={BsTrash}
+                                onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleButtonClickDelete(e,categoria.id)}
                             />
                             <GenericButton
                                 color="#0080FF"

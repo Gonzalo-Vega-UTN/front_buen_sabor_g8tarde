@@ -19,9 +19,10 @@ import ClientTable from "../pages/ClientesList";
 import { PedidosCajero } from "../components/PedidosXEstado/PedidosCajero";
 import { PedidosCocinero } from "../components/PedidosXEstado/PedidosCocinero";
 import { PedidosDelivery } from "../components/PedidosXEstado/PedidosDelivery";
-import { UnidadesMedidaList } from "../pages/UnidadMedidaList";
 import { FormularioArtManuf } from "../pages/ArtManufacturado/FormularioArtManuf";
 import DashboardPage from "../pages/ArtManufacturado/DashBoard";
+import { UnidadesMedidaList } from "../pages/UnidadMedida/UnidadMedidaList";
+import FormularioDomicilio from "../pages/Domicilio/FormDomicilio";
 
 
 
@@ -181,6 +182,15 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={PedidosDelivery} //Recordar cambiar
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
+      <Route
+        path="/Domicilio"
+        element={
+          <PrivateRoute
+            element={FormularioDomicilio} //Recordar cambiar
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }

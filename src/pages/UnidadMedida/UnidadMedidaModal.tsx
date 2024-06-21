@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { UnidadMedida } from '../entities/DTO/UnidadMedida/UnidadMedida';
-import UnidadMedidaService from '../services/UnidadMedidaServices';
+import UnidadMedidaService from '../../services/UnidadMedidaServices';
+import { UnidadMedida } from '../../entities/DTO/UnidadMedida/UnidadMedida';
 
 function UnidadMedidaModal(props: { show: boolean, onHide: () => void, editing: boolean, id: number }) {
     const [error, setError] = useState<string>("");

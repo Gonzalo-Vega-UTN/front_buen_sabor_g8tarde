@@ -19,9 +19,9 @@ export default function PromotionTable() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<number>();
 
   const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
-   //const para manejar el estado del modal
-   const [showModal, setShowModal] = useState(false);
-   const [title, setTitle] = useState("");
+  // const para manejar el estado del modal
+  const [showModal, setShowModal] = useState(false);
+  const [title, setTitle] = useState("");
 
   const handleClick = (id: number) => {
     navigate("/create-promotion/" + id);
@@ -33,10 +33,10 @@ export default function PromotionTable() {
     setPromotion(promo);
   };
 
-  const handleDelete = async (id :number) => {
+  const handleDelete = async (id: number) => {
     try {
       await PromocionService.delete(id);
-      setShowModal(false)
+      setShowModal(false);
       fetchPromotions();
     } catch (error) {
       console.error(error);
@@ -51,10 +51,6 @@ export default function PromotionTable() {
   useEffect(() => {
     fetchPromotions();
   }, []);
-
- 
-
-
 
   useEffect(() => {
     fetchPromotions(categoriaSeleccionada, searchedDenominacion);
@@ -79,6 +75,7 @@ export default function PromotionTable() {
             <th>Fecha Hasta</th>
             <th>Hora Desde</th>
             <th>Hora Hasta</th>
+            <th>Tipo Promocion</th>
             <th>Precio Promocional</th>
             <th>Editar</th>
             <th>Eliminar</th>
@@ -86,13 +83,18 @@ export default function PromotionTable() {
         </thead>
         <tbody>
           {promotions.map((promotion) => (
-            <tr key={promotion.id} className="text-center">
+            <tr
+              key={promotion.id}
+              className="text-center"
+              style={{ backgroundColor: !promotion.alta ? '#d3d3d3' : 'inherit' }}
+            >
               <td>{promotion.id}</td>
               <td>{promotion.denominacion}</td>
               <td>{promotion.fechaDesde.toString()}</td>
               <td>{promotion.fechaHasta.toString()}</td>
               <td>{promotion.horaDesde}</td>
               <td>{promotion.horaHasta}</td>
+              <td>{promotion.tipoPromocion}</td>
               <td>{promotion.precioPromocional}</td>
               <td>
                 <CustomButton
@@ -103,13 +105,17 @@ export default function PromotionTable() {
                 />
               </td>
               <td>
-              <GenericButton color={promotion.alta ? "#D32F2F" : "#50C878"} size={23} icon={promotion.alta ? BsTrashFill : FaSave} onClick={() =>
-                  handleClickEliminar(
-                    "Alta/Baja Articulo",
-                    promotion,
-                    
-                  )
-                } />
+                <GenericButton
+                  color={promotion.alta ? "#D32F2F" : "#50C878"}
+                  size={23}
+                  icon={promotion.alta ? BsTrashFill : FaSave}
+                  onClick={() =>
+                    handleClickEliminar(
+                      "Alta/Baja Articulo",
+                      promotion
+                    )
+                  }
+                />
               </td>
             </tr>
           ))}
@@ -125,8 +131,6 @@ export default function PromotionTable() {
           promo={promotion}
         />
       )}
-
-
     </div>
   );
 }

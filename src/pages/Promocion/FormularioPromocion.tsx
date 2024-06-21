@@ -10,8 +10,6 @@ import PromocionService from '../../services/PromocionService';
 import ArticuloInsumoService from '../../services/ArticuloInsumoService';
 import { useAuth } from '../../Auth/Auth';
 
-
-
 const PromocionForm: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -19,10 +17,8 @@ const PromocionForm: React.FC = () => {
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [tipoPromocion, setTipoPromocion] = useState<string>("");
   const [submitError, setSubmitError] = useState<string>("");
-  const{activeSucursal}=useAuth()
-
-
-
+  const { activeSucursal } = useAuth();
+  
   useEffect(() => {
     const fetchData = async () => {
       const parsedId = Number(id);
@@ -40,8 +36,7 @@ const PromocionForm: React.FC = () => {
         const manufacturados = await ProductServices.getAllFiltered(activeSucursal);
         const insumos = (await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(activeSucursal)).filter(articulos => !articulos.esParaElaborar);
         const idsArticulosExistentes = promocion.detallesPromocion.map(detalle => detalle.articulo.id);
-        const articulos = [...manufacturados, ...insumos].filter(articulo => !idsArticulosExistentes.includes(articulo.id))
-        console.log(articulos)
+        const articulos = [...manufacturados, ...insumos].filter(articulo => !idsArticulosExistentes.includes(articulo.id));
         setArticulos(articulos);
       } catch (error) {
         console.error('Error al obtener los articulos', error);
@@ -58,19 +53,21 @@ const PromocionForm: React.FC = () => {
       [name]: value
     });
   };
+
   const handleChangeSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setTipoPromocion(event.target.value);
     let tipo: TipoPromocion;
-    if (event.target.value == "HappyHour") {
-      tipo = TipoPromocion.HappyHour
+    if (event.target.value === "HappyHour") {
+      tipo = TipoPromocion.HappyHour;
     } else {
-      tipo = TipoPromocion.Promocion
+      tipo = TipoPromocion.Promocion;
     }
     setPromocion({
       ...promocion,
       tipoPromocion: tipo
     });
   };
+
   const handleDetailChange = (index: number, field: string, value: any) => {
     const updatedDetails = promocion.detallesPromocion.map((detalle, i) =>
       i === index ? { ...detalle, [field]: value } : detalle
@@ -98,66 +95,66 @@ const PromocionForm: React.FC = () => {
 
   const validateInputs = () => {
     if (!promocion.denominacion || promocion.denominacion.trim().length === 0) {
-      setSubmitError("Agrega una denominacion")
-      return false
+      setSubmitError("Agrega una denominacion");
+      return false;
     }
     if (!promocion.fechaDesde) {
-      setSubmitError("Agrega una fecha desde ")
-      return false
+      setSubmitError("Agrega una fecha desde");
+      return false;
     }
     if (!promocion.fechaHasta) {
-      setSubmitError("Agrega una fecha hasta")
-      return false
+      setSubmitError("Agrega una fecha hasta");
+      return false;
     }
     if (!promocion.horaDesde || promocion.horaDesde.trim().length === 0) {
-      setSubmitError("Agrega un horario desde")
-      return false
+      setSubmitError("Agrega un horario desde");
+      return false;
     }
     if (!promocion.horaHasta || promocion.horaHasta.trim().length === 0) {
-      setSubmitError("Agrega un horario hasta")
-      return false
+      setSubmitError("Agrega un horario hasta");
+      return false;
     }
     if (!promocion.descripcionDescuento || promocion.descripcionDescuento.trim().length === 0) {
-      setSubmitError("Agrega una descripcion del descuento")
-      return false
+      setSubmitError("Agrega una descripcion del descuento");
+      return false;
     }
     if (!promocion.precioPromocional || promocion.precioPromocional < 0) {
-      setSubmitError("Agrega un precio promocional valido")
-      return false
+      setSubmitError("Agrega un precio promocional valido");
+      return false;
     }
     if (!promocion.tipoPromocion) {
-      setSubmitError("Agrega un tipo de promocion")
-      return false
+      setSubmitError("Agrega un tipo de promocion");
+      return false;
     }
-
     if (promocion.detallesPromocion.length === 0 || !promocion.detallesPromocion[0].articulo.id) {
-      setSubmitError("Agrega al menos un detalle de promocion")
-      return false
+      setSubmitError("Agrega al menos un detalle de promocion");
+      return false;
     }
-    setSubmitError("")
+    setSubmitError("");
     return true;
-  }
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (validateInputs()) {
-      console.log(promocion)
       try {
         if (promocion.id !== 0) {
           await PromocionService.update(promocion.id, promocion);
-          navigate("/promociones");
         } else {
           await PromocionService.create(promocion);
-          navigate("/promociones");
         }
-
-      } catch (error) {
-
         navigate("/promociones");
+      } catch (error) {
         console.error('Error saving promotion:', error);
       }
     }
+  };
 
+  const getAvailableArticulos = (index: number) => {
+    const selectedArticulosIds = promocion.detallesPromocion
+      .filter((_, i) => i !== index)
+      .map((detalle) => detalle.articulo.id);
+    return articulos.filter((articulo) => !selectedArticulosIds.includes(articulo.id));
   };
 
   return (
@@ -191,7 +188,6 @@ const PromocionForm: React.FC = () => {
               type="date"
               name="fechaHasta"
               value={promocion.fechaHasta instanceof Date ? promocion.fechaHasta.toISOString().split('T')[0] : promocion.fechaHasta}
-
               onChange={(e) => setPromocion({ ...promocion, fechaHasta: new Date(e.target.value) })}
             />
           </Form.Group>
@@ -263,7 +259,7 @@ const PromocionForm: React.FC = () => {
                 onChange={(e: ChangeEvent<HTMLSelectElement>) => handleDetailChange(index, 'articulo', articulos.find(a => a.id === parseInt(e.target.value)) || {} as Articulo)}
               >
                 <option value="">Seleccionar Artículo</option>
-                {articulos.map((articulo) => (
+                {getAvailableArticulos(index).map((articulo) => (
                   <option key={articulo.id} value={articulo.id}>
                     {articulo.denominacion}
                   </option>

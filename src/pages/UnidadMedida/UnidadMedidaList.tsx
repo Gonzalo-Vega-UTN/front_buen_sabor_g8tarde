@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Container, ListGroup, Button, Dropdown } from 'react-bootstrap';
-import { UnidadMedida } from '../entities/DTO/UnidadMedida/UnidadMedida';
 import { BsFillPencilFill } from 'react-icons/bs';
-import GenericButton from '../components/generic/GenericButton';
-import UnidadMedidaService from '../services/UnidadMedidaServices';
 import UnidadMedidaModal from './UnidadMedidaModal';
+import './UnidadesMedidaList.css'; 
+import UnidadMedidaService from '../../services/UnidadMedidaServices';
+import { UnidadMedida } from '../../entities/DTO/UnidadMedida/UnidadMedida';
+import GenericButton from '../../components/generic/GenericButton';
 
 export const UnidadesMedidaList = () => {
     const [unidades, setUnidades] = useState<UnidadMedida[]>([]);
@@ -50,12 +51,13 @@ export const UnidadesMedidaList = () => {
         return unidades.map((unidad, index) => (
             <ListGroup.Item
                 key={unidad.id}
-                className={`d-flex justify-content-between align-items-center ${!unidad.alta ? 'text-muted' : ''}`}
+                className={`d-flex justify-content-between align-items-center ${unidad.alta ? 'normal' : 'baja'}`}
+                style={{ backgroundColor: unidad.alta ? 'white' : '#f2f2f2' }}
             >
                 <span>{index + 1}. {unidad.denominacion}</span>
                 <div className="d-flex gap-3">
                     <GenericButton
-                        color="#FBC02D"
+                        color={unidad.alta ? "#4CAF50" : "#FBC02D"}
                         size={20}
                         icon={BsFillPencilFill}
                         onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleButtonClick(e, unidad.id)}
