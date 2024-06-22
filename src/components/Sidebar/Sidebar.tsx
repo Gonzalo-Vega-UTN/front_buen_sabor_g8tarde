@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { BsFillPeopleFill, BsBuilding, BsShop, BsBox, BsBasket, BsPercent, BsCart, BsGraphUp, BsReverseLayoutTextSidebarReverse } from 'react-icons/bs';
-import { MdOutlineCategory } from "react-icons/md";
+import { BsFillPeopleFill, BsBuilding, BsShop, BsBox, BsBasket, BsPercent, BsCart, BsGraphUp } from 'react-icons/bs';
+import { TbRulerMeasure } from "react-icons/tb";
+import { LuChefHat } from "react-icons/lu";
+import { LiaCashRegisterSolid } from "react-icons/lia";
+import { MdDeliveryDining, MdOutlineCategory } from "react-icons/md";
 import { Link, useLocation } from 'react-router-dom';
 import './style.css';
 import { useAuth } from '../../Auth/Auth';
@@ -108,8 +111,8 @@ const Sidebar = () => {
                                 className={`nav-link text-white ${location.pathname === '/unidadmedida' || selected === '/unidadmedida' ? 'active' : ''}`}
                                 onClick={() => handleClick('/unidadmedida')}
                             >
-                                <MdOutlineCategory size={24} className="me-2" />
-                                <span className="nav-text">unidades de medidas</span>
+                                <TbRulerMeasure size={24} className="me-2" />
+                                <span className="nav-text">Medidas</span>
                             </Link>
                         </li>
                         <li className="nav-item">
@@ -182,7 +185,7 @@ const Sidebar = () => {
                                 className={`nav-link text-white ${location.pathname === '/PedidosCajero' || selected === '/PedidosCajero' ? 'active' : ''}`}
                                 onClick={() => handleClick('/PedidosCajero')}
                             >
-                                <BsReverseLayoutTextSidebarReverse size={24} className="me-2" />
+                               <LiaCashRegisterSolid size={24} className="me-2" />
                                 <span className="nav-text">Cajero</span>
                             </Link>
                         </li>
@@ -192,7 +195,7 @@ const Sidebar = () => {
                                 className={`nav-link text-white ${location.pathname === '/PedidosDelivery' || selected === '/PedidosDelivery' ? 'active' : ''}`}
                                 onClick={() => handleClick('/PedidosDelivery')}
                             >
-                                <BsReverseLayoutTextSidebarReverse size={24} className="me-2" />
+                                <MdDeliveryDining size={24} className="me-2" />
                                 <span className="nav-text">Delivery</span>
                             </Link>
                         </li>
@@ -202,7 +205,7 @@ const Sidebar = () => {
                                 className={`nav-link text-white ${location.pathname === '/PedidosCocinero' || selected === '/PedidosCocinero' ? 'active' : ''}`}
                                 onClick={() => handleClick('/PedidosCocinero')}
                             >
-                                <BsReverseLayoutTextSidebarReverse size={24} className="me-2" />
+                                <LuChefHat size={24} className="me-2" />
                                 <span className="nav-text">Cocinero</span>
                             </Link>
                         </li>

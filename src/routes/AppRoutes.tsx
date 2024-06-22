@@ -7,7 +7,7 @@ import { CartProvider } from "../components/Carrito/ContextCarrito";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import { Rol } from "../entities/enums/Rol";
 import { PedidosList } from "../pages/PedidosList";
-import { CategoriasList } from "../pages/CategoriasList";
+import { CategoriaPage } from "../pages/Categoria/CategoriaPage";
 import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
 import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
 
@@ -136,7 +136,7 @@ export default function AppRoutes() {
         path="/categorias"
         element={
           <PrivateRoute
-            element={CategoriasList} //Recordar cambiar
+            element={CategoriaPage} //Recordar cambiar
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
