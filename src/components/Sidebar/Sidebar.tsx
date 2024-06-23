@@ -9,6 +9,8 @@ import './style.css';
 import { useAuth } from '../../Auth/Auth';
 import { Rol } from '../../entities/enums/Rol';
 import logo from '../../assets/images/Buen sabor logo 1.png'; // Importa el logo
+import BotonLogin from '../Log-Register/BotonLogin';
+import BotonLogout from '../Log-Register/BotonLogout';
 
 const Sidebar = () => {
     const [expanded, setExpanded] = useState(false);
@@ -16,6 +18,7 @@ const Sidebar = () => {
     const [submenuOpen, setSubmenuOpen] = useState(false);
     const location = useLocation();
     const { userRol } = useAuth();
+    const { isAuthenticated } = useAuth();
 
     const handleMouseEnter = () => setExpanded(true);
     const handleMouseLeave = () => setExpanded(false);
@@ -27,6 +30,7 @@ const Sidebar = () => {
     const toggleSubmenu = () => {
         setSubmenuOpen(!submenuOpen);
     };
+
 
     return (
         <div
@@ -50,7 +54,12 @@ const Sidebar = () => {
                         <span className="nav-text">Tienda</span>
                     </Link>
                 </li>
-                {userRol === Rol.Admin && (
+
+                {isAuthenticated ? (
+                    <BotonLogout />
+                ) : (
+                    <BotonLogin />
+                {isAuthenticated  && userRol === Rol.Admin && (
                     <>
                         <li className="nav-item">
                             <Link
@@ -194,10 +203,10 @@ const Sidebar = () => {
                     </>
                 )}
             </ul>
-
             <div className="mt-auto"></div> {/* Alinea los elementos al fondo del sidebar */}
         </div>
     );
-};
+}
+   
 
 export default Sidebar;
