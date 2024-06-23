@@ -237,8 +237,8 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                             <Row className="my-2">
                                 
                                 <ImagenCarousel
-                                    imagenesGuardadas={articuloInsumo.imagenes ? articuloInsumo.imagenes : []}
-                                    onFileChange={handleFileChange}
+                                    imagenesExistentes={articuloInsumo.imagenes ? articuloInsumo.imagenes : []}
+                                    agregarImagenes={handleFileChange}
                                 />
                                 
                                 
