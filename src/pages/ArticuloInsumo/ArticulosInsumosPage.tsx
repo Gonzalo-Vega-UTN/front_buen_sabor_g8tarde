@@ -31,7 +31,7 @@ export default function ArticuloInsumoPage() {
 
 
   // Estado para manejar los archivos
-  const [, setSelectedFiles] = useState<File[]>([]);
+  // const [, setSelectedFiles] = useState<File[]>([]);
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -69,23 +69,27 @@ export default function ArticuloInsumoPage() {
   const handleSaveUpdate = async (art: ArticuloInsumo, files: File[]) => {
     try {
       let response: ArticuloInsumo;
-      if (art.id === 0) { // Articulo Nuevo
-        response = await ArticuloInsumoService.crearArticuloInsumo(art,activeSucursal);
-      } else { // Actualizar Articulo
+      //quitar blobs
+      art.imagenes =  art.imagenes.filter(imagen => !imagen.url.includes("blob"))
+      if (art.id === 0) { // Artículo nuevo
+        response = await ArticuloInsumoService.crearArticuloInsumo(art, activeSucursal);
+      } else { // Actualizar artículo
         response = await ArticuloInsumoService.actualizarArticuloInsumo(art.id, art);
       }
+  
       if (response) {
-        setArticuloInsumo(prevArticulos => [...prevArticulos.filter(a => a.id !== art.id), response]); //Quita primero el articulo y luego lo agrega al final
+        setArticuloInsumo(prevArticulos => [...prevArticulos.filter(a => a.id !== art.id), response]);
         setError("");
-        fetchDataArticulosInsumo(); // Llama a fetchDataArticulosInsumo después de actualizar el estado
-      }
-
+        fetchDataArticulosInsumo(); 
+      } 
+      // Si el artículo se creó o actualizó correctamente, proceder a subir los archivos
       if (response.id) {
-       const uploadResponse = await ArticuloInsumoService.uploadFiles(response.id, files);
+       const images = await ArticuloInsumoService.uploadFiles(response.id, files);
+       fetchDataArticulosInsumo(); 
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setError(error.message);
       }
     }
@@ -108,10 +112,6 @@ export default function ArticuloInsumoPage() {
     }
   };
 
-  // Maneja el cambio de archivos
-  const handleFileChange = (newFiles: File[]) => {
-    setSelectedFiles(newFiles);
-  };
 
   const handleChangeCategoria = (id: number) => {
     setCategoria(id > 0 ? id : undefined);
@@ -136,7 +136,7 @@ const handleChangeText = (denominacion: string) => {
         articulosInsumo={articulosInsumo}
         handleSubmit={handleSaveUpdate}
         handleDelete={handleDelete}
-        onFileChange={handleFileChange}
+        // onFileChange={handleFileChange}
         handleChangeCategoria={handleChangeCategoria}
         handleChangeUnidadMedida={handleChangeUnidadMedida}
         handleChangeText={handleChangeText}
@@ -152,7 +152,7 @@ const handleChangeText = (denominacion: string) => {
           handleDelete={handleDelete}
           unidadesMedida={unidadesMedida}
           categorias={categorias}
-          onFileChange={handleFileChange} // Pasar el manejador de archivos
+          // onFileChange={handleFileChange} // Pasar el manejador de archivos
         />
       )}
     </>

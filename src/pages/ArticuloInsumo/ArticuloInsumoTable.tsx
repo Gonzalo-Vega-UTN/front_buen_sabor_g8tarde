@@ -16,7 +16,7 @@ interface TableProps {
     articulosInsumo: ArticuloInsumo[];
     handleSubmit: (art: ArticuloInsumo, files: File[]) => Promise<void>;
     handleDelete: (idArt: number) => Promise<void>;
-    onFileChange: (newFiles: File[]) => void;
+    onFileChange?: (newFiles: File[]) => void;
     handleChangeCategoria: (categoria : number) => void;
     handleChangeUnidadMedida: (unidadMedida : number) => void;
     handleChangeText: (denominacion : string) => void;
@@ -105,7 +105,7 @@ const ArticuloInsumoTable = ({ categorias, unidadesMedida, articulosInsumo, hand
                     unidadesMedida={unidadesMedida}
                     categorias={categorias}
                     handleDelete={handleDelete}
-                    onFileChange={onFileChange}
+                    // onFileChange={onFileChange}
                 />
             )}
         </div>

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { Form, Button, Alert } from 'react-bootstrap';
-import TimePicker from 'react-bootstrap-time-picker';
-import { createSucursal, updateSucursal } from '../services/SucursalService';
-import { Sucursal } from '../entities/DTO/Sucursal/Sucursal';
-import { Empresa } from '../entities/DTO/Empresa/Empresa';
-import FormularioDomicilio from './Domicilio/FormDomicilio';
+import React, { useState } from "react";
+import { Form, Button, Alert } from "react-bootstrap";
+import TimePicker from "react-bootstrap-time-picker";
+import { Sucursal } from "../entities/DTO/Sucursal/Sucursal";
+import { Empresa } from "../entities/DTO/Empresa/Empresa";
+import FormularioDomicilio from "./Domicilio/FormDomicilio";
+import SucursalService from "../services/SucursalService";
+import ImagenCarousel from "../components/carousel/ImagenCarousel";
+import { Imagen } from "../entities/DTO/Imagen";
 
 interface AddSucursalFormProps {
   onAddSucursal: () => void;
@@ -12,7 +14,11 @@ interface AddSucursalFormProps {
   empresa: Empresa;
 }
 
-const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalEditando, empresa }) => {
+const SucursalForm: React.FC<AddSucursalFormProps> = ({
+  onAddSucursal,
+  sucursalEditando,
+  empresa,
+}) => {
   const [sucursal, setSucursal] = useState<Sucursal>(() => {
     if (sucursalEditando) {
       return sucursalEditando;
@@ -24,17 +30,18 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalE
   const [domicilio, setDomicilio] = useState<any>(null); // Estado para el domicilio
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+  const [files, setFiles] = useState<File[]>([]);
   const [currentStep, setCurrentStep] = useState<number>(1); // Estado para controlar el paso del formulario
   const [aperturaValida, setAperturaValida] = useState<boolean>(false); // Estado para validar horario de apertura
   const [cierreValido, setCierreValido] = useState<boolean>(false); // Estado para validar horario de cierre
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setSucursal(prevState => ({ ...prevState, [name]: value }));
+    setSucursal((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handleAperturaChange = (time: number) => {
-    setSucursal(prevState => ({
+    setSucursal((prevState) => ({
       ...prevState,
       horarioApertura: convertirHoraATexto(time),
     }));
@@ -42,7 +49,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalE
   };
 
   const handleCierreChange = (time: number) => {
-    setSucursal(prevState => ({
+    setSucursal((prevState) => ({
       ...prevState,
       horarioCierre: convertirHoraATexto(time),
     }));
@@ -63,26 +70,40 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalE
       setCurrentStep(2); // Avanzar al siguiente paso si los horarios son válidos
       setError(null); // Limpiar el mensaje de error
     } else {
-      setError('Debe seleccionar un horario de apertura y cierre válidos');
+      setError("Debe seleccionar un horario de apertura y cierre válidos");
     }
   };
 
   const handleSubmitStep2 = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      // Aquí puedes hacer el llamado para crear o actualizar la sucursal con su domicilio
+
+      let response: Sucursal;
       if (sucursalEditando) {
-        await updateSucursal(sucursalEditando.id, { ...sucursal, domicilio });
+        response = await SucursalService.updateSucursal(sucursalEditando.id, {
+          ...sucursal,
+          domicilio, //TODO: ver porque sale en rojo
+        });
       } else {
-        await createSucursal({ ...sucursal, domicilio });
+        response = await SucursalService.createSucursal({
+          ...sucursal,
+          domicilio,
+        });
       }
-      setSuccess(true);
-      setSucursal(new Sucursal()); // Limpiar el formulario después del envío exitoso
-      setError(null);
-      setDomicilio(null); // Limpiar el domicilio después del envío exitoso
-      onAddSucursal();
+      if (response) {
+        setSuccess(true);
+        setSucursal(new Sucursal()); // Limpiar el formulario después del envío exitoso
+        setError(null);
+        setDomicilio(null); // Limpiar el domicilio después del envío exitoso
+        onAddSucursal();
+      }
+
+      if (response.id) {
+        const images = await SucursalService.uploadFiles(response.id, files);
+        onAddSucursal();
+      }
     } catch (err) {
-      setError('Error al crear o actualizar la sucursal');
+      setError("Error al crear o actualizar la sucursal");
       setSuccess(false);
     }
   };
@@ -91,11 +112,22 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalE
     setCurrentStep(1); // Retroceder al paso anterior
   };
 
+  const handleImagenesChange = (newImages: Imagen[]) => {
+    setSucursal((prev) => ({
+      ...prev,
+      imagenes: newImages,
+    }));
+  };
+
+  const handleFileChange = (newFiles: File[]) => {
+    setFiles(newFiles);
+  };
+
   return (
     <div>
       {currentStep === 1 && (
         <div>
-          <h2>{sucursalEditando ? 'Editar Sucursal' : 'Agregar Sucursal'}</h2>
+          <h2>{sucursalEditando ? "Editar Sucursal" : "Agregar Sucursal"}</h2>
           <Form onSubmit={handleSubmitStep1}>
             <Form.Group controlId="nombre">
               <Form.Label>Nombre</Form.Label>
@@ -113,7 +145,13 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalE
                 start="00:00"
                 end="23:59"
                 step={15}
-                value={sucursal.horarioApertura ? parseInt(sucursal.horarioApertura.split(':')[0], 10) * 3600 + parseInt(sucursal.horarioApertura.split(':')[1], 10) * 60 : 0}
+                value={
+                  sucursal.horarioApertura
+                    ? parseInt(sucursal.horarioApertura.split(":")[0], 10) *
+                        3600 +
+                      parseInt(sucursal.horarioApertura.split(":")[1], 10) * 60
+                    : 0
+                }
                 onChange={handleAperturaChange}
                 required
               />
@@ -124,12 +162,26 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalE
                 start="00:00"
                 end="23:59"
                 step={15}
-                value={sucursal.horarioCierre ? parseInt(sucursal.horarioCierre.split(':')[0], 10) * 3600 + parseInt(sucursal.horarioCierre.split(':')[1], 10) * 60 : 0}
+                value={
+                  sucursal.horarioCierre
+                    ? parseInt(sucursal.horarioCierre.split(":")[0], 10) *
+                        3600 +
+                      parseInt(sucursal.horarioCierre.split(":")[1], 10) * 60
+                    : 0
+                }
                 onChange={handleCierreChange}
                 required
               />
             </Form.Group>
-            <Button variant="primary" type="submit">Siguiente</Button>
+
+            <ImagenCarousel
+              imagenesExistentes={sucursal.imagenes}
+              onFilesChange={handleFileChange}
+              onImagenesChange={handleImagenesChange}
+            />
+            <Button variant="primary" type="submit">
+              Siguiente
+            </Button>
           </Form>
         </div>
       )}
@@ -138,15 +190,25 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({ onAddSucursal, sucursalE
           <Form onSubmit={handleSubmitStep2}>
             <FormularioDomicilio
               onBack={handlePrevStep}
-              onSubmit={data => setDomicilio(data)}
+              onSubmit={(data) => setDomicilio(data)}
             />
-            <Button variant="primary" type="submit">Enviar</Button>
-            <Button variant="secondary" onClick={handlePrevStep}>Volver</Button>
+            <Button variant="primary" type="submit">
+              Enviar
+            </Button>
+            <Button variant="secondary" onClick={handlePrevStep}>
+              Volver
+            </Button>
           </Form>
         </div>
       )}
 
-      {success && <Alert variant="success">{sucursalEditando ? 'Sucursal actualizada con éxito' : 'Sucursal creada con éxito'}</Alert>}
+      {success && (
+        <Alert variant="success">
+          {sucursalEditando
+            ? "Sucursal actualizada con éxito"
+            : "Sucursal creada con éxito"}
+        </Alert>
+      )}
       {error && <Alert variant="danger">{error}</Alert>}
     </div>
   );

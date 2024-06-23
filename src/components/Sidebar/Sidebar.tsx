@@ -74,37 +74,18 @@ const Sidebar = () => {
                             </Link>
                         </li>
 
+
                         <li className="nav-item">
-                            <span
-                                className={`nav-link text-white ${location.pathname.startsWith('/productos') || selected.startsWith('/productos') ? 'active' : ''}`}
-                                onClick={toggleSubmenu}
+                            <Link
+                                to="/productos"
+                                className={`nav-link text-white ${location.pathname === '/productos' || selected === '/productos' ? 'active' : ''}`}
+                                onClick={() => handleClick('/productos')}
                             >
                                 <BsBox size={24} className="me-2" />
                                 <span className="nav-text">Productos</span>
-                            </span>
-                            {submenuOpen && (
-                                <ul className="nav flex-column submenu">
-                                    <li className="nav-item">
-                                        <Link
-                                            to="/productos"
-                                            className={`nav-link text-white ${location.pathname === '/productos' || selected === '/productos/lista' ? 'active' : ''}`}
-                                            onClick={() => handleClick('/productos')}
-                                        >
-                                            Lista Productos
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link
-                                            to="/create-product/0"
-                                            className={`nav-link text-white ${location.pathname === '/create-product/0' || selected === '/create-product/0' ? 'active' : ''}`}
-                                            onClick={() => handleClick('/create-product/0')}
-                                        >
-                                            Crear Producto
-                                        </Link>
-                                    </li>
-                                </ul>
-                            )}
+                            </Link>
                         </li>
+                        
                         <li className="nav-item">
                             <Link
                                 to="/unidadmedida"

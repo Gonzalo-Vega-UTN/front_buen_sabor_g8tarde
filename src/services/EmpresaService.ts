@@ -1,4 +1,5 @@
 import { Empresa } from "../entities/DTO/Empresa/Empresa";
+import { Imagen } from "../entities/DTO/Imagen";
 
 export class EmpresaService {
 
@@ -93,25 +94,28 @@ export class EmpresaService {
     }
   }
 
-  static async getAllFiltered(idCategoria?: number, idUnidadMedida?: number, denominacion?: string): Promise<Empresa[]> {
-    try {
-      const params = new URLSearchParams();
-      if (idCategoria !== undefined) params.append("categoria_id", idCategoria.toString());
-      if (idUnidadMedida !== undefined) params.append("unidad_id", idUnidadMedida.toString());
-      if (denominacion !== undefined) params.append("denominacion", denominacion);
 
-      const responseData = await this.request(`/search?${params}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+
+  static async uploadFiles(id: number, files: File[]): Promise<Imagen[]> {
+    const uploadPromises = files.map(file => {
+      const formData = new FormData();
+      formData.append('uploads', file);
+      formData.append('id', String(id));
+
+      return this.request(`/uploads`, {
+        method: 'POST',
+        body: formData,
         mode: 'cors'
-      });
-      return responseData as Empresa[];
+      }) as Promise<Imagen>;
+    });
+
+    try {
+      return await Promise.all(uploadPromises);
     } catch (error) {
-      console.error('Error al obtener todas los Empresas:', error);
+      console.error(`Error al subir imágenes para el id ${id}:`, error);
       throw error;
     }
   }
 
 };
+

@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Dropdown, DropdownButton, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { fetchSucursales, fetchSucursalesByEmpresaId } from '../services/SucursalService';
 import SucursalForm from './SucursalForm';
 import { Sucursal } from '../entities/DTO/Sucursal/Sucursal';
 import { Empresa } from '../entities/DTO/Empresa/Empresa';
 import { useAuth } from '../Auth/Auth';
 import './styles.css'; // Importar tu archivo de estilos
+import SucursalService from '../services/SucursalService';
 
 interface SucursalListProps {
   refresh: boolean;
@@ -27,9 +27,9 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
       try {
         let data;
         if (empresa) {
-          data = await fetchSucursalesByEmpresaId(empresa.id);
+          data = await SucursalService.fetchSucursalesByEmpresaId(empresa.id);
         } else {
-          data = await fetchSucursales();
+          data = await SucursalService.fetchSucursales();
         }
         setSucursales(data);
       } catch (error) {
@@ -61,9 +61,9 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
     try {
       let data;
       if (empresa) {
-        data = await fetchSucursalesByEmpresaId(empresa.id);
+        data = await SucursalService.fetchSucursalesByEmpresaId(empresa.id);
       } else {
-        data = await fetchSucursales();
+        data = await SucursalService.fetchSucursales();
       }
       setSucursales(data);
     } catch (error) {
@@ -79,22 +79,11 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
     selectSucursal(sucursalId);
   };
 
-  const handleStatusChange = async (sucursalId: number, alta: boolean) => {
+  const handleStatusChange = async (sucursalId: number, alta: boolean) => { //TODO: arreglar baja de una sucursal para que de de baja todo
     try {
       const sucursal = sucursales.find(suc => suc.id === sucursalId);
       if (sucursal) {
-        const response = await fetch(`http://localhost:8080/api/sucursales/${sucursalId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ ...sucursal, alta }),
-        });
-        if (response.ok) {
-          setSucursales(sucursales.map(suc => suc.id === sucursalId ? { ...suc, alta } : suc));
-        } else {
-          throw new Error('Error updating status');
-        }
+        SucursalService.BajaSucursal(sucursal.id);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -103,7 +92,6 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
     }
   };
 
-  const defaultImageUrl = 'https://http2.mlstatic.com/storage/sc-seller-journey-backoffice/images-assets/234940675890-Sucursales--una-herramienta-para-mejorar-la-gesti-n-de-tus-puntos-de-venta.png';
 
   return (
     <Container>
@@ -118,7 +106,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
               className={activeSucursal === String(sucursal.id) ? "selected-card" : ""}
               style={{ backgroundColor: sucursal.alta ? 'white' : 'darkgrey' }}
             >
-              <Card.Img variant="top" src={defaultImageUrl} />
+              <Card.Img variant="top" src={sucursal.imagenes[0] ? sucursal.imagenes[0].url : 'https://via.placeholder.com/150'} />
               <Card.Body>
                 <Card.Title>{sucursal.nombre}</Card.Title>
                 <Card.Text>

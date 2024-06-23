@@ -1,7 +1,7 @@
 import { Base } from "../Base";
 import { Categoria } from "../Categoria/Categoria";
+import { Imagen } from "../Imagen";
 import { UnidadMedida } from "../UnidadMedida/UnidadMedida";
-import { Imagen } from "./Imagen";
 
 export class Articulo extends Base {
     denominacion: string = '';
