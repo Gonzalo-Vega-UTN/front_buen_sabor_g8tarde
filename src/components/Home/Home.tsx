@@ -1,138 +1,73 @@
-// Home.tsx
-
 import React, { useEffect, useState } from 'react';
-import Header from '../Header/Header';
-import { CategoriaService } from '../../services/CategoriaService';
-import { Categoria } from '../../entities/DTO/Categoria/Categoria';
-import Lista from '../../MioImport/lista';
-import { useAuth } from '../../Auth/Auth';
-import logo from '../../assets/images/Buen sabor logo 1.png'; // Importa el logo
-import Slider from 'react-slick';
+import { Container, Row, Col, Card } from 'react-bootstrap';
 import './Home.css'; // Importa estilos personalizados
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import { Empresa } from '../../entities/DTO/Empresa/Empresa';
+import { EmpresaService } from '../../services/EmpresaService';
+import SucursalList from '../../pages/SucursalList';
+
+// Importa el componente Sucursal
 
 const Home: React.FC = () => {
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [, setError] = useState<string | null>(null);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>(undefined);
-  const { isAuthenticated } = useAuth();
-  const [featuredProducts, setFeaturedProducts] = useState([
-    {
-      name: 'Platillo 1',
-      description: 'Descripción del platillo 1',
-      imageUrl: 'https://via.placeholder.com/300', // Cambia la URL por la de tu imagen
-    },
-    {
-      name: 'Platillo 2',
-      description: 'Descripción del platillo 2',
-      imageUrl: 'https://via.placeholder.com/300', // Cambia la URL por la de tu imagen
-    },
-    {
-      name: 'Platillo 3',
-      description: 'Descripción del platillo 3',
-      imageUrl: 'https://via.placeholder.com/300', // Cambia la URL por la de tu imagen
-    },
-  ]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
+  const [showSucursales, setShowSucursales] = useState<boolean>(false);
 
-  const fetchCategories = async () => {
+  const fetchEmpresas = async () => {
     try {
-      const data = await CategoriaService.obtenerCategorias();
-      setCategorias([{
-        id: undefined, denominacion: 'Todos', imagen: '',
-        alta: false,
-        subCategorias: []
-      }, ...data]);
+      const data = await EmpresaService.getAll();
+      setEmpresas(data);
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Ocurrió un error desconocido");
-      }
+      console.error('Error fetching empresas:', error);
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
-    fetchCategories();
+    fetchEmpresas();
   }, []);
 
-  const defaultImageUrl = 'https://via.placeholder.com/150';
-
-  const handleCategoryClick = (categoryId: number | undefined) => {
-    setSelectedCategoryId(categoryId);
+  const selectEmpresa = (empresa: Empresa) => {
+    setSelectedEmpresa(empresa);
+    setShowSucursales(true);
   };
 
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    arrows: false,
-    adaptiveHeight: true,
-  };
+  if (loading) {
+    return <div className="container">Cargando...</div>;
+  }
 
   return (
-    <div className="container-fluid mt-5 home-background text-light"> {/* Cambiar a la clase home-background */}
-      {/* Barra de búsqueda y encabezado */}
-      <div className="row mb-4 align-items-center">
-        <div className="col-md-1">
-          {!isAuthenticated && (
-            <img src={logo} alt="Logo" className="logo" />
-          )}
-        </div>
-        <div className="col-md-7">
-          <input type="text" className="form-control search-bar" placeholder="Buscar comida..." />
-        </div>
-        <div className="col-md-4">
-          <Header />
-        </div>
-      </div>
-      
-      <div className="row mb-4 justify-content-center"> {/* Agrega la clase justify-content-center para centrar horizontalmente */}
-  <div className="col-10"> {/* Ajusta el ancho del contenedor del carrusel según tus necesidades */}
-    <Slider {...settings}>
-      {featuredProducts.map((product, index) => (
-        <div key={index}>
-          <img src={product.imageUrl} alt={product.name} className="carousel-image" />
-        </div>
-      ))}
-    </Slider>
-  </div>
-</div>
-      
-      {/* Categorías */}
-      <div className="row mb-4">
-        {categorias.map(category => (
-          <div
-            className={`col-3 text-center category ${selectedCategoryId === category.id ? 'selected' : ''}`}
-            key={category.id === undefined ? 'all' : category.id}
-            onClick={() => handleCategoryClick(category.id)}
-          >
-            <img
-              src={category.imagen || defaultImageUrl}
-              className="rounded-circle category-image"
-              alt={category.denominacion}
-            />
-            <h5 className="mt-2">{category.denominacion}</h5>
-          </div>
-        ))}
-      </div>
+    <>
+      {currentStep === 1 && (
+        <Container>
+          <h1>Seleccionar Empresa</h1>
+          <Row>
+            {empresas.map((empresa) => (
+              <Col key={empresa.id} sm={12} md={6} lg={4} className="mb-4">
+                <Card
+                  onClick={() => selectEmpresa(empresa)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <Card.Img
+                    variant="top"
+                    src={empresa.imagenUrl || 'https://via.placeholder.com/150'}
+                  />
+                  <Card.Body>
+                    <Card.Title>{empresa.nombre}</Card.Title>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </Container>
+      )}
 
-      {/* Productos destacados */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <h2 className="section-title mb-4">Platillos Destacados</h2>
-          <br />
-          <br />
-          <br />
-          <br />
-          <Lista selectedCategoryId={selectedCategoryId} />
-        </div>
-      </div>
-    </div>
+      {showSucursales && selectedEmpresa && (
+        <SucursalList empresa={selectedEmpresa} refresh={false} />
+      )}
+    </>
   );
 };
 

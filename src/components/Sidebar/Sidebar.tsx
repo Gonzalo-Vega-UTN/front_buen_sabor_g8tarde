@@ -9,6 +9,8 @@ import './style.css';
 import { useAuth } from '../../Auth/Auth';
 import { Rol } from '../../entities/enums/Rol';
 import logo from '../../assets/images/Buen sabor logo 1.png'; // Importa el logo
+import BotonLogin from '../Log-Register/BotonLogin';
+import BotonLogout from '../Log-Register/BotonLogout';
 
 const Sidebar = () => {
     const [expanded, setExpanded] = useState(false);
@@ -16,6 +18,7 @@ const Sidebar = () => {
     const [submenuOpen, setSubmenuOpen] = useState(false);
     const location = useLocation();
     const { userRol } = useAuth();
+    const { isAuthenticated } = useAuth();
 
     const handleMouseEnter = () => setExpanded(true);
     const handleMouseLeave = () => setExpanded(false);
@@ -27,6 +30,7 @@ const Sidebar = () => {
     const toggleSubmenu = () => {
         setSubmenuOpen(!submenuOpen);
     };
+
 
     return (
         <div
@@ -50,173 +54,180 @@ const Sidebar = () => {
                         <span className="nav-text">Tienda</span>
                     </Link>
                 </li>
-                {userRol === Rol.Admin && (
-                    <>
-                        <li className="nav-item">
-                            <Link
-                                to="/empresas"
-                                className={`nav-link text-white ${location.pathname === '/empresas' || selected === '/empresas' ? 'active' : ''}`}
-                                onClick={() => handleClick('/empresas')}
-                            >
-                                <BsBuilding size={24} className="me-2" />
-                                <span className="nav-text">Empresas</span>
-                            </Link>
-                        </li>
 
-                        <li className="nav-item">
-                            <Link
-                                to="/sucursales"
-                                className={`nav-link text-white ${location.pathname === '/sucursal' || selected === '/sucursal' ? 'active' : ''}`}
-                                onClick={() => handleClick('/sucursales')}
-                            >
-                                <BsShop size={24} className="me-2" />
-                                <span className="nav-text">Sucursal</span>
-                            </Link>
-                        </li>
-
-                        <li className="nav-item">
-                            <span
-                                className={`nav-link text-white ${location.pathname.startsWith('/productos') || selected.startsWith('/productos') ? 'active' : ''}`}
-                                onClick={toggleSubmenu}
-                            >
-                                <BsBox size={24} className="me-2" />
-                                <span className="nav-text">Productos</span>
-                            </span>
-                            {submenuOpen && (
-                                <ul className="nav flex-column submenu">
-                                    <li className="nav-item">
-                                        <Link
-                                            to="/productos"
-                                            className={`nav-link text-white ${location.pathname === '/productos' || selected === '/productos/lista' ? 'active' : ''}`}
-                                            onClick={() => handleClick('/productos')}
-                                        >
-                                            Lista Productos
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link
-                                            to="/create-product/0"
-                                            className={`nav-link text-white ${location.pathname === '/create-product/0' || selected === '/create-product/0' ? 'active' : ''}`}
-                                            onClick={() => handleClick('/create-product/0')}
-                                        >
-                                            Crear Producto
-                                        </Link>
-                                    </li>
-                                </ul>
-                            )}
-                        </li>
-                        <li className="nav-item">
-                            <Link
-                                to="/unidadmedida"
-                                className={`nav-link text-white ${location.pathname === '/unidadmedida' || selected === '/unidadmedida' ? 'active' : ''}`}
-                                onClick={() => handleClick('/unidadmedida')}
-                            >
-                                <TbRulerMeasure size={24} className="me-2" />
-                                <span className="nav-text">Medidas</span>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link
-                                to="/ingredientes"
-                                className={`nav-link text-white ${location.pathname === '/ingredientes' || selected === '/ingredientes' ? 'active' : ''}`}
-                                onClick={() => handleClick('/ingredientes')}
-                            >
-                                <BsBasket size={24} className="me-2" />
-                                <span className="nav-text">Ingredientes</span>
-                            </Link>
-                        </li>
-
-                        <li className="nav-item">
-                            <Link
-                                to="/promociones"
-                                className={`nav-link text-white ${location.pathname === '/promociones' || selected === '/promociones' ? 'active' : ''}`}
-                                onClick={() => handleClick('/promociones')}
-                            >
-                                <BsPercent size={24} className="me-2" />
-                                <span className="nav-text">Promociones</span>
-                            </Link>
-                        </li>
-
-                        <li className="nav-item">
-                            <Link
-                                to="/pedidos"
-                                className={`nav-link text-white ${location.pathname === '/pedidos' || selected === '/pedidos' ? 'active' : ''}`}
-                                onClick={() => handleClick('/pedidos')}
-                            >
-                                <BsCart size={24} className="me-2" />
-                                <span className="nav-text">Pedidos</span>
-                            </Link>
-                        </li>
-
-                        <li className="nav-item">
-                            <Link
-                                to="/clientes"
-                                className={`nav-link text-white ${location.pathname === '/clientes' || selected === '/clientes' ? 'active' : ''}`}
-                                onClick={() => handleClick('/clientes')}
-                            >
-                                <BsFillPeopleFill size={24} className="me-2" />
-                                <span className="nav-text">Clientes</span>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link
-                                to="/categorias"
-                                className={`nav-link text-white ${location.pathname === '/categorias' || selected === '/categorias' ? 'active' : ''}`}
-                                onClick={() => handleClick('/categorias')}
-                            >
-                                <MdOutlineCategory size={24} className="me-2" />
-                                <span className="nav-text">Categorias</span>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link
-                                to="/estadisticas"
-                                className={`nav-link text-white ${location.pathname === '/estadisticas' || selected === '/estadisticas' ? 'active' : ''}`}
-                                onClick={() => handleClick('/estadisticas')}
-                            >
-                                <BsGraphUp size={24} className="me-2" />
-                                <span className="nav-text">Estadísticas</span>
-                            </Link>
-                        </li>
-                        
-                        <li className="nav-item">
-                            <Link
-                                to="/PedidosCajero"
-                                className={`nav-link text-white ${location.pathname === '/PedidosCajero' || selected === '/PedidosCajero' ? 'active' : ''}`}
-                                onClick={() => handleClick('/PedidosCajero')}
-                            >
-                               <LiaCashRegisterSolid size={24} className="me-2" />
-                                <span className="nav-text">Cajero</span>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link
-                                to="/PedidosDelivery"
-                                className={`nav-link text-white ${location.pathname === '/PedidosDelivery' || selected === '/PedidosDelivery' ? 'active' : ''}`}
-                                onClick={() => handleClick('/PedidosDelivery')}
-                            >
-                                <MdDeliveryDining size={24} className="me-2" />
-                                <span className="nav-text">Delivery</span>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link
-                                to="/PedidosCocinero"
-                                className={`nav-link text-white ${location.pathname === '/PedidosCocinero' || selected === '/PedidosCocinero' ? 'active' : ''}`}
-                                onClick={() => handleClick('/PedidosCocinero')}
-                            >
-                                <LuChefHat size={24} className="me-2" />
-                                <span className="nav-text">Cocinero</span>
-                            </Link>
-                        </li>
-
-                    </>
+                {isAuthenticated ? (
+                    <BotonLogout />
+                ) : (
+                    <BotonLogin />
                 )}
-            </ul>
+                    {isAuthenticated  && userRol === Rol.Admin && (
+                        <>
+                            <li className="nav-item">
 
+                                <Link
+                                    to="/empresas"
+                                    className={`nav-link text-white ${location.pathname === '/empresas' || selected === '/empresas' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/empresas')}
+                                >
+                                    <BsBuilding size={24} className="me-2" />
+                                    <span className="nav-text">Empresas</span>
+                                </Link>
+                            </li>
+
+                            <li className="nav-item">
+                                <Link
+                                    to="/sucursales"
+                                    className={`nav-link text-white ${location.pathname === '/sucursal' || selected === '/sucursal' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/sucursales')}
+                                >
+                                    <BsShop size={24} className="me-2" />
+                                    <span className="nav-text">Sucursal</span>
+                                </Link>
+                            </li>
+
+                            <li className="nav-item">
+                                <span
+                                    className={`nav-link text-white ${location.pathname.startsWith('/productos') || selected.startsWith('/productos') ? 'active' : ''}`}
+                                    onClick={toggleSubmenu}
+                                >
+                                    <BsBox size={24} className="me-2" />
+                                    <span className="nav-text">Productos</span>
+                                </span>
+                                {submenuOpen && (
+                                    <ul className="nav flex-column submenu">
+                                        <li className="nav-item">
+                                            <Link
+                                                to="/productos"
+                                                className={`nav-link text-white ${location.pathname === '/productos' || selected === '/productos/lista' ? 'active' : ''}`}
+                                                onClick={() => handleClick('/productos')}
+                                            >
+                                                Lista Productos
+                                            </Link>
+                                        </li>
+                                        <li className="nav-item">
+                                            <Link
+                                                to="/create-product/0"
+                                                className={`nav-link text-white ${location.pathname === '/create-product/0' || selected === '/create-product/0' ? 'active' : ''}`}
+                                                onClick={() => handleClick('/create-product/0')}
+                                            >
+                                                Crear Producto
+                                            </Link>
+                                        </li>
+                                    </ul>
+                                )}
+                            </li>
+                            <li className="nav-item">
+                                <Link
+                                    to="/unidadmedida"
+                                    className={`nav-link text-white ${location.pathname === '/unidadmedida' || selected === '/unidadmedida' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/unidadmedida')}
+                                >
+                                    <TbRulerMeasure size={24} className="me-2" />
+                                    <span className="nav-text">Medidas</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link
+                                    to="/ingredientes"
+                                    className={`nav-link text-white ${location.pathname === '/ingredientes' || selected === '/ingredientes' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/ingredientes')}
+                                >
+                                    <BsBasket size={24} className="me-2" />
+                                    <span className="nav-text">Ingredientes</span>
+                                </Link>
+                            </li>
+
+                            <li className="nav-item">
+                                <Link
+                                    to="/promociones"
+                                    className={`nav-link text-white ${location.pathname === '/promociones' || selected === '/promociones' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/promociones')}
+                                >
+                                    <BsPercent size={24} className="me-2" />
+                                    <span className="nav-text">Promociones</span>
+                                </Link>
+                            </li>
+
+                            <li className="nav-item">
+                                <Link
+                                    to="/pedidos"
+                                    className={`nav-link text-white ${location.pathname === '/pedidos' || selected === '/pedidos' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/pedidos')}
+                                >
+                                    <BsCart size={24} className="me-2" />
+                                    <span className="nav-text">Pedidos</span>
+                                </Link>
+                            </li>
+
+                            <li className="nav-item">
+                                <Link
+                                    to="/clientes"
+                                    className={`nav-link text-white ${location.pathname === '/clientes' || selected === '/clientes' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/clientes')}
+                                >
+                                    <BsFillPeopleFill size={24} className="me-2" />
+                                    <span className="nav-text">Clientes</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link
+                                    to="/categorias"
+                                    className={`nav-link text-white ${location.pathname === '/categorias' || selected === '/categorias' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/categorias')}
+                                >
+                                    <MdOutlineCategory size={24} className="me-2" />
+                                    <span className="nav-text">Categorias</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link
+                                    to="/estadisticas"
+                                    className={`nav-link text-white ${location.pathname === '/estadisticas' || selected === '/estadisticas' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/estadisticas')}
+                                >
+                                    <BsGraphUp size={24} className="me-2" />
+                                    <span className="nav-text">Estadísticas</span>
+                                </Link>
+                            </li>
+
+                            <li className="nav-item">
+                                <Link
+                                    to="/PedidosCajero"
+                                    className={`nav-link text-white ${location.pathname === '/PedidosCajero' || selected === '/PedidosCajero' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/PedidosCajero')}
+                                >
+                                    <LiaCashRegisterSolid size={24} className="me-2" />
+                                    <span className="nav-text">Cajero</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link
+                                    to="/PedidosDelivery"
+                                    className={`nav-link text-white ${location.pathname === '/PedidosDelivery' || selected === '/PedidosDelivery' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/PedidosDelivery')}
+                                >
+                                    <MdDeliveryDining size={24} className="me-2" />
+                                    <span className="nav-text">Delivery</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link
+                                    to="/PedidosCocinero"
+                                    className={`nav-link text-white ${location.pathname === '/PedidosCocinero' || selected === '/PedidosCocinero' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/PedidosCocinero')}
+                                >
+                                    <LuChefHat size={24} className="me-2" />
+                                    <span className="nav-text">Cocinero</span>
+                                </Link>
+                            </li>
+
+                        </>
+                    )}
+            </ul>
             <div className="mt-auto"></div> {/* Alinea los elementos al fondo del sidebar */}
         </div>
     );
-};
+}
+   
 
 export default Sidebar;

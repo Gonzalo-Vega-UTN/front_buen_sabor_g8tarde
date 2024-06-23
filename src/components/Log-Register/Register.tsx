@@ -3,6 +3,7 @@ import { Button, Form, Alert } from 'react-bootstrap';
 import { Rol } from '../../entities/enums/Rol';
 import Usuario from '../../entities/DTO/Usuario/Usuario';
 import UsuarioService from '../../services/UsuarioService';
+import { GoogleLogin } from '@react-oauth/google';
 
 interface RegisterProps {
     closeModal: () => void;
@@ -13,29 +14,23 @@ const Register: React.FC<RegisterProps> = ({ closeModal }) => {
     const [auth0Id, setAuth0Id] = useState<string>('');
     const [rol, setRol] = useState<Rol>(Rol.Cliente);
     const [mensaje, setMensaje] = useState<string>('');
-    
     const [Registromensaje, setRegistromensaje] = useState<string>('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Submit button clicked"); // Verificar que se detecta el clic en el botón de submit
-
-        // Validar la longitud de la contraseña
         if (auth0Id.length < 4) {
             setMensaje('La contraseña debe tener al menos 4 caracteres');
             return;
         }
-
         try {
             const usuario: Usuario = { username, auth0Id, rol };
-            
             await UsuarioService.register(usuario);
             setRegistromensaje('Usuario registrado con éxito');
-            setTimeout(() =>{
-                closeModal(); 
-            },1500)
+            setTimeout(() => {
+                closeModal();
+            }, 1500);
         } catch (err) {
-            if(err instanceof Error){
+            if (err instanceof Error) {
                 setMensaje(err.message);
             }
             console.error(err);
@@ -66,18 +61,25 @@ const Register: React.FC<RegisterProps> = ({ closeModal }) => {
             </Form.Group>
             <Form.Group controlId="formBasicRole">
                 <Form.Label>Rol:</Form.Label>
-                <Form.Select value={rol} onChange={(e) => setRol(e.target.value as Rol)}>
-                    <option value={Rol.Admin}>Admin</option>
+                <Form.Select value={rol} onChange={(e) => setRol(e.target.value as Rol)} required>
                     <option value={Rol.Cliente}>Cliente</option>
-                    <option value={Rol.Empleado}>Empleado</option>
+                    <option value={Rol.Admin}>Administrador</option>
                 </Form.Select>
-                <br></br>
             </Form.Group>
             <Button variant="primary" type="submit">
-                Registrar
+                Registro
             </Button>
-            {mensaje && <Alert variant="danger">{mensaje}</Alert>}
+            <GoogleLogin
+                onSuccess={(credentialResponse) => {
+                    GoogleLogin(credentialResponse);
+                    closeModal();
+                }}
+                onError={() => {
+                    console.log('Login Failed');
+                }}
+            />
             {Registromensaje && <Alert variant="success">{Registromensaje}</Alert>}
+            {mensaje && <Alert variant="danger">{mensaje}</Alert>}
         </Form>
     );
 };
