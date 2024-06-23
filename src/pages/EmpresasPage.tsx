@@ -2,13 +2,9 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Button, Modal } from 'react-bootstrap';
 import EmpresaList from './EmpresaList';
 import AddEmpresaForm from './AddEmpresaForm';
+import { Empresa } from '../entities/DTO/Empresa/Empresa';
 
-interface Empresa {
-  id: number;
-  nombre: string;
-  razonSocial: string;
-  cuil: string;
-}
+
 
 const EmpresasPage: React.FC = () => {
   const [refreshEmpresas, setRefreshEmpresas] = useState(false);

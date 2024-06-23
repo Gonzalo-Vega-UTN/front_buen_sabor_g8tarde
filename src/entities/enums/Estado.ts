@@ -1,7 +1,8 @@
-enum Estado {
-  Preparacion,
-  Pendiente,
-  Cancelado,
-  Rechazado,
-  Entregado
+export enum Estado {
+  Preparacion='Preparacion',
+  Pendiente='Pendiente',
+  EnDelivery='EnDelivery',
+  Cancelado='Cancelado',
+  Rechazado='Rechazado',
+  Entregado='Entregado'
 }

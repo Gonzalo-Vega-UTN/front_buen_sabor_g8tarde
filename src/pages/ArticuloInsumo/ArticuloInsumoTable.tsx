@@ -16,10 +16,13 @@ interface TableProps {
     articulosInsumo: ArticuloInsumo[];
     handleSubmit: (art: ArticuloInsumo, files: File[]) => Promise<void>;
     handleDelete: (idArt: number) => Promise<void>;
-    onFileChange: (newFiles: File[]) => void;
+    onFileChange?: (newFiles: File[]) => void;
+    handleChangeCategoria: (categoria : number) => void;
+    handleChangeUnidadMedida: (unidadMedida : number) => void;
+    handleChangeText: (denominacion : string) => void;
 }
 
-const ArticuloInsumoTable = ({ categorias, unidadesMedida, articulosInsumo, handleSubmit, handleDelete, onFileChange }: TableProps) => {
+const ArticuloInsumoTable = ({ categorias, unidadesMedida, articulosInsumo, handleSubmit, handleDelete, onFileChange, handleChangeCategoria, handleChangeText, handleChangeUnidadMedida }: TableProps) => {
     //Entidades de la Tabla
     const [articuloInsumo, setArticuloInsumo] = useState<ArticuloInsumo>();
 
@@ -39,17 +42,6 @@ const ArticuloInsumoTable = ({ categorias, unidadesMedida, articulosInsumo, hand
         setShowModal(true);
     };
 
-    const handleChangeCategoria = (id: number) => {
-        setCategoriaSeleccionada(id > 0 ? id : undefined);
-    }
-
-    const handleChangeUnidadMedida = (id: number) => {
-        setUnidadMedidaSeleccionada(id > 0 ? id : undefined);
-    }
-
-    const handleChangeText = (denominacion: string) => {
-        setSearchedDenominacion(denominacion ? denominacion : undefined);
-    }
 
     return (
         <div className="container">
@@ -113,7 +105,7 @@ const ArticuloInsumoTable = ({ categorias, unidadesMedida, articulosInsumo, hand
                     unidadesMedida={unidadesMedida}
                     categorias={categorias}
                     handleDelete={handleDelete}
-                    onFileChange={onFileChange}
+                    // onFileChange={onFileChange}
                 />
             )}
         </div>

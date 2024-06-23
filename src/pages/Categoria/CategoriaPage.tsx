@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Container, ListGroup, Button, Collapse, Modal, Form, ModalProps } from 'react-bootstrap';
-import { Categoria } from '../entities/DTO/Categoria/Categoria';
-import { CategoriaService } from '../services/CategoriaService';
-import { BsFillPencilFill, BsPlusCircleFill } from 'react-icons/bs';
-import GenericButton from '../components/generic/GenericButton';
-import { Omit, BsPrefixProps } from 'react-bootstrap/esm/helpers';
-import { JSX } from 'react/jsx-runtime';
+import { Categoria } from '../../entities/DTO/Categoria/Categoria';
+import { CategoriaService } from '../../services/CategoriaService';
+import {  BsPlusCircleFill, BsTrash } from 'react-icons/bs';
+import GenericButton from '../../components/generic/GenericButton';
+import { useAuth } from '../../Auth/Auth';
+import CategoriaModal from './CategoriaModal';
 
-export const CategoriasList = () => {
+export const CategoriaPage = () => {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [clickedCategoria, setClickedCategoria] = useState<number>(0);
     const [activeItems, setActiveItems] = useState<number[]>([]);
     const [collapsedItems, setCollapsedItems] = useState<number[]>([]);
     const [modalShow, setModalShow] = useState(false);
+    const{activeSucursal}=useAuth();
 
     const fetchCategorias = async () => {
         try {
-            const categorias = await CategoriaService.obtenerCategoriasPadre();
+            const categorias = await CategoriaService.obtenerCategoriasPadre(activeSucursal);
             console.log(categorias)
             setCategorias(categorias);
         } catch (error) {
@@ -44,6 +45,10 @@ export const CategoriasList = () => {
         }
     };
 
+    const handleButtonClickDelete = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, idPadre: number) =>{
+        console.log("ASD")
+    }
+
     const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, idPadre: number) => {
         event.stopPropagation();
         setClickedCategoria(idPadre);
@@ -68,8 +73,8 @@ export const CategoriasList = () => {
                             <GenericButton
                                 color="#FBC02D"
                                 size={20}
-                                icon={BsFillPencilFill}
-                                onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => console.log("EDITAR")}
+                                icon={BsTrash}
+                                onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleButtonClickDelete(e,categoria.id)}
                             />
                             <GenericButton
                                 color="#0080FF"
@@ -101,77 +106,16 @@ export const CategoriasList = () => {
                 <Button onClick={(e) => handleButtonClick(e, 0)}>Crear Categoria</Button>
             </div>
             {categorias ? renderCategorias(categorias) : <p>No hay categorias</p>}
-            <MyVerticallyCenteredModal
+            <CategoriaModal
                 show={modalShow}
                 onHide={() => {
                     setModalShow(false);
                     fetchCategorias();
                 }}
                 idpadre={clickedCategoria}
+                activeSucursal={activeSucursal}
             />
         </Container>
     );
 };
 
-function MyVerticallyCenteredModal(props: JSX.IntrinsicAttributes & Omit<Omit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, "ref"> & { ref?: ((instance: HTMLDivElement | null) => void | React.DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES[keyof React.DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES]) | React.RefObject<HTMLDivElement> | null | undefined; }, BsPrefixProps<"div"> & ModalProps> & BsPrefixProps<"div"> & ModalProps & { children?: React.ReactNode | undefined; }) {
-    const [error, setError] = useState<string>("");
-    const [categoria, setCategoria] = useState<Categoria>(new Categoria());
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            console.log(categoria);
-
-            const data = await CategoriaService.agregarCategoria(props.idpadre, { ...categoria, alta: true });
-            if (data) {
-                props.onHide()
-                setCategoria(new Categoria());
-            }
-
-        } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message);
-            }
-        }
-    }
-
-    return (
-        <Modal
-            {...props}
-            size="lg"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-        >
-            <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">
-                    Crear Categoria
-                </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group className="mb-3" controlId="denominacion">
-                        <Form.Label>Denominacion</Form.Label>
-                        <Form.Control type="tex" placeholder="Ingresar Denominacion" onChange={(e) => setCategoria(prev => ({
-                            ...prev,
-                            denominacion: e.target.value
-                        }))}
-                            value={categoria.denominacion} />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="imagen">
-                        <Form.Label>Imagen</Form.Label>
-                        <Form.Control type="tex" placeholder="Ingresar url imagen"
-                            onChange={(e) => setCategoria(prev => ({
-                                ...prev,
-                                imagen: e.target.value
-                            }))}
-                            value={categoria.imagen} />
-                    </Form.Group>
-                </Form>
-                {error && <p className='text-danger'>{error}</p>}
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant='secondary' onClick={props.onHide}>Close</Button>
-                <Button onClick={handleSave}>Crear</Button>
-            </Modal.Footer>
-        </Modal>
-    );
-}

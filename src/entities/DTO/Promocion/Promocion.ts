@@ -2,6 +2,7 @@
 import { TipoPromocion } from "../../enums/TipoPromocion";
 import { Articulo } from "../Articulo/Articulo";
 import { Base } from "../Base";
+import { Imagen } from "../Imagen";
 
 export class Promocion extends Base {
     denominacion: string = '';
@@ -13,6 +14,7 @@ export class Promocion extends Base {
     precioPromocional: number = 0;
     tipoPromocion: TipoPromocion | undefined = undefined;
     detallesPromocion: PromocionDetalle[] = [];
+    imagenes: Imagen[] = [];
   }
 export class PromocionDetalle extends Base {
     cantidad: number | null = 0;

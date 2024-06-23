@@ -1,56 +1,89 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Button, Alert } from 'react-bootstrap';
-import axios from 'axios';
-
-interface Empresa {
-  id?: number; // ID opcional porque no se necesita al crear una nueva empresa
-  nombre: string;
-  razonSocial: string;
-  cuil: string;
-}
+import React, { useState, useEffect } from "react";
+import { Form, Button, Alert } from "react-bootstrap";
+import { EmpresaService } from "../services/EmpresaService";
+import { Empresa } from "../entities/DTO/Empresa/Empresa";
+import ImagenCarousel from "../components/carousel/ImagenCarousel";
+import { Imagen } from "../entities/DTO/Imagen";
 
 interface AddEmpresaFormProps {
   onAddEmpresa: () => void;
   empresaEditando: Empresa | null;
 }
 
-const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEditando }) => {
-  const [empresa, setEmpresa] = useState<Empresa>({ nombre: '', razonSocial: '', cuil: '' });
+const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
+  onAddEmpresa,
+  empresaEditando,
+}) => {
+  const [empresa, setEmpresa] = useState<Empresa>(new Empresa());
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+  const [files, setFiles] = useState<File[]>([]);
 
   useEffect(() => {
     if (empresaEditando) {
+      console.log("empresaeditando", empresaEditando)
       setEmpresa(empresaEditando);
     }
   }, [empresaEditando]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setEmpresa({ ...empresa, [name]: value });
+    if (name === "cuil") {
+      // Validamos que el valor sea mayor o igual a cero antes de actualizar
+      const newValue = parseInt(value, 10);
+      if (!isNaN(newValue) && newValue >= 0) {
+        setEmpresa({ ...empresa, [name]: newValue.toString() });
+      }
+    } else {
+      setEmpresa({ ...empresa, [name]: value });
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    let response: Empresa;
+    //quitar blobs
+    empresa.imagenes = empresa.imagenes.filter(
+      (imagen) => !imagen.url.includes("blob")
+    );
     try {
-      if (empresaEditando) {
-        await axios.put(`http://localhost:8080/api/empresas/${empresaEditando.id}`, empresa);
+      if (empresaEditando && empresaEditando.id) {
+        response = await EmpresaService.update(empresaEditando.id, empresa);
       } else {
-        await axios.post('http://localhost:8080/api/empresas', empresa);
+        response = await EmpresaService.create(empresa);
       }
-      setSuccess(true);
-      setEmpresa({ nombre: '', razonSocial: '', cuil: '' });
-      setError(null);
-      onAddEmpresa();
+      if (response) {
+        setSuccess(true);
+        setEmpresa(new Empresa());
+        setError(null);
+        onAddEmpresa();
+      }
+
+      // Si el artículo se creó o actualizó correctamente, proceder a subir los archivos
+      if (response.id) {
+        const images = await EmpresaService.uploadFiles(response.id, files);
+        onAddEmpresa();
+      }
     } catch (err) {
-      setError('Error al crear o actualizar la empresa');
+      setError("Error al crear o actualizar la empresa");
       setSuccess(false);
     }
   };
 
+  const handleFileChange = (newFiles: File[]) => {
+    setFiles(newFiles);
+  };
+
+  const handleImagenesChange = (newImages: Imagen[]) => {
+    setEmpresa((prev) => ({
+      ...prev,
+      imagenes: newImages,
+    }));
+  };
+
   return (
     <div>
-      <h2>{empresaEditando ? 'Editar Empresa' : 'Agregar Empresa'}</h2>
+      <h2>{empresaEditando ? "Editar Empresa" : "Agregar Empresa"}</h2>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="nombre">
           <Form.Label>Nombre</Form.Label>
@@ -79,14 +112,26 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({ onAddEmpresa, empresaEd
             name="cuil"
             value={empresa.cuil}
             onChange={handleChange}
+            min="0" // Establecemos el mínimo a cero
             required
           />
         </Form.Group>
+        <ImagenCarousel
+          imagenesExistentes={empresa.imagenes}
+          onFilesChange={handleFileChange}
+          onImagenesChange={handleImagenesChange}
+        />
         <Button variant="primary" type="submit">
-          {empresaEditando ? 'Actualizar' : 'Agregar'}
+          {empresaEditando ? "Actualizar" : "Agregar"}
         </Button>
       </Form>
-      {success && <Alert variant="success">{empresaEditando ? 'Empresa actualizada con éxito' : 'Empresa creada con éxito'}</Alert>}
+      {success && (
+        <Alert variant="success">
+          {empresaEditando
+            ? "Empresa actualizada con éxito"
+            : "Empresa creada con éxito"}
+        </Alert>
+      )}
       {error && <Alert variant="danger">{error}</Alert>}
     </div>
   );

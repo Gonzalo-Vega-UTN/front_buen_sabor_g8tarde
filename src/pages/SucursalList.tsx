@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Dropdown, DropdownButton, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { fetchSucursales, fetchSucursalesByEmpresaId } from '../services/SucursalService';
 import SucursalForm from './SucursalForm';
 import { Sucursal } from '../entities/DTO/Sucursal/Sucursal';
 import { Empresa } from '../entities/DTO/Empresa/Empresa';
-
+import { useAuth } from '../Auth/Auth';
+import './styles.css'; // Importar tu archivo de estilos
+import SucursalService from '../services/SucursalService';
 
 interface SucursalListProps {
   refresh: boolean;
@@ -18,15 +19,17 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
   const [error, setError] = useState<string | null>(null);
   const [sucursalEditando, setSucursalEditando] = useState<Sucursal | null>(null);
   const [showModal, setShowModal] = useState(false);
+ 
+  const { selectSucursal ,activeSucursal} = useAuth();
 
   useEffect(() => {
     const getSucursales = async () => {
       try {
         let data;
         if (empresa) {
-          data = await fetchSucursalesByEmpresaId(empresa.id);
+          data = await SucursalService.fetchSucursalesByEmpresaId(empresa.id);
         } else {
-          data = await fetchSucursales();
+          data = await SucursalService.fetchSucursales();
         }
         setSucursales(data);
       } catch (error) {
@@ -41,6 +44,8 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
     getSucursales();
   }, [refresh, empresa]);
 
+
+
   const handleEdit = (sucursal: Sucursal) => {
     setSucursalEditando(sucursal);
     setShowModal(true);
@@ -51,12 +56,42 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
     setShowModal(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseModal = async () => {
     setShowModal(false);
-    fetchSucursales();
+    try {
+      let data;
+      if (empresa) {
+        data = await SucursalService.fetchSucursalesByEmpresaId(empresa.id);
+      } else {
+        data = await SucursalService.fetchSucursales();
+      }
+      setSucursales(data);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unknown error occurred");
+      }
+    }
   };
 
-  const defaultImageUrl = 'https://http2.mlstatic.com/storage/sc-seller-journey-backoffice/images-assets/234940675890-Sucursales--una-herramienta-para-mejorar-la-gesti-n-de-tus-puntos-de-venta.png';
+  const handleCardClick = (sucursalId: number) => {
+    selectSucursal(sucursalId);
+  };
+
+  const handleStatusChange = async (sucursalId: number, alta: boolean) => { //TODO: arreglar baja de una sucursal para que de de baja todo
+    try {
+      const sucursal = sucursales.find(suc => suc.id === sucursalId);
+      if (sucursal) {
+        SucursalService.BajaSucursal(sucursal.id);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      }
+    }
+  };
+
 
   return (
     <Container>
@@ -66,8 +101,12 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
       <Row>
         {sucursales.map(sucursal => (
           <Col key={sucursal.id} sm={12} md={6} lg={4} className="mb-4">
-            <Card>
-              <Card.Img variant="top" src={defaultImageUrl} />
+            <Card 
+              onClick={() => handleCardClick(sucursal.id)}
+              className={activeSucursal === String(sucursal.id) ? "selected-card" : ""}
+              style={{ backgroundColor: sucursal.alta ? 'white' : 'darkgrey' }}
+            >
+              <Card.Img variant="top" src={sucursal.imagenes[0] ? sucursal.imagenes[0].url : 'https://via.placeholder.com/150'} />
               <Card.Body>
                 <Card.Title>{sucursal.nombre}</Card.Title>
                 <Card.Text>
@@ -75,9 +114,19 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
                   <strong>Horario Apertura:</strong> {sucursal.horarioApertura} <br />
                   <strong>Horario Cierre:</strong> {sucursal.horarioCierre}
                 </Card.Text>
-                <Button onClick={() => handleEdit(sucursal)}>
+                <Button onClick={(e) => { e.stopPropagation(); handleEdit(sucursal); }}>
                   <FontAwesomeIcon icon={faEdit} />
                 </Button>
+                <DropdownButton
+                  id="dropdown-basic-button"
+                  title={sucursal.alta ? 'Alta' : 'Baja'}
+                  variant={sucursal.alta ? 'success' : 'danger'}
+                  className="ml-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Dropdown.Item onClick={() => handleStatusChange(sucursal.id, true)}>Alta</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleStatusChange(sucursal.id, false)}>Baja</Dropdown.Item>
+                </DropdownButton>
               </Card.Body>
             </Card>
           </Col>

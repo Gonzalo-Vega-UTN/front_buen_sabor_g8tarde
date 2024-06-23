@@ -1,7 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import DashboardPage from "../pages/DashboardPage";
 import ArticuloInsumoPage from "../pages/ArticuloInsumo/ArticulosInsumosPage";
-import { FormularioArtManuf } from "../pages/FormularioArtManuf";
 import EmpresasPage from '../pages/EmpresasPage';
 import SucursalesPage from "../pages/SucursalPage";
 import Home from "../components/Home/Home";
@@ -9,16 +7,22 @@ import { CartProvider } from "../components/Carrito/ContextCarrito";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import { Rol } from "../entities/enums/Rol";
 import { PedidosList } from "../pages/PedidosList";
-import { CategoriasList } from "../pages/CategoriasList";
+import { CategoriaPage } from "../pages/Categoria/CategoriaPage";
 import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
 import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
 
-import { Reportes } from "../pages/Reportes";
 import { Estadisticas } from "../pages/Estadisticas";
 
 import PromocionesPage from "../pages/Promocion/PromocionesPage";
 import PromocionForm from "../pages/Promocion/FormularioPromocion";
 import ClientTable from "../pages/ClientesList";
+import { PedidosCajero } from "../components/PedidosXEstado/PedidosCajero";
+import { PedidosCocinero } from "../components/PedidosXEstado/PedidosCocinero";
+import { PedidosDelivery } from "../components/PedidosXEstado/PedidosDelivery";
+import { FormularioArtManuf } from "../pages/ArtManufacturado/FormularioArtManuf";
+import DashboardPage from "../pages/ArtManufacturado/DashBoard";
+import { UnidadesMedidaList } from "../pages/UnidadMedida/UnidadMedidaList";
+import FormularioDomicilio from "../pages/Domicilio/FormDomicilio";
 
 
 
@@ -32,22 +36,25 @@ export default function AppRoutes() {
           <Home />
         </CartProvider>} />
 
-      <Route
-        path="/dashboard"
-        element={
-          <PrivateRoute
-            element={DashboardPage}
-            roles={[Rol.Admin]}
-          />
-        }
-      />
-      <Route path="/registro" element={<RegistroUsuarioCliente />} />
+      
+      <Route path="/registro" element={<RegistroUsuarioCliente closeModal={function (): void {
+        throw new Error("Function not implemented.");
+      } } />} />
       <Route path="/perfil" element={<ClienteFormulario />} />
       <Route
         path="/productos"
         element={
           <PrivateRoute
             element={DashboardPage}
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
+       <Route
+        path="/unidadmedida"
+        element={
+          <PrivateRoute
+            element={UnidadesMedidaList}
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
@@ -129,7 +136,7 @@ export default function AppRoutes() {
         path="/categorias"
         element={
           <PrivateRoute
-            element={CategoriasList} //Recordar cambiar
+            element={CategoriaPage} //Recordar cambiar
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
@@ -152,17 +159,42 @@ export default function AppRoutes() {
           />
         }
       />
-
       <Route
-        path="/reportes"
+        path="/PedidosCajero"
         element={
           <PrivateRoute
-            element={Reportes} //Recordar cambiar
+            element={PedidosCajero} //Recordar cambiar
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
       />
-
+      <Route
+        path="/PedidosCocinero"
+        element={
+          <PrivateRoute
+            element={PedidosCocinero} //Recordar cambiar
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
+      <Route
+        path="/PedidosDelivery"
+        element={
+          <PrivateRoute
+            element={PedidosDelivery} //Recordar cambiar
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
+      <Route
+        path="/Domicilio"
+        element={
+          <PrivateRoute
+            element={FormularioDomicilio} //Recordar cambiar
+            roles={[Rol.Admin]} // Solo admin puede acceder
+          />
+        }
+      />
     </Routes>
   );
 }

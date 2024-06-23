@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { BsFillPeopleFill, BsBuilding, BsShop, BsBox, BsBasket, BsPercent, BsCart, BsGraphUp, BsReverseLayoutTextSidebarReverse } from 'react-icons/bs';
-import { MdOutlineCategory } from "react-icons/md";
+import { BsFillPeopleFill, BsBuilding, BsShop, BsBox, BsBasket, BsPercent, BsCart, BsGraphUp } from 'react-icons/bs';
+import { TbRulerMeasure } from "react-icons/tb";
+import { LuChefHat } from "react-icons/lu";
+import { LiaCashRegisterSolid } from "react-icons/lia";
+import { MdDeliveryDining, MdOutlineCategory } from "react-icons/md";
 import { Link, useLocation } from 'react-router-dom';
 import './style.css';
 import { useAuth } from '../../Auth/Auth';
 import { Rol } from '../../entities/enums/Rol';
 import logo from '../../assets/images/Buen sabor logo 1.png'; // Importa el logo
+import BotonLogin from '../Log-Register/BotonLogin';
+import BotonLogout from '../Log-Register/BotonLogout';
 
 const Sidebar = () => {
     const [expanded, setExpanded] = useState(false);
@@ -13,6 +18,7 @@ const Sidebar = () => {
     const [submenuOpen, setSubmenuOpen] = useState(false);
     const location = useLocation();
     const { userRol } = useAuth();
+    const { isAuthenticated } = useAuth();
 
     const handleMouseEnter = () => setExpanded(true);
     const handleMouseLeave = () => setExpanded(false);
@@ -24,6 +30,7 @@ const Sidebar = () => {
     const toggleSubmenu = () => {
         setSubmenuOpen(!submenuOpen);
     };
+
 
     return (
         <div
@@ -47,7 +54,12 @@ const Sidebar = () => {
                         <span className="nav-text">Tienda</span>
                     </Link>
                 </li>
-                {userRol === Rol.Admin && (
+
+                {isAuthenticated ? (
+                    <BotonLogout />
+                ) : (
+                    <BotonLogin />
+                {isAuthenticated  && userRol === Rol.Admin && (
                     <>
                         <li className="nav-item">
                             <Link
@@ -71,38 +83,28 @@ const Sidebar = () => {
                             </Link>
                         </li>
 
+
                         <li className="nav-item">
-                            <span
-                                className={`nav-link text-white ${location.pathname.startsWith('/productos') || selected.startsWith('/productos') ? 'active' : ''}`}
-                                onClick={toggleSubmenu}
+                            <Link
+                                to="/productos"
+                                className={`nav-link text-white ${location.pathname === '/productos' || selected === '/productos' ? 'active' : ''}`}
+                                onClick={() => handleClick('/productos')}
                             >
                                 <BsBox size={24} className="me-2" />
                                 <span className="nav-text">Productos</span>
-                            </span>
-                            {submenuOpen && (
-                                <ul className="nav flex-column submenu">
-                                    <li className="nav-item">
-                                        <Link
-                                            to="/productos"
-                                            className={`nav-link text-white ${location.pathname === '/productos' || selected === '/productos/lista' ? 'active' : ''}`}
-                                            onClick={() => handleClick('/productos')}
-                                        >
-                                            Lista Productos
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link
-                                            to="/create-product/0"
-                                            className={`nav-link text-white ${location.pathname === '/create-product/0' || selected === '/create-product/0' ? 'active' : ''}`}
-                                            onClick={() => handleClick('/create-product/0')}
-                                        >
-                                            Crear Producto
-                                        </Link>
-                                    </li>
-                                </ul>
-                            )}
+                            </Link>
                         </li>
-
+                        
+                        <li className="nav-item">
+                            <Link
+                                to="/unidadmedida"
+                                className={`nav-link text-white ${location.pathname === '/unidadmedida' || selected === '/unidadmedida' ? 'active' : ''}`}
+                                onClick={() => handleClick('/unidadmedida')}
+                            >
+                                <TbRulerMeasure size={24} className="me-2" />
+                                <span className="nav-text">Medidas</span>
+                            </Link>
+                        </li>
                         <li className="nav-item">
                             <Link
                                 to="/ingredientes"
@@ -166,25 +168,45 @@ const Sidebar = () => {
                                 <span className="nav-text">Estadísticas</span>
                             </Link>
                         </li>
-
+                        
                         <li className="nav-item">
                             <Link
-                                to="/reportes"
-                                className={`nav-link text-white ${location.pathname === '/reportes' || selected === '/reportes' ? 'active' : ''}`}
-                                onClick={() => handleClick('/reportes')}
+                                to="/PedidosCajero"
+                                className={`nav-link text-white ${location.pathname === '/PedidosCajero' || selected === '/PedidosCajero' ? 'active' : ''}`}
+                                onClick={() => handleClick('/PedidosCajero')}
                             >
-                                <BsReverseLayoutTextSidebarReverse size={24} className="me-2" />
-                                <span className="nav-text">Reportes</span>
+                               <LiaCashRegisterSolid size={24} className="me-2" />
+                                <span className="nav-text">Cajero</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link
+                                to="/PedidosDelivery"
+                                className={`nav-link text-white ${location.pathname === '/PedidosDelivery' || selected === '/PedidosDelivery' ? 'active' : ''}`}
+                                onClick={() => handleClick('/PedidosDelivery')}
+                            >
+                                <MdDeliveryDining size={24} className="me-2" />
+                                <span className="nav-text">Delivery</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link
+                                to="/PedidosCocinero"
+                                className={`nav-link text-white ${location.pathname === '/PedidosCocinero' || selected === '/PedidosCocinero' ? 'active' : ''}`}
+                                onClick={() => handleClick('/PedidosCocinero')}
+                            >
+                                <LuChefHat size={24} className="me-2" />
+                                <span className="nav-text">Cocinero</span>
                             </Link>
                         </li>
 
                     </>
                 )}
             </ul>
-
             <div className="mt-auto"></div> {/* Alinea los elementos al fondo del sidebar */}
         </div>
     );
-};
+}
+   
 
 export default Sidebar;

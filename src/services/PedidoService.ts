@@ -1,4 +1,5 @@
 import PedidoFull from "../entities/DTO/Pedido/PedidoFull";
+import { Estado } from "../entities/enums/Estado";
 
 class PedidoService {
     private static  urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/pedidos`;
@@ -56,6 +57,35 @@ class PedidoService {
             }) as PedidoFull[];
         } catch (error) {
             console.error('Error al obtener los pedidos:', error);
+            throw error;
+        }
+    }
+    static async obtenerPedidosXEstado(estado : Estado): Promise<PedidoFull[]> {
+        try {
+            return await this.request('/estado/' + estado , {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                mode: 'cors'
+            }) as PedidoFull[];
+        } catch (error) {
+            console.error('Error al obtener los pedidos:', error);
+            throw error;
+        }
+    }
+    static async actualizarEstado(id: number, estado: Estado): Promise<PedidoFull> {
+        try {
+            const url = `/estado/actualizar/${id}/${estado}`;
+            return await this.request(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                mode: 'cors'
+            }) as PedidoFull;
+        } catch (error) {
+            console.error('Error al actualizar el pedido:', error);
             throw error;
         }
     }

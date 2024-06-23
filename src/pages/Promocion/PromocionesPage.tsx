@@ -4,9 +4,11 @@ import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import { Promocion } from "../../entities/DTO/Promocion/Promocion";
-import { ModalType } from "../../types/ModalType";
 import PromocionService from "../../services/PromocionService";
 import CustomButton from "../../components/generic/GenericButton";
+import GenericButton from "../../components/generic/GenericButton";
+import { FaSave } from "react-icons/fa";
+import PromModal from "./ModalPromocion";
 
 export default function PromotionTable() {
   const navigate = useNavigate();
@@ -17,17 +19,29 @@ export default function PromotionTable() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<number>();
 
   const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
+  // const para manejar el estado del modal
+  const [showModal, setShowModal] = useState(false);
+  const [title, setTitle] = useState("");
 
   const handleClick = (id: number) => {
     navigate("/create-promotion/" + id);
   };
 
-  const handleClickEliminar = (newTitle: string, promo: Promocion, modal: ModalType) => {
-
+  const handleClickEliminar = (newTitle: string, promo: Promocion) => {
+    setTitle(newTitle);
+    setShowModal(true);
     setPromotion(promo);
   };
 
-
+  const handleDelete = async (id: number) => {
+    try {
+      await PromocionService.delete(id);
+      setShowModal(false);
+      fetchPromotions();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchPromotions = async (idCategoria?: number, denominacion?: string) => {
     const promotionsFiltered = await PromocionService.getAll(/*idCategoria, denominacion*/);
@@ -37,9 +51,6 @@ export default function PromotionTable() {
   useEffect(() => {
     fetchPromotions();
   }, []);
-
-
-
 
   useEffect(() => {
     fetchPromotions(categoriaSeleccionada, searchedDenominacion);
@@ -64,6 +75,7 @@ export default function PromotionTable() {
             <th>Fecha Hasta</th>
             <th>Hora Desde</th>
             <th>Hora Hasta</th>
+            <th>Tipo Promocion</th>
             <th>Precio Promocional</th>
             <th>Editar</th>
             <th>Eliminar</th>
@@ -71,13 +83,18 @@ export default function PromotionTable() {
         </thead>
         <tbody>
           {promotions.map((promotion) => (
-            <tr key={promotion.id} className="text-center">
+            <tr
+              key={promotion.id}
+              className="text-center"
+              style={{ backgroundColor: !promotion.alta ? '#d3d3d3' : 'inherit' }}
+            >
               <td>{promotion.id}</td>
               <td>{promotion.denominacion}</td>
               <td>{promotion.fechaDesde.toString()}</td>
               <td>{promotion.fechaHasta.toString()}</td>
               <td>{promotion.horaDesde}</td>
               <td>{promotion.horaHasta}</td>
+              <td>{promotion.tipoPromocion}</td>
               <td>{promotion.precioPromocional}</td>
               <td>
                 <CustomButton
@@ -88,12 +105,15 @@ export default function PromotionTable() {
                 />
               </td>
               <td>
-                <CustomButton
-                  color="#D32F2F"
+                <GenericButton
+                  color={promotion.alta ? "#D32F2F" : "#50C878"}
                   size={23}
-                  icon={BsTrashFill}
+                  icon={promotion.alta ? BsTrashFill : FaSave}
                   onClick={() =>
-                    handleClickEliminar("Eliminar Promoción", promotion, ModalType.DELETE)
+                    handleClickEliminar(
+                      "Alta/Baja Articulo",
+                      promotion
+                    )
                   }
                 />
               </td>
@@ -102,7 +122,15 @@ export default function PromotionTable() {
         </tbody>
       </Table>
 
-
+      {showModal && (
+        <PromModal
+          show={showModal}
+          onHide={() => setShowModal(false)}
+          title={title}
+          handleDelete={handleDelete}
+          promo={promotion}
+        />
+      )}
     </div>
   );
 }

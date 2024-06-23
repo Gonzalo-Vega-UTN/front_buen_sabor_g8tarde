@@ -3,31 +3,39 @@ import ArticuloInsumoTable from "./ArticuloInsumoTable";
 import { ModalType } from "../../types/ModalType";
 import Button from "../../components/generic/GenericButton";
 import { useEffect, useState } from "react";
-import ArticuloInsumoModal from "./ArticuloInsumoModal";
-import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
+import { useAuth } from "../../Auth/Auth";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
-import ArticuloInsumoService from "../../services/ArticuloInsumoService";
-import { CategoriaService } from "../../services/CategoriaService";
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
-import UnidadMedidaServices from "../../services/UnidadMedidaServices";
+import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
+import { CategoriaService } from "../../services/CategoriaService";
+import UnidadMedidaService from "../../services/UnidadMedidaServices";
+import ArticuloInsumoService from "../../services/ArticuloInsumoService";
+import ArticuloInsumoModal from "./ArticuloInsumoModal";
 
 export default function ArticuloInsumoPage() {
 
   //Estados
   const [showModalCrear, setShowModalCrear] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [, setError] = useState<string>("");
+  const{activeSucursal}=useAuth();
 
   //Estados Listas Entidades
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
   const [articulosInsumo, setArticuloInsumo] = useState<ArticuloInsumo[]>([]);
 
+  //Estados de Selección
+  const [categoria, setCategoria] = useState<number>();
+  const [unidadMedida, setUnidadMedida] = useState<number>();
+  const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
+
+
   // Estado para manejar los archivos
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  // const [, setSelectedFiles] = useState<File[]>([]);
 
   useEffect(() => {
     const fetchCategorias = async () => {
-      const categorias = await CategoriaService.obtenerCategorias();
+      const categorias = await CategoriaService.obtenerCategorias(activeSucursal);
       setCategorias(categorias);
     };
 
@@ -36,7 +44,7 @@ export default function ArticuloInsumoPage() {
 
   useEffect(() => {
     const fetchUnidadadMedida = async () => {
-      const unidadesMedida = await UnidadMedidaServices.getAll();
+      const unidadesMedida = await UnidadMedidaService.getAll();
       setUnidadesMedida(unidadesMedida);
     };
 
@@ -44,7 +52,7 @@ export default function ArticuloInsumoPage() {
   }, []);
 
   const fetchDataArticulosInsumo = async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string) => {
-    const articulos = await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(idCategoria, idUnidadMedida, denominacion);
+    const articulos = await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(activeSucursal, idCategoria, idUnidadMedida, denominacion);
     setArticuloInsumo(articulos);
   };
 
@@ -52,28 +60,36 @@ export default function ArticuloInsumoPage() {
     fetchDataArticulosInsumo();
   }, []);
 
+  useEffect(() => {
+      fetchDataArticulosInsumo(categoria,unidadMedida,searchedDenominacion);
+
+  }, [categoria, unidadMedida, searchedDenominacion]);
+
+
   const handleSaveUpdate = async (art: ArticuloInsumo, files: File[]) => {
-    console.log(files)
-    return;
     try {
       let response: ArticuloInsumo;
-      if (art.id === 0) { // Articulo Nuevo
-        response = await ArticuloInsumoService.crearArticuloInsumo(art);
-      } else { // Actualizar Articulo
+      //quitar blobs
+      art.imagenes =  art.imagenes.filter(imagen => !imagen.url.includes("blob"))
+      if (art.id === 0) { // Artículo nuevo
+        response = await ArticuloInsumoService.crearArticuloInsumo(art, activeSucursal);
+      } else { // Actualizar artículo
         response = await ArticuloInsumoService.actualizarArticuloInsumo(art.id, art);
       }
+  
       if (response) {
-        setArticuloInsumo(prevArticulos => [...prevArticulos.filter(a => a.id !== art.id), response]); //Quita primero el articulo y luego lo agrega al final
+        setArticuloInsumo(prevArticulos => [...prevArticulos.filter(a => a.id !== art.id), response]);
         setError("");
-        fetchDataArticulosInsumo(); // Llama a fetchDataArticulosInsumo después de actualizar el estado
-      }
-
+        fetchDataArticulosInsumo(); 
+      } 
+      // Si el artículo se creó o actualizó correctamente, proceder a subir los archivos
       if (response.id) {
-        const uploadResponse = await ArticuloInsumoService.uploadFiles(response.id, files);
+       const images = await ArticuloInsumoService.uploadFiles(response.id, files);
+       fetchDataArticulosInsumo(); 
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setError(error.message);
       }
     }
@@ -96,10 +112,18 @@ export default function ArticuloInsumoPage() {
     }
   };
 
-  // Maneja el cambio de archivos
-  const handleFileChange = (newFiles: File[]) => {
-    setSelectedFiles(newFiles);
-  };
+
+  const handleChangeCategoria = (id: number) => {
+    setCategoria(id > 0 ? id : undefined);
+}
+
+const handleChangeUnidadMedida = (id: number) => {
+    setUnidadMedida(id > 0 ? id : undefined);
+}
+
+const handleChangeText = (denominacion: string) => {
+    setSearchedDenominacion(denominacion ? denominacion : undefined);
+}
 
   return (
     <>
@@ -112,7 +136,10 @@ export default function ArticuloInsumoPage() {
         articulosInsumo={articulosInsumo}
         handleSubmit={handleSaveUpdate}
         handleDelete={handleDelete}
-        onFileChange={handleFileChange}
+        // onFileChange={handleFileChange}
+        handleChangeCategoria={handleChangeCategoria}
+        handleChangeUnidadMedida={handleChangeUnidadMedida}
+        handleChangeText={handleChangeText}
       />
 
       {showModalCrear && (
@@ -125,7 +152,7 @@ export default function ArticuloInsumoPage() {
           handleDelete={handleDelete}
           unidadesMedida={unidadesMedida}
           categorias={categorias}
-          onFileChange={handleFileChange} // Pasar el manejador de archivos
+          // onFileChange={handleFileChange} // Pasar el manejador de archivos
         />
       )}
     </>

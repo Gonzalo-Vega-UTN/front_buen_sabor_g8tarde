@@ -1,4 +1,5 @@
-import ProductTable from "../components/tables/ProductTable";
+import ProductTable from "./ProductTable";
+
 
 export default function DashboardPage() {
   return (

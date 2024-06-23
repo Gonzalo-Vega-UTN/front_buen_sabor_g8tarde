@@ -4,9 +4,10 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import * as Icon from 'react-bootstrap-icons';
-import BotonLogin from '../Log-Register/BotonLogin';
-import BotonLogout from '../Log-Register/BotonLogout';
-import { useAuth } from '../../Auth/Auth';
+import { useAuth } from '../../../Auth/Auth';
+import BotonLogout from '../../Log-Register/BotonLogout';
+import BotonLogin from '../../Log-Register/BotonLogin';
+
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
