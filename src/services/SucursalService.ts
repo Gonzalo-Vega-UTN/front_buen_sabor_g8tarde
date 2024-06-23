@@ -1,52 +1,122 @@
-import axios from 'axios';
+import { Imagen } from "../entities/DTO/Imagen";
+import { Sucursal } from "../entities/DTO/Sucursal/Sucursal";
 
-const API_URL = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/sucursales`;
+const BASE_URL = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/sucursales`;
 
-export const fetchSucursales = async () => {
-  try {
-    const response = await axios.get(API_URL);
-    if (Array.isArray(response.data)) {
-      return response.data;
-    } else {
-      console.error('Response is not an array:', response.data);
-      throw new Error('Error fetching sucursales: Response is not an array');
+export class SucursalService {
+  private static urlServer = BASE_URL;
+
+  private static async request(endpoint: string, options: RequestInit) {
+    const response = await fetch(`${this.urlServer}${endpoint}`, options);
+    const responseData = await response.json();
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Error during request');
     }
-  } catch (error) {
-    console.error('Error fetching sucursales:', error);
-    throw new Error('Error fetching sucursales');
+    return responseData;
   }
-};
-export const fetchSucursalesByEmpresaId = async (empresaId:number) => {
-  try {
-    const response = await axios.get(`${API_URL}/empresa/${empresaId}`);
-    if (Array.isArray(response.data)) {
-      return response.data;
-    } else {
-      console.error('Response is not an array:', response.data);
-      throw new Error('Error fetching sucursales: Response is not an array');
-    }
-  } catch (error) {
-    console.error('Error fetching sucursales by empresa ID:', error);
-    throw new Error('Error fetching sucursales by empresa ID');
-  }
-};
-export const createSucursal = async (sucursal: any) => {
+
+  static async fetchSucursales(): Promise<Sucursal[]> {
     try {
-      console.log(sucursal)
-      await axios.post(API_URL, sucursal);
+      const responseData = await this.request('', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      });
+
+      return responseData as Sucursal[];
     } catch (error) {
-      console.error('Error creating sucursal:', error);
-      throw new Error('Error creating sucursal');
+      console.error('Error al obtener todas las Sucursales:', error);
+      throw error;
     }
-  };
+  }
+
+  static async fetchSucursalesByEmpresaId(empresaId: number): Promise<Sucursal[]> {
+    try {
+      const responseData = await this.request(`/empresa/${empresaId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      });
+      return responseData;
+    } catch (error) {
+      console.error(`Error al obtener sucursales por empresa ID ${empresaId}:`, error);
+      throw error;
+    }
+  }
+
+  static async createSucursal(sucursal: Sucursal): Promise<Sucursal> {
+    try {
+      const responseData = await this.request('', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sucursal),
+        mode: 'cors'
+      });
+      return responseData;
+    } catch (error) {
+      console.error('Error al crear sucursal:', error);
+      throw error;
+    }
+  }
+
+  static async updateSucursal(id: number, sucursal: Sucursal): Promise<Sucursal> {
+    try {
+      const responseData = await this.request(`/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sucursal),
+        mode: 'cors'
+      });
+      return responseData;
+    } catch (error) {
+      console.error(`Error actualizando sucursal con ID ${id}:`, error);
+      throw error;
+    }
+  }
+  static async BajaSucursal(id: number): Promise<Sucursal> {
+    try {
+      const responseData = await this.request(`/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      });
+      return responseData;
+    } catch (error) {
+      console.error(`Error actualizando sucursal con ID ${id}:`, error);
+      throw error;
+    }
+  }
   
-  export const updateSucursal = async (id: number, sucursal: any) => {
+  static async uploadFiles(id: number, files: File[]): Promise<Imagen[]> {
+    const uploadPromises = files.map(file => {
+      const formData = new FormData();
+      formData.append('uploads', file);
+      formData.append('id', String(id));
+
+      return this.request(`/uploads`, {
+        method: 'POST',
+        body: formData,
+        mode: 'cors'
+      }) as Promise<Imagen>;
+    });
+
     try {
-      
-      console.log(sucursal)
-      await axios.put(`${API_URL}/${id}`, sucursal);
+      return await Promise.all(uploadPromises);
     } catch (error) {
-      console.error('Error updating sucursal:', error);
-      throw new Error('Error updating sucursal');
+      console.error(`Error al subir imágenes para el id ${id}:`, error);
+      throw error;
     }
-  };
+  }
+};
+
+export default SucursalService;

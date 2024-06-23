@@ -1,19 +1,24 @@
-import React, { useState } from 'react';
-import { Modal, Form, Button, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import Usuario from '../../entities/DTO/Usuario/Usuario';
-import {Cliente} from '../../entities/DTO/Cliente/Cliente';
-import UsuarioService from '../../services/UsuarioService';
-import ClienteService from '../../services/ClienteService';
+import React, { useState } from "react";
+import { Modal, Form, Button, Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import Usuario from "../../entities/DTO/Usuario/Usuario";
+import { Cliente } from "../../entities/DTO/Cliente/Cliente";
+import UsuarioService from "../../services/UsuarioService";
+import ClienteService from "../../services/ClienteService";
+import ImagenCarousel from "../carousel/ImagenCarousel";
+import { Imagen } from "../../entities/DTO/Imagen";
 
 interface RegistroUsuarioClienteProps {
   closeModal: () => void;
 }
 
-const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({ closeModal }) => {
+const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
+  closeModal,
+}) => {
   const [step, setStep] = useState(1);
   const [usuarioData, setUsuarioData] = useState<Usuario>(new Usuario());
   const [clienteData, setClienteData] = useState<Cliente>(new Cliente());
+  const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -38,7 +43,9 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({ closeMo
 
     try {
       console.log("Validando Usuario");
-      const data = await UsuarioService.validarExistenciaUsuario(usuarioData.username);
+      const data = await UsuarioService.validarExistenciaUsuario(
+        usuarioData.username
+      );
       if (!data) {
         setError("");
         setTimeout(() => {
@@ -76,7 +83,15 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({ closeMo
       }
     }
   };
-
+  const handleImagenesChange = (newImages: Imagen[]) => {
+    setClienteData((prev) => ({
+      ...prev,
+      imagenes: newImages,
+    }));
+  };
+  const handleFileChange = (newFiles: File[]) => {
+    setFiles(newFiles);
+  };
   const handleBack = () => {
     setStep(1);
     navigate("/"); // Redirigir al usuario a la página principal al volver
@@ -119,10 +134,18 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({ closeMo
               </Button>
             </Form.Group>
             <div className="d-flex justify-content-between mt-3">
-              <Button variant="secondary" onClick={handleBack}>Volver</Button>
-              <Button variant="primary" type="submit">Siguiente</Button>
+              <Button variant="secondary" onClick={handleBack}>
+                Volver
+              </Button>
+              <Button variant="primary" type="submit">
+                Siguiente
+              </Button>
             </div>
-            {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+            {error && (
+              <Alert variant="danger" className="mt-3">
+                {error}
+              </Alert>
+            )}
           </Form>
         )}
 
@@ -182,28 +205,30 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({ closeMo
                 required
               />
             </Form.Group>
-            <Form.Group controlId="formImagen">
-              <Form.Label>Imagen</Form.Label>
-              <Form.Control
-                type="file"
-                name="imagen"
-                accept="image/*"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    setClienteData({
-                      ...clienteData,
-                      imagen: e.target.files[0],
-                    });
-                  }
-                }}
-              />
-            </Form.Group>
+            <ImagenCarousel
+              imagenesExistentes={clienteData.imagenes}
+              onFilesChange={handleFileChange}
+              onImagenesChange={handleImagenesChange}
+            />
+
             <div className="d-flex justify-content-between mt-3">
-              <Button variant="secondary" onClick={() => setStep(1)}>Volver</Button>
-              <Button variant="primary" type="submit">Registrar</Button>
+              <Button variant="secondary" onClick={() => setStep(1)}>
+                Volver
+              </Button>
+              <Button variant="primary" type="submit">
+                Registrar
+              </Button>
             </div>
-            {success && <Alert variant="success" className="mt-3">{success}</Alert>}
-            {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+            {success && (
+              <Alert variant="success" className="mt-3">
+                {success}
+              </Alert>
+            )}
+            {error && (
+              <Alert variant="danger" className="mt-3">
+                {error}
+              </Alert>
+            )}
           </Form>
         )}
       </Modal.Body>

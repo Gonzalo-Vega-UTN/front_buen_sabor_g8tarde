@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Empresa } from '../entities/DTO/Empresa/Empresa';
 import { EmpresaService } from '../services/EmpresaService';
@@ -40,7 +39,18 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
     try {
       const empresa = empresas.find(emp => emp.id === empresaId);
       if (empresa) {
-        await axios.put(`http://localhost:8080/api/empresas/${empresaId}`, { ...empresa, alta });
+        const response = await fetch(`http://localhost:8080/api/empresas/${empresaId}`, { //TODO: arreglar
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ...empresa, alta }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Error al actualizar el estado de la empresa');
+        }
+
         setEmpresas(empresas.map(emp => emp.id === empresaId ? { ...emp, alta } : emp));
       }
     } catch (error) {
@@ -61,7 +71,7 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
               onClick={() => handleCardClick(empresa.id)}
               style={{ backgroundColor: empresa.alta ? 'white' : 'darkgrey' }}
             >
-              <Card.Img variant="top" src={empresa.imagenUrl || 'https://via.placeholder.com/150'} />
+              <Card.Img variant="top" src={empresa.imagenes[0] ? empresa.imagenes[0].url : 'https://via.placeholder.com/150'} />
               <Card.Body>
                 <Card.Title>{empresa.nombre}</Card.Title>
                 <Card.Text>

@@ -21,12 +21,12 @@ const SucursalesPage: React.FC = () => {
         const response = await EmpresaService.getOne(Number(id))
         console.log(response)
         if (!response) {
-          throw new Error('Network response was not ok'); //TODO: ARREGLAR
+          throw new Error('Error procesando la solicitud'); //TODO: ARREGLAR
         }
         console.log(response)
         setEmpresa(response);
       } catch (error) {
-        console.error('Fetch error:', error);
+        console.error('error:', error);
       }
     }
   };

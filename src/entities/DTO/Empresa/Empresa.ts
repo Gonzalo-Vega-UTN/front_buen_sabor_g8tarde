@@ -1,12 +1,12 @@
 import { Base } from "../Base";
+import { Imagen } from "../Imagen";
 import { Sucursal } from "../Sucursal/Sucursal";
-import { EmpresaImagen } from "./EmpresaImagen";
 
 export class Empresa extends Base {
     nombre: string = '';
     razonSocial: string = '';
     cuil: string = '' ;
-    imagenUrl: string = '';
+    imagenes: Imagen[] = [];
     alta: boolean = true; // Nueva propiedad para indicar si la empresa está activa o de baja
     sucursal: Sucursal[] = [];
 }

@@ -5,6 +5,7 @@ import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsum
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import ImagenCarousel from "../../components/carousel/ImagenCarousel";
+import { Imagen } from "../../entities/DTO/Imagen";
 
 interface ArticuloInsumoModalProps {
     articulo: ArticuloInsumo | undefined;
@@ -15,10 +16,9 @@ interface ArticuloInsumoModalProps {
     onHide: () => void;
     handleSubmit: (art: ArticuloInsumo, files: File[]) => Promise<void>;
     handleDelete: (idArt: number) => Promise<void>;
-    onFileChange: (newFiles: File[]) => void;
 };
 
-const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit, handleDelete, unidadesMedida, categorias, onFileChange }: ArticuloInsumoModalProps) => {
+const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit, handleDelete, unidadesMedida, categorias }: ArticuloInsumoModalProps) => {
 
     const [articuloInsumo, setArticuloInsumo] = useState<ArticuloInsumo>(articulo ? articulo : new ArticuloInsumo());
     const [error, setError] = useState<string>("");
@@ -46,9 +46,15 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
         }
     };
 
+    const handleImagenesChange = (newImages: Imagen[]) => {
+        setArticuloInsumo(prev => ({
+            ...prev,
+            imagenes: newImages
+        }));
+    };
+
     const handleFileChange = (newFiles: File[]) => {
         setFiles(newFiles);
-        onFileChange(newFiles);
     };
 
     const validarFormulario = (): boolean => {
@@ -90,6 +96,7 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
         if (validarFormulario()) {
             setLoading(true); // Activar indicador de carga
             try {
+                console.log("el submit", files)
                 await handleSubmit(articuloInsumo, files);
                 onHide(); // Ocultar el modal después de guardar
             } catch (error) {
@@ -236,9 +243,10 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                             </Row>
                             <Row className="my-2">
                                 
-                                <ImagenCarousel
-                                    imagenesExistentes={articuloInsumo.imagenes ? articuloInsumo.imagenes : []}
-                                    agregarImagenes={handleFileChange}
+                            <ImagenCarousel
+                                    imagenesExistentes={articuloInsumo.imagenes}
+                                    onFilesChange={handleFileChange}
+                                    onImagenesChange={handleImagenesChange}
                                 />
                                 
                                 
