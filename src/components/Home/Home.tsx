@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-import './Home.css'; // Importa estilos personalizados
+import './Home.css';
 import { Empresa } from '../../entities/DTO/Empresa/Empresa';
 import { EmpresaService } from '../../services/EmpresaService';
 import { Sucursal } from '../../entities/DTO/Sucursal/Sucursal';
@@ -10,9 +10,9 @@ import { CategoriaService } from '../../services/CategoriaService';
 import { ProductServices } from '../../services/ProductServices';
 import { ArticuloManufacturado } from '../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado';
 import { useAuth } from '../../Auth/Auth';
-import logo from '../../assets/images/Buen sabor logo 1.png'; // Importa el logo
-import Slider from 'react-slick';
-
+import logo from '../../assets/images/Buen sabor logo 1.png';
+import { useCart } from '../Carrito/ContextCarrito';
+import Carrito from '../Carrito/carrito';
 
 const Home: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -21,14 +21,12 @@ const Home: React.FC = () => {
   const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
   const [showSucursales, setShowSucursales] = useState<boolean>(false);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
+  const [selectedSucursal, setSelectedSucursal] = useState<Sucursal | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [productos, setProductos] = useState<ArticuloManufacturado[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>(undefined);
   const { isAuthenticated } = useAuth();
-
-  const [featuredProducts, setFeaturedProducts] = useState([
-    
-  ]);
+  const { agregarAlCarrito } = useCart(); // Usa el hook useCart para agregar al carrito
 
   useEffect(() => {
     fetchEmpresas();
@@ -47,10 +45,11 @@ const Home: React.FC = () => {
 
   const fetchSucursales = async (idEmpresa: number) => {
     try {
+      setLoading(true);
       const data = await SucursalService.fetchSucursalesByEmpresaId(idEmpresa);
       setSucursales(data);
-      setShowSucursales(true); // Mostrar sucursales después de cargarlas
-      setCurrentStep(2); // Avanzar al paso 2 después de cargar las sucursales
+      setShowSucursales(true);
+      setCurrentStep(2);
     } catch (error) {
       console.error('Error fetching sucursales:', error);
     } finally {
@@ -60,17 +59,21 @@ const Home: React.FC = () => {
 
   const fetchCategorias = async (idSucursal: number) => {
     try {
-      const data = await CategoriaService.obtenerCategorias(idSucursal.toString());
+      setLoading(true);
+      const data = await CategoriaService.obtenerCategoriasPadre(idSucursal.toString());
       setCategorias(data);
-      setCurrentStep(3); // Avanzar al paso 3 después de cargar las categorías
+      setCurrentStep(3);
     } catch (error) {
-      console.error('Error fetching categorias:', error);
+      console.error('Error fetching categorias padre:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchProductos = async (idCategoria: number) => {
     try {
-      const data = await ProductServices.getAllFiltered(idCategoria.toString());
+      setLoading(true);
+      const data = await ProductServices.getAllFiltered(String(selectedSucursal.id) , idCategoria);
       setProductos(data);
     } catch (error) {
       console.error('Error fetching productos:', error);
@@ -85,12 +88,13 @@ const Home: React.FC = () => {
   };
 
   const selectSucursal = (sucursal: Sucursal) => {
-    fetchCategorias(sucursal.id); // Debes usar el ID de la sucursal aquí, asegúrate de que sea correcto
+    setSelectedSucursal(sucursal);
+    fetchCategorias(sucursal.id);
   };
 
   const selectCategoria = (categoria: Categoria) => {
-    fetchProductos(categoria.id); // Debes usar el ID de la categoría aquí, asegúrate de que sea correcto
     setSelectedCategoryId(categoria.id);
+    fetchProductos(categoria.id);
   };
 
   const defaultImageUrl = 'https://via.placeholder.com/150';
@@ -113,7 +117,6 @@ const Home: React.FC = () => {
 
   return (
     <div className="container-fluid mt-5 home-background text-light">
-      {/* Barra de búsqueda y encabezado */}
       <div className="row mb-4 align-items-center">
         <div className="col-md-1">
           {!isAuthenticated && (
@@ -125,7 +128,6 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* Contenido basado en los pasos */}
       {currentStep === 1 && (
         <Container>
           <h1>Seleccionar Empresa</h1>
@@ -163,9 +165,6 @@ const Home: React.FC = () => {
                 >
                   <Card.Body>
                     <Card.Title>{sucursal.nombre}</Card.Title>
-                    <Card.Text>
-                      {/* Agrega aquí cualquier otra información relevante de la sucursal */}
-                    </Card.Text>
                   </Card.Body>
                 </Card>
               </Col>
@@ -193,15 +192,21 @@ const Home: React.FC = () => {
           <Row>
             {productos.map((producto) => (
               <Col key={producto.id} sm={12} md={6} lg={4} className="mb-4">
-                <Card>
+                <Card className="product-card">
+                <Card.Img
+                    variant="top"
+                    src={producto.imagenes.length > 0 ? producto.imagenes[0].url : defaultImageUrl}
+                    className="product-image"
+                  />
                   <Card.Body>
                     <Card.Title>{producto.denominacion}</Card.Title>
                     <Card.Text>
-                      Descripción: {producto.descripcion}
+                      {producto.descripcion}
                     </Card.Text>
                     <Card.Text>
                       Precio: ${producto.precioVenta}
                     </Card.Text>
+                    <Button variant="primary" className="add-to-cart-button" onClick={() => agregarAlCarrito(producto)}>Añadir al carrito</Button>
                   </Card.Body>
                 </Card>
               </Col>
@@ -210,23 +215,11 @@ const Home: React.FC = () => {
         </Container>
       )}
 
-      {/* Carrusel */}
-      {showSucursales && currentStep >= 2 && (
-        <div className="row mb-4 justify-content-center">
-          <div className="col-10">
-            <Slider {...settings}>
-              {featuredProducts.map((product, index) => (
-                <div key={index}>
-              
-                </div>
-              ))}
-            </Slider>
-          </div>
-        </div>
+      {selectedSucursal && ( // Condiciona el renderizado del carrito
+        <Carrito actualizarLista={() => fetchProductos(selectedCategoryId!)} />
       )}
-
     </div>
   );
 };
 
-export default Home
+export default Home;

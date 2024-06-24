@@ -1,4 +1,5 @@
 import { Categoria } from "../entities/DTO/Categoria/Categoria";
+import { Imagen } from "../entities/DTO/Imagen";
 
 
 export class CategoriaService {

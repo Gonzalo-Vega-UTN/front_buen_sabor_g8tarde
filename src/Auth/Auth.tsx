@@ -97,7 +97,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           //Si ya existe se logea unicamente NO SE CREA
           const loggedUser = await UsuarioService.login(usuario);
           console.log("uuario logeado, ", loggedUser)
-          login(loggedUser.username, loggedUser.email, loggedUser.rol || Rol.Cliente);
+
+          login(loggedUser.email,loggedUser.username, loggedUser.rol || Rol.Cliente);
 
         } else {
           throw Error("Usuario no existe")
