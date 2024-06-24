@@ -45,8 +45,10 @@ export const CategoriaPage = () => {
         }
     };
 
-    const handleButtonClickDelete = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, idPadre: number) =>{
-        console.log("ASD")
+    const handleButtonClickDelete = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) =>{
+         await CategoriaService.eliminarCategoriaById(activeSucursal,id)
+        fetchCategorias();
+
     }
 
     const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, idPadre: number) => {
@@ -112,7 +114,7 @@ export const CategoriaPage = () => {
                     setModalShow(false);
                     fetchCategorias();
                 }}
-                idpadre={clickedCategoria}
+                idpadre={String(clickedCategoria)}
                 activeSucursal={activeSucursal}
             />
         </Container>

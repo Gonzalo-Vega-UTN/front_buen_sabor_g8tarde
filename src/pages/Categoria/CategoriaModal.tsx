@@ -4,12 +4,14 @@ import Modal from "react-bootstrap/esm/Modal";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { CategoriaService } from "../../services/CategoriaService";
 import { useState } from "react";
+import { Imagen } from "../../entities/DTO/Imagen";
+import ImagenCarousel from "../../components/carousel/ImagenCarousel";
 
 interface ModalProps{
     show : boolean
     onHide : () => void;
     idpadre: string;
-    activeSucursal : number
+    activeSucursal : string
 }
 
 const CategoriaModal = ( {show, onHide, idpadre, activeSucursal} : ModalProps) =>{
@@ -17,16 +19,20 @@ const CategoriaModal = ( {show, onHide, idpadre, activeSucursal} : ModalProps) =
         
     const [error, setError] = useState<string>("");
     const [categoria, setCategoria] = useState<Categoria>(new Categoria());
+    const [files, setFiles] = useState<File[]>([]);
     
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             console.log(categoria);
 
-            const data = await CategoriaService.agregarCategoria(Number(idpadre) ,activeSucursal,{ ...categoria, alta: true });
+            const data = await CategoriaService.agregarCategoria(Number(idpadre) ,Number(activeSucursal),{ ...categoria, alta: true });
             if (data) {
                 onHide()
                 setCategoria(new Categoria());
+            }
+            if(data.id){
+                await CategoriaService.uploadFiles(data.id, files)
             }
 
         } catch (error) {
@@ -36,11 +42,23 @@ const CategoriaModal = ( {show, onHide, idpadre, activeSucursal} : ModalProps) =
         }
     }
 
+    
+    const handleImagenesChange = (newImages: Imagen[]) => {
+        setCategoria(prev => ({
+            ...prev,
+            imagenes: newImages
+        }));
+    };
+
+    const handleFileChange = (newFiles: File[]) => {
+        setFiles(newFiles);
+    };
     return (
         <Modal
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered
+            show={show}
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
@@ -57,15 +75,12 @@ const CategoriaModal = ( {show, onHide, idpadre, activeSucursal} : ModalProps) =
                         }))}
                             value={categoria.denominacion} />
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="imagen">
-                        <Form.Label>Imagen</Form.Label>
-                        <Form.Control type="tex" placeholder="Ingresar url imagen"
-                            onChange={(e) => setCategoria(prev => ({
-                                ...prev,
-                                imagen: e.target.value
-                            }))}
-                            value={categoria.imagen} />
-                    </Form.Group>
+                   
+                    <ImagenCarousel
+                                    imagenesExistentes={categoria.imagenes}
+                                    onFilesChange={handleFileChange}
+                                    onImagenesChange={handleImagenesChange}
+                                />
                 </Form>
                 {error && <p className='text-danger'>{error}</p>}
             </Modal.Body>

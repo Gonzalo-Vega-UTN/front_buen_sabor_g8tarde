@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import Usuario from '../entities/DTO/Usuario/Usuario';
 import UsuarioService from '../services/UsuarioService';
 import { Rol } from '../entities/enums/Rol';
@@ -15,6 +15,7 @@ interface AuthContextType {
   logout: () => void;
   selectSucursal: (idSucursal: number) => void;
   googleLogin: (response: CredentialResponse) => void;
+  googleRegister: (response: CredentialResponse) => Promise<Usuario>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -23,10 +24,11 @@ const AuthContext = createContext<AuthContextType>({
   userRol: Rol.Cliente,
   activeSucursal: '0',
   isSelected: false,
-  login: () => {},
-  logout: () => {},
-  selectSucursal: () => {},
-  googleLogin: () => {},
+  login: () => { },
+  logout: () => { },
+  selectSucursal: () => { },
+  googleLogin: () => { },
+  googleRegister: async () => { throw new Error('Not implemented') }
 });
 
 const GOOGLE_CLIENT_ID = '44321289734-fugt7imldhfb9cb8prachhhugfol4o5o.apps.googleusercontent.com';
@@ -85,25 +87,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const decoded: any = jwtDecode(response.credential);
         const email = decoded.email;
+        console.log(email.split("@")[0])
+        const validacion = await UsuarioService.validarExistenciaUsuario(email.split("@")[0]);
+        console.log("existe en el back??????", validacion.valueOf)
+        if (validacion) {
+          const usuario = new Usuario();
+          usuario.auth0Id = "google"; //Contraseña
+          usuario.username = email.split("@")[0]; //Nombre de usuario
+          //Si ya existe se logea unicamente NO SE CREA
+          const loggedUser = await UsuarioService.login(usuario);
+          console.log("uuario logeado, ", loggedUser)
+          login(loggedUser.username, loggedUser.email, loggedUser.rol || Rol.Cliente);
 
-        const validacion = await UsuarioService.validarExistenciaUsuario(email);
-
-        if (!validacion) {
-          const usuario: Usuario = {
-            auth0Id: '', // Debes obtener el ID de autenticación si es necesario
-            username: email,
-            email: email,
-            rol: Rol.Cliente, // Definir el rol adecuado
-          };
-          await UsuarioService.guardarUsuario(usuario);
         } else {
-          await UsuarioService.login(email);
-        }
+          throw Error("Usuario no existe")
 
-        // Realizar el login con el email como username
-        login(email, email, Rol.Cliente);
+        }
       } catch (error) {
-        console.error('Error decoding JWT:', error);
+        //console.error('Error decoding JWT:', error);
+        throw Error("Usuario no existe")
+      }
+    }
+  };
+
+  const googleRegister = async (response: CredentialResponse) => {
+    if (response.credential) {
+      try {
+        const decoded: any = jwtDecode(response.credential);
+        const email = decoded.email;
+        const validacion = await UsuarioService.validarExistenciaUsuario(email);
+        if (!validacion) {
+          const usuario = new Usuario();
+          usuario.auth0Id = "google"; //Contraseña
+          usuario.username = email.split("@")[0]; //Nombre de usuario
+          usuario.email = email;
+          usuario.rol = Rol.Cliente;
+          //Si ya existe se logea unicamente NO SE CREA
+          const loggedUser = await UsuarioService.register(usuario);
+          login(loggedUser.email, loggedUser.email, loggedUser.rol || Rol.Cliente);
+          return loggedUser
+        } else {
+          throw Error("Usuario ya existe")
+
+        }
+      } catch (error) {
+        //console.error('Error decoding JWT:', error);
+        throw Error("Usuario ya existe")
       }
     }
   };
@@ -121,6 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           logout,
           selectSucursal,
           googleLogin,
+          googleRegister,
         }}
       >
         {children}

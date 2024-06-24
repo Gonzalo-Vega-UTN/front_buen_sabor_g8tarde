@@ -4,7 +4,7 @@ import AppRoutes from './routes/AppRoutes';
 import Footer from './components/Footer/Footer';
 import Sidebar from './components/Sidebar/Sidebar';
 import { useAuth, AuthProvider } from './Auth/Auth';
-import Layout from './components/Layout/Layout';
+import './App.css'; 
 
 const App: React.FC = () => {
 
@@ -12,8 +12,7 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <Router>
-        <Layout>
-          <div className="container-fluid p-0">
+          <div className="container-fluid p-0 layout">
             <div className="row">
 
               <div className="col-md-2">
@@ -34,7 +33,6 @@ const App: React.FC = () => {
               </div>
             </div>
           </div>
-        </Layout>
       </Router>
     </AuthProvider>
   );

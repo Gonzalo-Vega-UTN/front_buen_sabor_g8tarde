@@ -7,6 +7,9 @@ import UsuarioService from "../../services/UsuarioService";
 import ClienteService from "../../services/ClienteService";
 import ImagenCarousel from "../carousel/ImagenCarousel";
 import { Imagen } from "../../entities/DTO/Imagen";
+import { Rol } from "../../entities/enums/Rol";
+import { GoogleLogin } from '@react-oauth/google';
+import { useAuth } from "../../Auth/Auth";
 
 interface RegistroUsuarioClienteProps {
   closeModal: () => void;
@@ -19,9 +22,11 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
   const [usuarioData, setUsuarioData] = useState<Usuario>(new Usuario());
   const [clienteData, setClienteData] = useState<Cliente>(new Cliente());
   const [files, setFiles] = useState<File[]>([]);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false)
+  const {login , googleRegister} = useAuth();
   const navigate = useNavigate();
 
   const handleChangeUsuario = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,6 +41,11 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
 
   const handleSubmitUsuario = async (e: React.FormEvent) => {
     e.preventDefault();
+    setUsuarioData((prev) => ({
+      ...prev,
+      rol: Rol.Cliente
+    }));
+
     if (usuarioData.auth0Id.length < 8) {
       setError("La contraseña debe tener al menos 8 caracteres.");
       return;
@@ -83,15 +93,18 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
       }
     }
   };
+
   const handleImagenesChange = (newImages: Imagen[]) => {
     setClienteData((prev) => ({
       ...prev,
       imagenes: newImages,
     }));
   };
+
   const handleFileChange = (newFiles: File[]) => {
     setFiles(newFiles);
   };
+
   const handleBack = () => {
     setStep(1);
     navigate("/"); // Redirigir al usuario a la página principal al volver
@@ -102,6 +115,17 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
       <Modal.Body>
         {step === 1 && (
           <Form onSubmit={handleSubmitUsuario}>
+            <Form.Group controlId="formEmail">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="text"
+                name="email"
+                value={usuarioData.email}
+                onChange={handleChangeUsuario}
+                placeholder="Ingrese su email"
+                required
+              />
+            </Form.Group>
             <Form.Group controlId="formUsername">
               <Form.Label>Nombre de usuario</Form.Label>
               <Form.Control
@@ -133,6 +157,28 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
                 {passwordVisible ? "Ocultar" : "Mostrar"}
               </Button>
             </Form.Group>
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                try {
+                 const user = await googleRegister(credentialResponse); //registro google googleRegister
+                 setUsuarioData(user);
+                  setLoading(true)
+                  setTimeout(() => {
+                    setLoading(false)
+                    setStep(2)
+                  }, 1500);
+                } catch (error) {
+                  setLoading(false)
+                  if (error instanceof Error) {
+                    setError(error.message)
+                  }
+                }
+              }}
+              onError={() => {
+                console.log('Login Failed');
+                setError("Hubo un error con tu login con google")
+              }}
+            />
             <div className="d-flex justify-content-between mt-3">
               <Button variant="secondary" onClick={handleBack}>
                 Volver
@@ -184,17 +230,6 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
                 required
               />
             </Form.Group>
-            <Form.Group controlId="formEmail">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                name="email"
-                value={clienteData.email}
-                onChange={handleChangeCliente}
-                placeholder="Ingrese su email"
-                required
-              />
-            </Form.Group>
             <Form.Group controlId="formFechaNacimiento">
               <Form.Label>Fecha de Nacimiento</Form.Label>
               <Form.Control
@@ -210,7 +245,6 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
               onFilesChange={handleFileChange}
               onImagenesChange={handleImagenesChange}
             />
-
             <div className="d-flex justify-content-between mt-3">
               <Button variant="secondary" onClick={() => setStep(1)}>
                 Volver

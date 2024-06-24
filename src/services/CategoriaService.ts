@@ -115,9 +115,9 @@ export class CategoriaService {
     }
   }
 
-  static async eliminarCategoriaById(id: number): Promise<Categoria> {
+  static async eliminarCategoriaById(idSucursal : string , id: number): Promise<Categoria> {
     try {
-      return await this.request(`/${id}`, {
+      return await this.request(`/${idSucursal}/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -126,6 +126,27 @@ export class CategoriaService {
       }) as Categoria;
     } catch (error) {
       console.error(`Error al dar de baja la categoria con ID ${id}:`, error);
+      throw error;
+    }
+  }
+
+  static async uploadFiles(id: number, files: File[]): Promise<Imagen[]> {
+    const uploadPromises = files.map(file => {
+      const formData = new FormData();
+      formData.append('uploads', file);
+      formData.append('id', String(id));
+
+      return this.request(`/uploads`, {
+        method: 'POST',
+        body: formData,
+        mode: 'cors'
+      }) as Promise<Imagen>;
+    });
+
+    try {
+      return await Promise.all(uploadPromises);
+    } catch (error) {
+      console.error(`Error al subir imágenes para el id ${id}:`, error);
       throw error;
     }
   }

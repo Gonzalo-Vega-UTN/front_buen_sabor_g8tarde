@@ -17,7 +17,6 @@ const ImagenCarousel: React.FC<Props> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  console.log("EN EL CARROUSEL", imagenesExistentes);
   const handleAgregarImagenButton = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
