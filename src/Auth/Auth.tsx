@@ -110,32 +110,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const googleRegister = async (response: CredentialResponse) => {
-    if (response.credential) {
-      try {
-        const decoded: any = jwtDecode(response.credential);
-        const email = decoded.email;
-        const validacion = await UsuarioService.validarExistenciaUsuario(email);
-        if (!validacion) {
-          const usuario = new Usuario();
-          usuario.auth0Id = "google"; //Contraseña
-          usuario.username = email.split("@")[0]; //Nombre de usuario
-          usuario.email = email;
-          usuario.rol = Rol.Cliente;
-          //Si ya existe se logea unicamente NO SE CREA
-          const loggedUser = await UsuarioService.register(usuario);
-          login(loggedUser.email, loggedUser.email, loggedUser.rol || Rol.Cliente);
-          return loggedUser
-        } else {
-          throw Error("Usuario ya existe")
+ const googleRegister = async (response: CredentialResponse): Promise<Usuario> => {
+  if (!response.credential) {
+    throw new Error("No se proporcionó credencial");
+  }
 
-        }
-      } catch (error) {
-        //console.error('Error decoding JWT:', error);
-        throw Error("Usuario ya existe")
-      }
+  try {
+    const decoded: any = jwtDecode(response.credential);
+    const email = decoded.email;
+    const validacion = await UsuarioService.validarExistenciaUsuario(email);
+    
+    if (!validacion) {
+      const usuario = new Usuario();
+      usuario.auth0Id = "google";
+      usuario.username = email.split("@")[0];
+      usuario.email = email;
+      usuario.rol = Rol.Cliente;
+      
+      const loggedUser = await UsuarioService.register(usuario);
+      login(loggedUser.email, loggedUser.email, loggedUser.rol || Rol.Cliente);
+      return loggedUser;
+    } else {
+      throw new Error("Usuario ya existe");
     }
-  };
+  } catch (error) {
+    console.error('Error en el registro de Google:', error);
+    throw new Error("Error en el registro de Google");
+  }
+};
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>

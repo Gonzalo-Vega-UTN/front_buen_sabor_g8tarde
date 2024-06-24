@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Form, Button } from 'react-bootstrap';
 
 const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmit: (domicilio: any) => void; }) => {
@@ -13,25 +12,19 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
 
   useEffect(() => {
     // Obtener provincias
-    axios.get('https://apis.datos.gob.ar/georef/api/provincias')
-      .then(response => {
-        setProvincias(response.data.provincias);
-      })
-      .catch(error => {
-        console.error('Error al obtener provincias:', error);
-      });
+    fetch('https://apis.datos.gob.ar/georef/api/provincias')
+      .then(response => response.json())
+      .then(data => setProvincias(data.provincias))
+      .catch(error => console.error('Error al obtener provincias:', error));
   }, []);
 
   useEffect(() => {
     if (provincia) {
       // Obtener municipios de la provincia seleccionada
-      axios.get(`https://apis.datos.gob.ar/georef/api/municipios?provincia=${provincia}&campos=id,nombre&max=100`)
-        .then(response => {
-          setLocalidades(response.data.municipios);
-        })
-        .catch(error => {
-          console.error('Error al obtener municipios:', error);
-        });
+      fetch(`https://apis.datos.gob.ar/georef/api/municipios?provincia=${provincia}&campos=id,nombre&max=100`)
+        .then(response => response.json())
+        .then(data => setLocalidades(data.municipios))
+        .catch(error => console.error('Error al obtener municipios:', error));
     }
   }, [provincia]);
 
@@ -99,7 +92,14 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
           ))}
         </Form.Control>
       </Form.Group>
-      
+      <div className="d-flex justify-content-between mt-3">
+        <Button variant="secondary" onClick={onBack}>
+          Volver
+        </Button>
+        <Button variant="primary" type="submit">
+          Completar Registro
+        </Button>
+      </div>
     </Form>
   );
 };

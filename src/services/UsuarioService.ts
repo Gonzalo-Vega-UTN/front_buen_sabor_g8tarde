@@ -77,6 +77,22 @@ class UsuarioService {
       }
     }
   }
+
+  // Nuevo método para eliminar un usuario
+  static async deleteUsuario(id: string): Promise<void> {
+    try {
+      await this.request(`/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+      });
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+      throw error;
+    }
+  }
 }
 
 export default UsuarioService;

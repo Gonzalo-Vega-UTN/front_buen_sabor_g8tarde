@@ -5,11 +5,13 @@ import Usuario from "../../entities/DTO/Usuario/Usuario";
 import { Cliente } from "../../entities/DTO/Cliente/Cliente";
 import UsuarioService from "../../services/UsuarioService";
 import ClienteService from "../../services/ClienteService";
+import { useAuth } from "../../Auth/Auth";
+
 import ImagenCarousel from "../carousel/ImagenCarousel";
 import { Imagen } from "../../entities/DTO/Imagen";
 import { Rol } from "../../entities/enums/Rol";
 import { GoogleLogin } from '@react-oauth/google';
-import { useAuth } from "../../Auth/Auth";
+import FormularioDomicilio from "../../pages/Domicilio/FormDomicilio";
 
 interface RegistroUsuarioClienteProps {
   closeModal: () => void;
@@ -21,12 +23,13 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
   const [step, setStep] = useState(1);
   const [usuarioData, setUsuarioData] = useState<Usuario>(new Usuario());
   const [clienteData, setClienteData] = useState<Cliente>(new Cliente());
+  const [domicilioData, setDomicilioData] = useState({});
   const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [loading, setLoading] = useState<boolean>(false)
-  const {login , googleRegister} = useAuth();
+  const [loading, setLoading] = useState<boolean>(false);
+  const { login, googleRegister } = useAuth();
   const navigate = useNavigate();
 
   const handleChangeUsuario = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +46,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
     e.preventDefault();
     setUsuarioData((prev) => ({
       ...prev,
-      rol: Rol.Cliente
+      rol: Rol.Cliente,
     }));
 
     if (usuarioData.auth0Id.length < 8) {
@@ -52,7 +55,6 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
     }
 
     try {
-      console.log("Validando Usuario");
       const data = await UsuarioService.validarExistenciaUsuario(
         usuarioData.username
       );
@@ -73,11 +75,17 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
 
   const handleSubmitCliente = async (e: React.FormEvent) => {
     e.preventDefault();
+    setStep(3);
+  };
+
+  const handleSubmitDomicilio = async (domicilio: any) => {
+    setDomicilioData(domicilio);
     const clienteCompleto = {
       ...clienteData,
       usuario: usuarioData,
+      domicilios: [domicilio],
     };
-    console.log(clienteCompleto);
+
     try {
       const cliente = await ClienteService.agregarcliente(clienteCompleto);
       if (cliente) {
@@ -106,8 +114,11 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
   };
 
   const handleBack = () => {
-    setStep(1);
-    navigate("/"); // Redirigir al usuario a la página principal al volver
+    setStep((prevStep) => prevStep - 1);
+  };
+
+  const handleDomicilioSubmit = (domicilio: any) => {
+    handleSubmitDomicilio(domicilio);
   };
 
   return (
@@ -160,23 +171,22 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
             <GoogleLogin
               onSuccess={async (credentialResponse) => {
                 try {
-                 const user = await googleRegister(credentialResponse); //registro google googleRegister
-                 setUsuarioData(user);
-                  setLoading(true)
+                  const user = await googleRegister(credentialResponse); //registro google googleRegister
+                  setUsuarioData(user);
+                  setLoading(true);
                   setTimeout(() => {
-                    setLoading(false)
-                    setStep(2)
+                    setLoading(false);
+                    setStep(2);
                   }, 1500);
                 } catch (error) {
-                  setLoading(false)
+                  setLoading(false);
                   if (error instanceof Error) {
-                    setError(error.message)
+                    setError(error.message);
                   }
                 }
               }}
               onError={() => {
-                console.log('Login Failed');
-                setError("Hubo un error con tu login con google")
+                setError("Hubo un error con tu login con google");
               }}
             />
             <div className="d-flex justify-content-between mt-3">
@@ -250,7 +260,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
                 Volver
               </Button>
               <Button variant="primary" type="submit">
-                Registrar
+                Siguiente
               </Button>
             </div>
             {success && (
@@ -264,6 +274,13 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
               </Alert>
             )}
           </Form>
+        )}
+
+        {step === 3 && (
+          <FormularioDomicilio
+            onBack={handleBack}
+            onSubmit={handleDomicilioSubmit}
+          />
         )}
       </Modal.Body>
     </Modal>
