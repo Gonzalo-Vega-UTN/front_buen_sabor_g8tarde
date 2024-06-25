@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Spinner } from 'react-bootstrap';
 import DomicilioService from '../../services/DomicilioService';
 
 const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmit: (domicilio: any) => void; }) => {
@@ -10,6 +10,7 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
   const [calle, setCalle] = useState('');
   const [numero, setNumero] = useState('');
   const [cp, setCp] = useState('');
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchProvincias = async () => {
     try {
@@ -48,6 +49,10 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 2000);
     const domicilio = {
       calle, numero, cp, localidad: {
         id: localidad,
@@ -125,9 +130,13 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
         <Button variant="secondary" onClick={onBack}>
           Volver
         </Button>
-        <Button variant="primary" type="submit">
-          Completar Registro
+        {loading ? <Button variant="primary" type="submit">
+          Completando.. <Spinner size="sm" />
         </Button>
+          :
+          <Button variant="primary" type="submit">
+            Completar Formulario
+          </Button>}
       </div>
     </Form>
   );

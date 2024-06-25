@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Form, Button, Alert } from "react-bootstrap";
+import { Modal, Form, Button, Alert, Spinner } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import Usuario from "../../entities/DTO/Usuario/Usuario";
 import { Cliente } from "../../entities/DTO/Cliente/Cliente";
@@ -61,8 +61,10 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
         usuarioData.username
       );
       if (!data) {
+        setLoading(true)
         setError("");
         setTimeout(() => {
+          setLoading(false)
           setStep(2);
         }, 1500);
       } else {
@@ -78,7 +80,12 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
 
   const handleSubmitCliente = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStep(3);
+    setLoading(true)
+    setError("");
+    setTimeout(() => {
+      setLoading(false)
+      setStep(3);
+    }, 1500);
   };
 
   const handleSubmitDomicilio = async (domicilio: Domicilio) => {
@@ -96,7 +103,10 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
         setTimeout(() => {
           navigate("/");
           closeModal(); // Cerrar el modal después de registrar
+          login(cliente.usuario.email, cliente.usuario.username, cliente.usuario.rol || Rol.Cliente)
+
         }, 1500);
+
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -194,13 +204,17 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
             />
             <div className="d-flex justify-content-between mt-3">
               <Button variant="secondary" onClick={handleBack}>
-              <Link to="/" className="btn btn-secondary">
+                <Link to="/" className="btn btn-secondary">
                   Volver
-              </Link>
+                </Link>
               </Button>
-              <Button variant="primary" type="submit">
-                Siguiente
+              {loading ? <Button variant="primary" type="submit">
+                Siguiente <Spinner size="sm" />
               </Button>
+                :
+                <Button variant="primary" type="submit">
+                  Siguiente
+                </Button>}
             </div>
             {error && (
               <Alert variant="danger" className="mt-3">
@@ -264,9 +278,13 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
               <Button variant="secondary" onClick={() => setStep(1)}>
                 Volver
               </Button>
-              <Button variant="primary" type="submit">
-                Siguiente
+              {loading ? <Button variant="primary" type="submit">
+                Siguiente <Spinner size="sm" />
               </Button>
+                :
+                <Button variant="primary" type="submit">
+                  Siguiente
+                </Button>}
             </div>
             {success && (
               <Alert variant="success" className="mt-3">
