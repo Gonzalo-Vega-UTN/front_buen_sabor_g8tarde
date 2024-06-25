@@ -20,17 +20,17 @@ const BotonLogin: React.FC = () => {
     navigate("/registro");
   };
 
-  // Mostrar el botón solo en la página principal
+  
   const showButton = location.pathname === "/";
 
   return (
     <>
       {showButton && (
         <>
-          <Button variant="primary" className="me-2" onClick={handleLoginModalOpen}>
+          <Button variant="primary" className="btn btn-outline-light w-100" onClick={handleLoginModalOpen}>
             Login
           </Button>
-          <Button variant="secondary" onClick={handleRegister}>
+          <Button variant="secondary" className="btn btn-outline-light w-100" onClick={handleRegister}>
             Registro
           </Button>
         </>

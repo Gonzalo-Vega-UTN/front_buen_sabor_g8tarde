@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
+import DomicilioService from '../../services/DomicilioService';
 
 const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmit: (domicilio: any) => void; }) => {
   const [provincias, setProvincias] = useState([]);
@@ -10,27 +11,55 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
   const [numero, setNumero] = useState('');
   const [cp, setCp] = useState('');
 
+  const fetchProvincias = async () => {
+    try {
+      const provincias = await DomicilioService.getProvinciasByPais();
+      setProvincias(provincias)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message)
+      } else {
+        console.log("Error inesperado")
+      }
+    }
+  }
   useEffect(() => {
-    // Obtener provincias
-    fetch('https://apis.datos.gob.ar/georef/api/provincias')
-      .then(response => response.json())
-      .then(data => setProvincias(data.provincias))
-      .catch(error => console.error('Error al obtener provincias:', error));
+    fetchProvincias();
   }, []);
+
+  const fetchLocalidades = async (idProvincia: number) => {
+    try {
+      const localidades = await DomicilioService.getLocalidadesByProvincia(idProvincia);
+      setLocalidades(localidades)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message)
+      } else {
+        console.log("Error inesperado")
+      }
+    }
+  }
 
   useEffect(() => {
     if (provincia) {
-      // Obtener municipios de la provincia seleccionada
-      fetch(`https://apis.datos.gob.ar/georef/api/municipios?provincia=${provincia}&campos=id,nombre&max=100`)
-        .then(response => response.json())
-        .then(data => setLocalidades(data.municipios))
-        .catch(error => console.error('Error al obtener municipios:', error));
+      fetchLocalidades(Number(provincia));
     }
   }, [provincia]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const domicilio = { calle, numero, cp, provincia, localidad };
+    const domicilio = {
+      calle, numero, cp, localidad: {
+        id: localidad,
+        provincia: {
+          id: provincia,
+          pais: {
+            id: 2
+          }
+        }
+
+      }
+    };
     onSubmit(domicilio);
   };
 
@@ -74,7 +103,7 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
         >
           <option value="">Selecciona una provincia</option>
           {provincias.map((prov: any) => (
-            <option key={prov.id} value={prov.nombre}>{prov.nombre}</option>
+            <option key={prov.id} value={prov.id}>{prov.nombre}</option>
           ))}
         </Form.Control>
       </Form.Group>
@@ -88,7 +117,7 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
         >
           <option value="">Selecciona una localidad</option>
           {localidades.map((loc: any) => (
-            <option key={loc.id} value={loc.nombre}>{loc.nombre}</option>
+            <option key={loc.id} value={loc.id}>{loc.nombre}</option>
           ))}
         </Form.Control>
       </Form.Group>

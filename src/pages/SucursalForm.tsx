@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
-import TimePicker from "react-bootstrap-time-picker";
 import { Sucursal } from "../entities/DTO/Sucursal/Sucursal";
 import { Empresa } from "../entities/DTO/Empresa/Empresa";
 import FormularioDomicilio from "./Domicilio/FormDomicilio";
 import SucursalService from "../services/SucursalService";
 import ImagenCarousel from "../components/carousel/ImagenCarousel";
 import { Imagen } from "../entities/DTO/Imagen";
+import { useAuth } from "../Auth/Auth";
+import { useNavigate } from "react-router-dom";
+import TimePicker from 'react-bootstrap-time-picker';
+
 
 interface AddSucursalFormProps {
   onAddSucursal: () => void;
@@ -35,6 +38,14 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
   const [aperturaValida, setAperturaValida] = useState<boolean>(false); // Estado para validar horario de apertura
   const [cierreValido, setCierreValido] = useState<boolean>(false); // Estado para validar horario de cierre
 
+  const {activeSucursal} = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!activeSucursal || activeSucursal === "0") {
+      navigate("/empresas");
+    }
+  }, []);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setSucursal((prevState) => ({ ...prevState, [name]: value }));

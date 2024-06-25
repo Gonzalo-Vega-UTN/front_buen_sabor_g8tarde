@@ -128,9 +128,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       usuario.email = email;
       usuario.rol = Rol.Cliente;
       
-      const loggedUser = await UsuarioService.register(usuario);
-      login(loggedUser.email, loggedUser.email, loggedUser.rol || Rol.Cliente);
-      return loggedUser;
+      // const loggedUser = await UsuarioService.register(usuario);
+      // login(loggedUser.email, loggedUser.email, loggedUser.rol || Rol.Cliente);
+      return usuario;
     } else {
       throw new Error("Usuario ya existe");
     }

@@ -37,9 +37,7 @@ export default function AppRoutes() {
         </CartProvider>} />
 
       
-      <Route path="/registro" element={<RegistroUsuarioCliente closeModal={function (): void {
-        throw new Error("Function not implemented.");
-      } } />} />
+      <Route path="/registro" element={<RegistroUsuarioCliente closeModal={() => console.log("")} />} />
       <Route path="/perfil" element={<ClienteFormulario />} />
       <Route
         path="/productos"

@@ -8,6 +8,7 @@ import { Empresa } from '../entities/DTO/Empresa/Empresa';
 import { useAuth } from '../Auth/Auth';
 import './styles.css'; // Importar tu archivo de estilos
 import SucursalService from '../services/SucursalService';
+import { useNavigate } from 'react-router-dom';
 
 interface SucursalListProps {
   refresh: boolean;
@@ -22,6 +23,8 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
  
   const { selectSucursal ,activeSucursal} = useAuth();
 
+  
+ 
   useEffect(() => {
     const getSucursales = async () => {
       try {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Form, Button, Alert } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Usuario from "../../entities/DTO/Usuario/Usuario";
 import { Cliente } from "../../entities/DTO/Cliente/Cliente";
 import UsuarioService from "../../services/UsuarioService";
@@ -12,6 +12,7 @@ import { Imagen } from "../../entities/DTO/Imagen";
 import { Rol } from "../../entities/enums/Rol";
 import { GoogleLogin } from '@react-oauth/google';
 import FormularioDomicilio from "../../pages/Domicilio/FormDomicilio";
+import { Domicilio } from "../../entities/DTO/Domicilio/Domicilio";
 
 interface RegistroUsuarioClienteProps {
   closeModal: () => void;
@@ -44,6 +45,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
 
   const handleSubmitUsuario = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("ANTES DE GUARDAR")
     setUsuarioData((prev) => ({
       ...prev,
       rol: Rol.Cliente,
@@ -71,6 +73,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
         setError(error.message);
       }
     }
+    console.log("DESPUES DE GUARDAR")
   };
 
   const handleSubmitCliente = async (e: React.FormEvent) => {
@@ -78,7 +81,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
     setStep(3);
   };
 
-  const handleSubmitDomicilio = async (domicilio: any) => {
+  const handleSubmitDomicilio = async (domicilio: Domicilio) => {
     setDomicilioData(domicilio);
     const clienteCompleto = {
       ...clienteData,
@@ -191,7 +194,9 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
             />
             <div className="d-flex justify-content-between mt-3">
               <Button variant="secondary" onClick={handleBack}>
-                Volver
+              <Link to="/" className="btn btn-secondary">
+                  Volver
+              </Link>
               </Button>
               <Button variant="primary" type="submit">
                 Siguiente
