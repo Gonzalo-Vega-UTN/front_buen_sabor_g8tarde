@@ -1,18 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Chart } from 'react-google-charts';
 
-interface Props{
-    data : any[] 
-    subtitle?: string
+interface Props {
+    data: any[]
+    title: string
 }
-const BarChart = ({ data, subtitle } : Props) => {
+const BarChart = ({ data, title }: Props) => {
 
-    const sub = subtitle ? subtitle : "Pedidos por Año"
-    
+
     const options = {
         chart: {
-            title: "Venta de Pedidos",
-            subtitle: sub,
+            title: { title },
         },
     };
 
@@ -20,8 +18,8 @@ const BarChart = ({ data, subtitle } : Props) => {
         <>
             <Chart
                 chartType="Bar"
-                width="80%"
-                height="300px"
+                width="100%"
+                height="400px"
                 data={data}
                 options={options}
             />

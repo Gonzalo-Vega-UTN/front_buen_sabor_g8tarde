@@ -66,6 +66,7 @@ export class SucursalService {
   }
 
   static async createSucursal(sucursal: Sucursal): Promise<Sucursal> {
+    console.log("ANTES DE GUARDAR UNA SUCURSAL" , sucursal)
     try {
       const responseData = await this.request('', {
         method: 'POST',
