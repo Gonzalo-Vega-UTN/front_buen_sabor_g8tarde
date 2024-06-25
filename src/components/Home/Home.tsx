@@ -211,7 +211,7 @@ const Home: React.FC = () => {
                   </div>
                 ))
               ) : (
-                selectedCategoryId && <p>No hay productos en esta categoría.</p>
+                selectedCategoryId && <p>Lo sentimos! No tenemos productos disponibles para esta Categoria!</p>
               )}
             </div>
           </Container>

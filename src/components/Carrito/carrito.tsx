@@ -2,19 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { useCart } from './ContextCarrito';
 import { Alert, Button, Col, Form, Row } from 'react-bootstrap';
 import CheckoutMP from './MP/CheckoutMP';
+
 import './Carrito.css';
 import { useAuth } from '../../Auth/Auth';
 import { Sucursal } from '../../entities/DTO/Sucursal/Sucursal';
 import SucursalService from '../../services/SucursalService';
+import ModalDomicilios from '../../pages/Domicilio/ModalDomicilios';
 
 const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista }) => {
   const { pedido, quitarDelCarrito, agregarAlCarrito, vaciarCarrito, handleCompra, handleCantidadChange, error, preferenceId } = useCart();
-  const [currentStep, setCurrentStep] = useState<number>(0)
-  const [deshabilitado, setDeshabilitado] = useState<boolean>(true);
-  const [tipoEnvio, setTipoEnvio] = useState<string>("")
-  const [tipoPago, setTipoPago] = useState<string>("")
+  const [currentStep, setCurrentStep] = useState<number>(0);
+  const [tipoEnvio, setTipoEnvio] = useState<string>("");
+  const [tipoPago, setTipoPago] = useState<string>("");
   const { activeSucursal } = useAuth();
   const [sucursal, setSucursal] = useState<Sucursal>();
+  const [showModalDomicilios, setShowModalDomicilios] = useState(false); // Estado para controlar la visibilidad del modal
+
+  useEffect(() => {
+    if (activeSucursal) {
+      fetchSucursal();
+    }
+  }, [activeSucursal]);
 
   useEffect(() => {
     if (preferenceId) {
@@ -24,22 +32,24 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
 
   const fetchSucursal = async () => {
     try {
-      setSucursal(await SucursalService.getOne(activeSucursal))
+      const sucursalData = await SucursalService.getOne(activeSucursal);
+      setSucursal(sucursalData);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error)
+        console.log(error);
       }
     }
-  }
+  };
 
-  useEffect(() => {
-    if (activeSucursal) {
-      fetchSucursal();
-    }
-  }, [preferenceId]);
   const RealizarCompra = async () => {
     await handleCompra();
     await actualizarLista();
+  };
+
+  const handleSeleccionarDomicilio = (domicilioId: any) => {
+    // Implementa la lógica para seleccionar el domicilio
+    console.log('Domicilio seleccionado:', domicilioId);
+    setShowModalDomicilios(false); // Ocultar el modal después de seleccionar un domicilio
   };
 
   return (
@@ -84,12 +94,10 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
             <Button variant="primary" onClick={() => setCurrentStep(1)}>Confirmar Compra</Button>
           </div>
         </div>
-
       )}
       {currentStep === 1 && (
         <div>
           <Button variant="warning" onClick={() => setCurrentStep(0)}>Volver</Button>
-
           {pedido.detallePedidos.map((detalle, index) => (
             <div key={index} className="item-carrito">
               <div className="d-flex align-items-center">
@@ -112,50 +120,45 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
                 />
               </div>
             </div>
-
           ))}
           <div className='text-black'>
-            <h3>Elegi tu Forma de Entrega</h3>
+            <h3>Elige tu Forma de Entrega</h3>
             <Row>
               <Col>
                 <Form.Select onChange={(e) => setTipoEnvio(e.target.value)}>
                   <option value={""}>Seleccionar una forma de retiro</option>
                   <option value={"retiro"}>Retiro en Sucursal</option>
-                  <option value={"envio"}>Envio a Domicilio</option>
+                  <option value={"envio"}>Envío a Domicilio</option>
                 </Form.Select>
-
               </Col>
               <Col>
                 <Form.Select onChange={(e) => setTipoPago(e.target.value)}>
                   <option value={""}>Seleccionar una forma de pago</option>
-                  {tipoEnvio === "retiro" ? <option value={"efectivo"}>Efectivo</option> : null}
+                  {tipoEnvio === "retiro" && <option value={"efectivo"}>Efectivo</option>}
                   <option value={"mp"}>Mercado Pago</option>
-
-                </Form.Select></Col>
-
+                </Form.Select>
+              </Col>
             </Row>
-
-            <Row>
-              {tipoEnvio && (
-                tipoEnvio === "retiro" && sucursal ? (
-                  <div>
-                    <h5>Domicilio de Retiro</h5>
-                    <input type="text" value={sucursal?.domicilio.calle} readOnly />
-                    <input type="text" value={sucursal?.domicilio.numero} readOnly />
-                    <input type="text" value={sucursal?.domicilio.cp} readOnly />
-                    <input type="text" value={sucursal?.domicilio.localidad.nombre} readOnly />
-                    <input type="text" value={sucursal?.domicilio.localidad.provincia.nombre} readOnly />
-                  </div>
-                ) : (
-                  <div>
-                    <h5>Domicilio de Entrega</h5>
-                    <select name="" id=""></select>
-                    {/* TERMINAR */}
-                  </div>
-                )
-              )}
-            </Row>
-
+            {tipoEnvio === "retiro" && sucursal && sucursal.domicilio ? (
+              <div>
+                <h5>Domicilio de Retiro</h5>
+                <p>{sucursal.domicilio.calle} {sucursal.domicilio.numero}</p>
+                <p>{sucursal.domicilio.cp}</p>
+                <p>{sucursal.domicilio.localidad.nombre}, {sucursal.domicilio.localidad.provincia.nombre}</p>
+              </div>
+            ) : (
+              tipoEnvio === "envio" && (
+                <div>
+                  <h5>Domicilio de Entrega</h5>
+                  <Button variant="primary" onClick={() => setShowModalDomicilios(true)}>Seleccionar Domicilio</Button>
+                  <ModalDomicilios
+                    show={showModalDomicilios}
+                    onHide={() => setShowModalDomicilios(false)}
+                    onSelectDomicilio={handleSeleccionarDomicilio}
+                  />
+                </div>
+              )
+            )}
           </div>
           {preferenceId ? (
             <CheckoutMP preferenceId={preferenceId} />
@@ -165,9 +168,7 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
             </div>
           )}
         </div>
-
       )}
-
       {error && <Alert variant="danger">{error}</Alert>}
     </div>
   );
