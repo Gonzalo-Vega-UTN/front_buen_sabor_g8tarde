@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Navbar, Form } from 'react-bootstrap';
 import './Home.css';
 import { Empresa } from '../../entities/DTO/Empresa/Empresa';
 import { EmpresaService } from '../../services/EmpresaService';
@@ -15,7 +15,7 @@ import Carrito from '../Carrito/carrito';
 import { useNavigate } from 'react-router-dom';
 import ArticuloInsumoService from '../../services/ArticuloInsumoService';
 import { Articulo } from '../../entities/DTO/Articulo/Articulo';
-import { Cart, CartFill } from 'react-bootstrap-icons';  // Importación de íconos
+import { Cart, CartFill } from 'react-bootstrap-icons';
 
 const Home: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -129,16 +129,35 @@ const Home: React.FC = () => {
 
   return (
     <div className="home-container">
+      <Navbar bg="light" expand="lg" className="mb-4">
+        <Container fluid>
+          <Navbar.Brand href="#home">
+           
+          </Navbar.Brand>
+          <Form className="d-flex flex-grow-1 mx-4">
+            <Form.Control
+              type="search"
+              placeholder="Buscar comida..."
+              className="me-2 search-bar"
+              aria-label="Search"
+            />
+          </Form>
+          {currentStep >= 2 && (
+            <Button variant="outline-primary" onClick={() => setCurrentStep(currentStep - 1)}>
+              Cambiar {currentStep === 2 ? 'Empresa' : 'Sucursal'}
+            </Button>
+          )}
+        </Container>
+      </Navbar>
+
       <div className="main-content">
-        <input type="text" className="form-control search-bar mb-4" placeholder="Buscar comida..." />
-        
         {currentStep === 1 && (
           <Container>
             <h1 className="section-title">Seleccionar Empresa</h1>
             <Row>
               {empresas.map((empresa) => (
                 <Col key={empresa.id} sm={12} md={6} lg={4} className="mb-4">
-                  <Card onClick={() => selectEmpresa(empresa)} style={{ cursor: 'pointer' }}>
+                  <Card onClick={() => selectEmpresa(empresa)} className="empresa-card">
                     <Card.Img variant="top" src={empresa.imagenes[0] ? empresa.imagenes[0].url : "https://via.placeholder.com/150"} />
                     <Card.Body>
                       <Card.Title>{empresa.nombre}</Card.Title>
@@ -152,12 +171,11 @@ const Home: React.FC = () => {
 
         {currentStep === 2 && (
           <Container>
-            <Button onClick={() => setCurrentStep(1)}>Cambiar Empresa</Button>
-            <h2 className="section-title">Seleccionar Sucursal de {selectedEmpresa?.nombre}</h2>
+            <h2 className="section-title">Seleccionar Sucursal </h2>
             <Row>
               {sucursales.map((sucursal) => (
                 <Col key={sucursal.id} sm={12} md={6} lg={4} className="mb-4">
-                  <Card onClick={() => selectSucursal(sucursal)} style={{ cursor: 'pointer' }}>
+                  <Card onClick={() => selectSucursal(sucursal)} className="sucursal-card">
                     <Card.Img variant="top" src={sucursal.imagenes[0] ? sucursal.imagenes[0].url : "https://via.placeholder.com/150"} />
                     <Card.Body>
                       <Card.Title>{sucursal.nombre}</Card.Title>
@@ -171,12 +189,11 @@ const Home: React.FC = () => {
 
         {currentStep === 3 && (
           <Container>
-            <Button onClick={() => { setCurrentStep(2); setProductos([]); }}>Cambiar Sucursal</Button>
             <h1 className="section-title">Seleccionar Categoría</h1>
-            <Row className="mb-4">
+            <Row className="mb-4 categoria-container">
               {subCategoriaSelected && (
                 <Col>
-                  <Button variant='secondary' style={{ width: "80px", height: '80px', borderRadius: "50%" }} onClick={() => fetchCategoriasPadresBySucursal(selectedSucursal?.id)}>
+                  <Button variant='outline-secondary' className="category-button" onClick={() => fetchCategoriasPadresBySucursal(selectedSucursal?.id)}>
                     Volver
                   </Button>
                 </Col>
@@ -198,7 +215,7 @@ const Home: React.FC = () => {
                     <img src={producto.imagenes[0] ? producto.imagenes[0].url : "https://via.placeholder.com/100"} alt={producto.denominacion} className="product-image" />
                     <h3>{producto.denominacion}</h3>
                     <p>{producto instanceof ArticuloManufacturado ? producto.descripcion : ""}</p>
-                    <p>Precio: ${producto.precioVenta}</p>
+                    <p className="price">Precio: ${producto.precioVenta}</p>
                     {isAuthenticated ? (
                       <Button variant="primary" onClick={() => handleAgregarAlCarrito(producto)}>
                         Añadir al carrito
@@ -223,12 +240,20 @@ const Home: React.FC = () => {
       </Button>
 
       <div className={`cart-sidebar ${isCartOpen ? 'open' : ''}`}>
-        <Carrito 
+        <Carrito
           actualizarLista={() => fetchProductos(selectedCategoryId!)}
           isOpen={isCartOpen}
           setIsOpen={setIsCartOpen}
         />
       </div>
+      <div className={`cart-sidebar ${isCartOpen ? 'open' : ''}`}>
+  <button className="close-cart-btn" onClick={() => setIsCartOpen(false)}>×</button>
+  <Carrito
+    actualizarLista={() => fetchProductos(selectedCategoryId!)}
+    isOpen={isCartOpen}
+    setIsOpen={setIsCartOpen}
+  />
+</div>
     </div>
   );
 };

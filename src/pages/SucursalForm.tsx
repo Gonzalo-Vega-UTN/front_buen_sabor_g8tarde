@@ -184,7 +184,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
                 required
               />
             </Form.Group>
-
+            <br></br>
             <ImagenCarousel
               imagenesExistentes={sucursal.imagenes}
               onFilesChange={handleFileChange}

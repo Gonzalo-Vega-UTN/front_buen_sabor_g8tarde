@@ -2,9 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Spinner } from 'react-bootstrap';
 import DomicilioService from '../../services/DomicilioService';
 
-const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmit: (domicilio: any) => void; }) => {
-  const [provincias, setProvincias] = useState([]);
-  const [localidades, setLocalidades] = useState([]);
+interface FormularioDomicilioProps {
+  onBack: () => void;
+  onSubmit: (domicilio: any) => void;
+}
+
+const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({ onBack, onSubmit }) => {
+  const [provincias, setProvincias] = useState<any[]>([]);
+  const [localidades, setLocalidades] = useState<any[]>([]);
   const [provincia, setProvincia] = useState('');
   const [localidad, setLocalidad] = useState('');
   const [calle, setCalle] = useState('');
@@ -15,15 +20,16 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
   const fetchProvincias = async () => {
     try {
       const provincias = await DomicilioService.getProvinciasByPais();
-      setProvincias(provincias)
+      setProvincias(provincias);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message)
+        console.log(error.message);
       } else {
-        console.log("Error inesperado")
+        console.log("Error inesperado");
       }
     }
-  }
+  };
+
   useEffect(() => {
     fetchProvincias();
   }, []);
@@ -31,15 +37,15 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
   const fetchLocalidades = async (idProvincia: number) => {
     try {
       const localidades = await DomicilioService.getLocalidadesByProvincia(idProvincia);
-      setLocalidades(localidades)
+      setLocalidades(localidades);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message)
+        console.log(error.message);
       } else {
-        console.log("Error inesperado")
+        console.log("Error inesperado");
       }
     }
-  }
+  };
 
   useEffect(() => {
     if (provincia) {
@@ -49,12 +55,12 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 2000);
+    setLoading(true);
     const domicilio = {
-      calle, numero, cp, localidad: {
+      calle,
+      numero,
+      cp,
+      localidad: {
         id: localidad,
         provincia: {
           id: provincia,
@@ -62,10 +68,10 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
             id: 2
           }
         }
-
       }
     };
     onSubmit(domicilio);
+    setLoading(false);
   };
 
   return (
@@ -107,7 +113,7 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
           required
         >
           <option value="">Selecciona una provincia</option>
-          {provincias.map((prov: any) => (
+          {provincias.map((prov) => (
             <option key={prov.id} value={prov.id}>{prov.nombre}</option>
           ))}
         </Form.Control>
@@ -121,23 +127,12 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
           required
         >
           <option value="">Selecciona una localidad</option>
-          {localidades.map((loc: any) => (
+          {localidades.map((loc) => (
             <option key={loc.id} value={loc.id}>{loc.nombre}</option>
           ))}
         </Form.Control>
       </Form.Group>
-      <div className="d-flex justify-content-between mt-3">
-        <Button variant="secondary" onClick={onBack}>
-          Volver
-        </Button>
-        {loading ? <Button variant="primary" type="submit">
-          Completando.. <Spinner size="sm" />
-        </Button>
-          :
-          <Button variant="primary" type="submit">
-            Completar Formulario
-          </Button>}
-      </div>
+      
     </Form>
   );
 };

@@ -20,6 +20,7 @@ import { AgregarInsumosModal } from "./AgregarInsumosModal";
 import ImagenCarousel from "../../components/carousel/ImagenCarousel";
 import { Imagen } from "../../entities/DTO/Imagen";
 
+
 export const FormularioArtManuf = () => {
   const { id } = useParams();
   const navigate = useNavigate();
