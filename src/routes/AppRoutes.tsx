@@ -23,6 +23,7 @@ import { FormularioArtManuf } from "../pages/ArtManufacturado/FormularioArtManuf
 import DashboardPage from "../pages/ArtManufacturado/DashBoard";
 import { UnidadesMedidaList } from "../pages/UnidadMedida/UnidadMedidaList";
 import FormularioDomicilio from "../pages/Domicilio/FormDomicilio";
+import { Reportes } from "../pages/Reportes/Reportes";
 
 
 
@@ -104,10 +105,10 @@ export default function AppRoutes() {
         }
       />
       <Route
-        path="/estadisticas"
+        path="/reportes"
         element={
           <PrivateRoute
-            element={Estadisticas} //Recordar cambiar
+            element={Reportes} //Recordar cambiar
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }

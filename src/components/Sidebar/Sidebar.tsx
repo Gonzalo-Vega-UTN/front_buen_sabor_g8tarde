@@ -165,12 +165,12 @@ const Sidebar = () => {
                             </li>
                             <li className="nav-item">
                                 <Link
-                                    to="/estadisticas"
-                                    className={`nav-link text-white ${location.pathname === '/estadisticas' || selected === '/estadisticas' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/estadisticas')}
+                                    to="/reportes"
+                                    className={`nav-link text-white ${location.pathname === '/reportes' || selected === '/reportes' ? 'active' : ''}`}
+                                    onClick={() => handleClick('/reportes')}
                                 >
                                     <BsGraphUp size={24} className="me-2" />
-                                    <span className="nav-text">Estadísticas</span>
+                                    <span className="nav-text">Reportes</span>
                                 </Link>
                             </li>
 

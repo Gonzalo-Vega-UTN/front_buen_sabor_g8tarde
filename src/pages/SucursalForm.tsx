@@ -93,7 +93,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
       if (sucursalEditando) {
         response = await SucursalService.updateSucursal(sucursalEditando.id, {
           ...sucursal,
-          domicilio, //TODO: ver porque sale en rojo
+          domicilio, 
         });
       } else {
         response = await SucursalService.createSucursal({
