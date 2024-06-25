@@ -18,11 +18,11 @@ import { Articulo } from '../../entities/DTO/Articulo/Articulo';
 import { Cart, CartFill } from 'react-bootstrap-icons';
 
 const Home: React.FC = () => {
-  const [loading, setLoading] = useState<boolean>(true);
+  const [, setLoading] = useState<boolean>(true);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
-  const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
-  const [showSucursales, setShowSucursales] = useState<boolean>(false);
+  const [, setSelectedEmpresa] = useState<Empresa | null>(null);
+  const [, setShowSucursales] = useState<boolean>(false);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [selectedSucursal, setSelectedSucursal] = useState<Sucursal | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -247,12 +247,12 @@ const Home: React.FC = () => {
         />
       </div>
       <div className={`cart-sidebar ${isCartOpen ? 'open' : ''}`}>
-  <button className="close-cart-btn" onClick={() => setIsCartOpen(false)}>×</button>
-  <Carrito
-    actualizarLista={() => fetchProductos(selectedCategoryId!)}
-    isOpen={isCartOpen}
-    setIsOpen={setIsCartOpen}
-  />
+        <button className="close-cart-btn" onClick={() => setIsCartOpen(false)}>×</button>
+        <Carrito
+          actualizarLista={() => fetchProductos(selectedCategoryId!)}
+          isOpen={isCartOpen}
+          setIsOpen={setIsCartOpen}
+        />
 </div>
     </div>
   );

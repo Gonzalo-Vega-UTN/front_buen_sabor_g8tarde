@@ -132,7 +132,12 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({ onBack, onSub
           ))}
         </Form.Control>
       </Form.Group>
-      
+      <Button variant="secondary" onClick={onBack}>
+        Volver
+      </Button>
+      <Button variant="primary" type="submit" disabled={loading}>
+        {loading ? <Spinner animation="border" size="sm" /> : "Guardar"}
+      </Button>
     </Form>
   );
 };
