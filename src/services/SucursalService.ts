@@ -32,6 +32,23 @@ export class SucursalService {
     }
   }
 
+  static async getOne(id: string): Promise<Sucursal> {
+    try {
+      const responseData = await this.request(`/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      });
+
+      return responseData as Sucursal;
+    } catch (error) {
+      console.error('Error al obtener todas las Sucursales:', error);
+      throw error;
+    }
+  }
+
   static async fetchSucursalesByEmpresaId(empresaId: number): Promise<Sucursal[]> {
     try {
       const responseData = await this.request(`/empresa/${empresaId}`, {
