@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Usuario from '../../entities/DTO/Usuario/Usuario';
 import { Empleado } from '../../entities/DTO/Empleado/Empleado';
 import { Alert, Button, Form, Spinner } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import FormularioDomicilio from '../Domicilio/FormDomicilio';
 import ImagenCarousel from '../../components/carousel/ImagenCarousel';
@@ -24,6 +24,8 @@ const FormularioTrabajo = () => {
     const [files, setFiles] = useState<File[]>([]);
     const [error, setError] = useState<string>("");
     const [success, setSuccess] = useState<string>("");
+    const navigate = useNavigate();
+    const {login} = useAuth();
 
     const handleChangeUsuario = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -31,6 +33,7 @@ const FormularioTrabajo = () => {
     };
 
     const handleChangeRol = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        console.log(event.target.value as Rol)
         setSelectedRole(event.target.value as Rol);
     };
 
@@ -49,11 +52,18 @@ const FormularioTrabajo = () => {
             ...empleadoData,
             alta: false,
             usuario: usuarioData,
+            
             domicilios: [domicilio],
         }
+        empleadoCompleto.usuario.rol=selectedRole
+        console.log(empleadoCompleto)
          const response = await EmpleadoService.create(empleadoCompleto)
-         if(response){
+         
+         if(response && response.usuario.rol){
             console.log("EXITO", response)
+            login(response.usuario.email, response.usuario.username, response.usuario.rol)
+            navigate("/")
+
          }
     
     };
