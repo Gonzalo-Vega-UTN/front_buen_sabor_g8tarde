@@ -40,7 +40,15 @@ export const PedidosDelivery = () => {
                             <div className="d-flex justify-content-between px-5 w-100">
                                 <div>{pedido.id}</div>
                                 <div>{pedido.fechaPedido ? new Date(pedido.fechaPedido).toLocaleDateString() : "Fecha No disponible"}</div>
-                                <div>{pedido.domicilioShort ? pedido.domicilioShort.calle : 'Dirección no disponible'}</div>
+                                <div>
+                                {pedido.domicilio ? (
+                                    <>
+                                    <p>Calle: {pedido.domicilio.calle} Número: {pedido.domicilio.numero}</p>
+                                    </>
+                                ) : (
+                                    <p>Dirección no disponible</p>
+                                )}
+                                </div>
                                 <div>{pedido.total}</div>
                                 <div>{`Cliente: ${pedido.cliente ? pedido.cliente.nombre + ' ' + pedido.cliente.apellido : 'Cliente no disponible'} `}</div>
                             </div>

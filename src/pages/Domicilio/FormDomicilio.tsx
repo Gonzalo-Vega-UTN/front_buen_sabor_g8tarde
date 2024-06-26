@@ -23,7 +23,7 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
   const fetchProvincias = async () => {
     try {
       //Aca se rompe por el tema de que se cargan 2 paises verlo
-      const provincias = await DomicilioService.getProvinciasByPais(1);
+      const provincias = await DomicilioService.getProvinciasByPais(2);
       setProvincias(provincias);
       console.log(provincias)
     } catch (error) {
