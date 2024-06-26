@@ -29,7 +29,7 @@ const Home: React.FC = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [productos, setProductos] = useState<Articulo[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>(undefined);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, selectSucursal } = useAuth();
   const { agregarAlCarrito } = useCart();
   const [subCategoriaSelected, setSubCategoriaSelected] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -111,8 +111,9 @@ const Home: React.FC = () => {
     setCurrentStep(2);
   };
 
-  const selectSucursal = (sucursal: Sucursal) => {
+  const seleccionarSucursal = (sucursal: Sucursal) => {
     setSelectedSucursal(sucursal);
+    selectSucursal(sucursal.id)
     fetchCategoriasPadresBySucursal(sucursal.id);
     setCurrentStep(3);
   };
@@ -178,7 +179,7 @@ const Home: React.FC = () => {
             <Row>
               {sucursales.map((sucursal) => (
                 <Col key={sucursal.id} sm={12} md={6} lg={4} className="mb-4">
-                  <Card onClick={() => {selectSucursal(sucursal)
+                  <Card onClick={() => {seleccionarSucursal(sucursal)
                         fetchProductos(1);
                 
                 } }className="sucursal-card">

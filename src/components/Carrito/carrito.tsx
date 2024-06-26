@@ -71,7 +71,11 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
 
   useEffect(() => {
     if (tipoEnvio === TipoEnvio.TakeAway && sucursal && sucursal.domicilio) {
+      console.log("Sucursal",sucursal)
+      console.log("Domicilio",sucursal.domicilio)
       setDomicilioEntrega(sucursal.domicilio);
+      
+      console.log(domicilioEntrega)
     }
   }, [tipoEnvio, sucursal]);
 
@@ -168,6 +172,7 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
             <div>
               {tipoEnvio === TipoEnvio.TakeAway && (
                 <h5>Domicilio de Retiro</h5>
+
               )}
               {tipoEnvio === TipoEnvio.Delivery && (
                 <>

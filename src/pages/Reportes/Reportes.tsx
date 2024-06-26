@@ -34,6 +34,32 @@ export const Reportes = () => {
         }
     }
 
+    const generateExcelMovimientos = async (desde: string, hasta: string) => {
+        try {
+            const excelData = await ReporteService.getMovimientosExel(desde, hasta);
+            const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            window.open(url);
+            //navigate("")
+          } catch (error) {
+            console.error('Error al generar el Excel:', error);
+            if (error instanceof Error) {
+              console.log("FALLO");
+            }
+          }
+       
+    }
+
+    const generateExcelRanking = async (desde: string, hasta: string) => {
+        try {
+            await ReporteService.getMovimientosExel(desde, hasta);
+        } catch (error) {
+            if (error instanceof Error) {
+                console.log(error.message)
+            }
+        }
+    }
+
 
 
 
@@ -48,6 +74,7 @@ export const Reportes = () => {
                         fetchData={fecthRankingComidas}
                         data={rankingArticulos}
                         typeChart='bar'
+                        generateExcel={generateExcelMovimientos}
                     />
                 </Col>
                 <Col>
@@ -56,6 +83,7 @@ export const Reportes = () => {
                         fetchData={fetchMovimientos}
                         data={movimientos}
                         typeChart='line'
+                        generateExcel={generateExcelMovimientos}
                     />
                 </Col>
             </Row>

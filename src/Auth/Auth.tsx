@@ -9,7 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   activeUser: string;
   userRol: Rol;
-  activeSucursal: string;
+  activeSucursal: string; //Para admin
   isSelected: boolean;
   login: (email: string, username: string, rol: Rol) => void;
   logout: () => void;
@@ -75,6 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUserRol(Rol.Cliente);
     localStorage.removeItem('email');
     localStorage.removeItem('username');
+    localStorage.removeItem("activeSucursal")
   };
 
   const selectSucursal = (idSucursal: number) => {

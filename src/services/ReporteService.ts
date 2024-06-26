@@ -54,6 +54,24 @@ export class ReporteService {
         }
 
     }
+    static async getMovimientosExel(startDate: string, endDate: string) {
+        const params = new URLSearchParams();
+        params.append("startDate", startDate);
+        params.append("endDate", endDate);
+
+        const response = await fetch(`/reporte-diario/excel?${params}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors'
+        });
+        if (!response.ok) {
+            throw new Error('Error al generar el reporte Excel');
+        }
+        return response.blob();
+
+    }
 
 
 }

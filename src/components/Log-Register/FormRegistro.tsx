@@ -40,13 +40,21 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
 
   const handleChangeCliente = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setClienteData({ ...clienteData, [name]: value });
+    const year = new Date(value).getFullYear();
+    const currentYear = new Date().getFullYear();
+
+    if (name === "fechaNacimiento" && (year < 1930 || year > currentYear)) {
+      setError(`El año debe estar entre 1930 y ${currentYear}`);
+    } else {
+      setError("");
+      setClienteData({ ...clienteData, [name]: value });
+    }
   };
 
   const handleSubmitUsuario = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("ANTES DE GUARDAR")
-    
+    console.log("ANTES DE GUARDAR");
+
     setUsuarioData((prev) => ({
       ...prev,
       rol: Rol.Cliente,
@@ -62,10 +70,10 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
         usuarioData.username
       );
       if (!data) {
-        setLoading(true)
+        setLoading(true);
         setError("");
         setTimeout(() => {
-          setLoading(false)
+          setLoading(false);
           setStep(2);
         }, 1500);
       } else {
@@ -76,15 +84,15 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
         setError(error.message);
       }
     }
-    console.log("DESPUES DE GUARDAR")
+    console.log("DESPUES DE GUARDAR");
   };
 
   const handleSubmitCliente = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
     setError("");
     setTimeout(() => {
-      setLoading(false)
+      setLoading(false);
       setStep(3);
     }, 1500);
   };
@@ -98,18 +106,15 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
     };
 
     try {
-      
       const cliente = await ClienteService.agregarcliente(clienteCompleto);
-      console.log(cliente.domicilios)
+      console.log(cliente.domicilios);
       if (cliente) {
         setSuccess("Registro Exitoso");
         setTimeout(() => {
           navigate("/");
           closeModal(); // Cerrar el modal después de registrar
-          login(cliente.usuario.email, cliente.usuario.username, cliente.usuario.rol || Rol.Cliente)
-
+          login(cliente.usuario.email, cliente.usuario.username, cliente.usuario.rol || Rol.Cliente);
         }, 1500);
-
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -134,7 +139,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
   };
 
   const handleDomicilioSubmit = (domicilio: any) => {
-    console.log(domicilio)
+    console.log(domicilio);
     handleSubmitDomicilio(domicilio);
   };
 
@@ -212,13 +217,15 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
                   Volver
                 </Link>
               </Button>
-              {loading ? <Button variant="primary" type="submit">
-                Siguiente <Spinner size="sm" />
-              </Button>
-                :
+              {loading ? (
+                <Button variant="primary" type="submit">
+                  Siguiente <Spinner size="sm" />
+                </Button>
+              ) : (
                 <Button variant="primary" type="submit">
                   Siguiente
-                </Button>}
+                </Button>
+              )}
             </div>
             {error && (
               <Alert variant="danger" className="mt-3">
@@ -282,13 +289,15 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
               <Button variant="secondary" onClick={() => setStep(1)}>
                 Volver
               </Button>
-              {loading ? <Button variant="primary" type="submit">
-                Siguiente <Spinner size="sm" />
-              </Button>
-                :
+              {loading ? (
+                <Button variant="primary" type="submit">
+                  Siguiente <Spinner size="sm" />
+                </Button>
+              ) : (
                 <Button variant="primary" type="submit">
                   Siguiente
-                </Button>}
+                </Button>
+              )}
             </div>
             {success && (
               <Alert variant="success" className="mt-3">

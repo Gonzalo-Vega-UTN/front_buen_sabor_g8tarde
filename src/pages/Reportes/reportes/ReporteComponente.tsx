@@ -12,8 +12,9 @@ interface Props {
     fetchData: (startDate: string, endDate: string) => void
     data: any[]
     typeChart: string
+    generateExcel : () => void
 }
-export const ReporteComponente = ({ fetchData, titulo, data, typeChart }: Props) => {
+export const ReporteComponente = ({ fetchData, titulo, data, typeChart, generateExcel }: Props) => {
 
     const [startDate, setStartDate] = useState<string>('2020-01-01');
     const [endDate, setEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
@@ -65,9 +66,7 @@ export const ReporteComponente = ({ fetchData, titulo, data, typeChart }: Props)
                         </Form.Group>
                     </Col>
                     <Col className='d-flex align-items-end'>
-                        <Button variant="primary" type="submit">
-                            Enviar
-                        </Button>
+                        
                     </Col>
                 </Row>
 
@@ -86,6 +85,9 @@ export const ReporteComponente = ({ fetchData, titulo, data, typeChart }: Props)
                 </Row>
 
             </Form>
+            <Button variant="primary" onClick={() => generateExcel(startDate, endDate)}>
+                            Generar Excel
+                        </Button>
         </Container>
     )
 }

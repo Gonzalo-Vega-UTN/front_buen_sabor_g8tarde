@@ -15,10 +15,8 @@ import BotonLogout from '../Log-Register/BotonLogout';
 const Sidebar = () => {
     const [expanded, setExpanded] = useState(false);
     const [selected, setSelected] = useState('');
-    const [submenuOpen, setSubmenuOpen] = useState(false);
     const location = useLocation();
-    const { userRol } = useAuth();
-    const { isAuthenticated } = useAuth();
+    const { userRol, isAuthenticated } = useAuth();
 
     const handleMouseEnter = () => setExpanded(true);
     const handleMouseLeave = () => setExpanded(false);
@@ -27,10 +25,42 @@ const Sidebar = () => {
         setSelected(path);
     };
 
-    const toggleSubmenu = () => {
-        setSubmenuOpen(!submenuOpen);
+    const roleRoutes = {
+        [Rol.Admin]: [
+            { path: '/empresas', icon: BsBuilding, label: 'Empresas' },
+            { path: '/sucursales', icon: BsShop, label: 'Sucursal' },
+            { path: '/productos', icon: BsBox, label: 'Productos' },
+            { path: '/unidadmedida', icon: TbRulerMeasure, label: 'Medidas' },
+            { path: '/ingredientes', icon: BsBasket, label: 'Ingredientes' },
+            { path: '/promociones', icon: BsPercent, label: 'Promociones' },
+            { path: '/pedidos', icon: BsCart, label: 'Pedidos' },
+            { path: '/clientes', icon: BsFillPeopleFill, label: 'Clientes' },
+            { path: '/categorias', icon: MdOutlineCategory, label: 'Categorias' },
+            { path: '/reportes', icon: BsGraphUp, label: 'Reportes' },
+            { path: '/PedidosCajero', icon: LiaCashRegisterSolid, label: 'Cajero' },
+            { path: '/PedidosDelivery', icon: MdDeliveryDining, label: 'Delivery' },
+            { path: '/PedidosCocinero', icon: LuChefHat, label: 'Cocinero' },
+        ],
+        [Rol.Cocinero]: [
+            { path: '/unidadmedida', icon: TbRulerMeasure, label: 'Medidas' },
+            { path: '/ingredientes', icon: BsBasket, label: 'Ingredientes' },
+            { path: '/promociones', icon: BsPercent, label: 'Promociones' },
+            { path: '/PedidosCocinero', icon: LuChefHat, label: 'Cocinero' },
+        ],
+        [Rol.Cajero]: [
+            { path: '/PedidosCajero', icon: LiaCashRegisterSolid, label: 'Cajero' },
+        ],
+        [Rol.Delivery]: [
+            { path: '/PedidosDelivery', icon: MdDeliveryDining, label: 'Delivery' },
+        ],
     };
 
+    const defaultRoutes = [
+        { path: '/', icon: BsShop, label: 'Tienda' },
+        { path: '/acerca-de', icon: LuChefHat, label: 'Acerca De' }
+    ];
+
+    const routesToDisplay = isAuthenticated ? roleRoutes[userRol] || [] : [];
 
     return (
         <div
@@ -44,174 +74,37 @@ const Sidebar = () => {
 
             <hr className="text-white" />
             <ul className="nav flex-column flex-grow-1"> {/* Aplica flex-grow-1 para que ocupe todo el espacio vertical disponible */}
-                <li className="nav-item">
-                    <Link
-                        to="/"
-                        className={`nav-link text-white ${location.pathname === '/' || selected === '/' ? 'active' : ''}`}
-                        onClick={() => handleClick('/')}
-                    >
-                        <BsShop size={24} className="me-2" />
-                        <span className="nav-text">Tienda</span>
-                    </Link>
-                </li>
+                {defaultRoutes.map(({ path, icon: Icon, label }) => (
+                    <li className="nav-item" key={path}>
+                        <Link
+                            to={path}
+                            className={`nav-link text-white ${location.pathname === path || selected === path ? 'active' : ''}`}
+                            onClick={() => handleClick(path)}
+                        >
+                            <Icon size={24} className="me-2" />
+                            <span className="nav-text">{label}</span>
+                        </Link>
+                    </li>
+                ))}
 
-                {isAuthenticated ?
-                    <BotonLogout />
-                    :
-                    <BotonLogin 
-                    
-                    
-                    />
-                }
-                {
-                    isAuthenticated && userRol === Rol.Admin && (
-                        <>
-                            <li className="nav-item">
-                                <Link
-                                    to="/empresas"
-                                    className={`nav-link text-white ${location.pathname === '/empresas' || selected === '/empresas' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/empresas')}
-                                >
-                                    <BsBuilding size={24} className="me-2" />
-                                    <span className="nav-text">Empresas</span>
-                                </Link>
-                            </li>
+                {isAuthenticated ? <BotonLogout /> : <BotonLogin />}
 
-                            <li className="nav-item">
-                                <Link
-                                    to="/sucursales"
-                                    className={`nav-link text-white ${location.pathname === '/sucursal' || selected === '/sucursal' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/sucursales')}
-                                >
-                                    <BsShop size={24} className="me-2" />
-                                    <span className="nav-text">Sucursal</span>
-                                </Link>
-                            </li>
-
-
-                            <li className="nav-item">
-                                <Link
-                                    to="/productos"
-                                    className={`nav-link text-white ${location.pathname === '/productos' || selected === '/productos' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/productos')}
-                                >
-                                    <BsBox size={24} className="me-2" />
-                                    <span className="nav-text">Productos</span>
-                                </Link>
-                            </li>
-
-                            <li className="nav-item">
-                                <Link
-                                    to="/unidadmedida"
-                                    className={`nav-link text-white ${location.pathname === '/unidadmedida' || selected === '/unidadmedida' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/unidadmedida')}
-                                >
-                                    <TbRulerMeasure size={24} className="me-2" />
-                                    <span className="nav-text">Medidas</span>
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    to="/ingredientes"
-                                    className={`nav-link text-white ${location.pathname === '/ingredientes' || selected === '/ingredientes' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/ingredientes')}
-                                >
-                                    <BsBasket size={24} className="me-2" />
-                                    <span className="nav-text">Ingredientes</span>
-                                </Link>
-                            </li>
-
-                            <li className="nav-item">
-                                <Link
-                                    to="/promociones"
-                                    className={`nav-link text-white ${location.pathname === '/promociones' || selected === '/promociones' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/promociones')}
-                                >
-                                    <BsPercent size={24} className="me-2" />
-                                    <span className="nav-text">Promociones</span>
-                                </Link>
-                            </li>
-
-                            <li className="nav-item">
-                                <Link
-                                    to="/pedidos"
-                                    className={`nav-link text-white ${location.pathname === '/pedidos' || selected === '/pedidos' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/pedidos')}
-                                >
-                                    <BsCart size={24} className="me-2" />
-                                    <span className="nav-text">Pedidos</span>
-                                </Link>
-                            </li>
-
-                            <li className="nav-item">
-                                <Link
-                                    to="/clientes"
-                                    className={`nav-link text-white ${location.pathname === '/clientes' || selected === '/clientes' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/clientes')}
-                                >
-                                    <BsFillPeopleFill size={24} className="me-2" />
-                                    <span className="nav-text">Clientes</span>
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    to="/categorias"
-                                    className={`nav-link text-white ${location.pathname === '/categorias' || selected === '/categorias' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/categorias')}
-                                >
-                                    <MdOutlineCategory size={24} className="me-2" />
-                                    <span className="nav-text">Categorias</span>
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    to="/reportes"
-                                    className={`nav-link text-white ${location.pathname === '/reportes' || selected === '/reportes' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/reportes')}
-                                >
-                                    <BsGraphUp size={24} className="me-2" />
-                                    <span className="nav-text">Reportes</span>
-                                </Link>
-                            </li>
-
-                            <li className="nav-item">
-                                <Link
-                                    to="/PedidosCajero"
-                                    className={`nav-link text-white ${location.pathname === '/PedidosCajero' || selected === '/PedidosCajero' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/PedidosCajero')}
-                                >
-                                    <LiaCashRegisterSolid size={24} className="me-2" />
-                                    <span className="nav-text">Cajero</span>
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    to="/PedidosDelivery"
-                                    className={`nav-link text-white ${location.pathname === '/PedidosDelivery' || selected === '/PedidosDelivery' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/PedidosDelivery')}
-                                >
-                                    <MdDeliveryDining size={24} className="me-2" />
-                                    <span className="nav-text">Delivery</span>
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    to="/PedidosCocinero"
-                                    className={`nav-link text-white ${location.pathname === '/PedidosCocinero' || selected === '/PedidosCocinero' ? 'active' : ''}`}
-                                    onClick={() => handleClick('/PedidosCocinero')}
-                                >
-                                    <LuChefHat size={24} className="me-2" />
-                                    <span className="nav-text">Cocinero</span>
-                                </Link>
-                            </li>
-
-                        </>
-                    )}
+                {routesToDisplay.map(({ path, icon: Icon, label }) => (
+                    <li className="nav-item" key={path}>
+                        <Link
+                            to={path}
+                            className={`nav-link text-white ${location.pathname === path || selected === path ? 'active' : ''}`}
+                            onClick={() => handleClick(path)}
+                        >
+                            <Icon size={24} className="me-2" />
+                            <span className="nav-text">{label}</span>
+                        </Link>
+                    </li>
+                ))}
             </ul>
             <div className="mt-auto"></div> {/* Alinea los elementos al fondo del sidebar */}
         </div>
     );
 }
-
 
 export default Sidebar;
