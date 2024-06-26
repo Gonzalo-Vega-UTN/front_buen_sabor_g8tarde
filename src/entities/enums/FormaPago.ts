@@ -1,4 +1,4 @@
-enum FormaPago {
+export enum FormaPago {
     Efectivo,
     MercadoPago
 }

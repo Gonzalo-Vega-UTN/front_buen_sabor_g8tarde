@@ -46,6 +46,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
   const handleSubmitUsuario = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("ANTES DE GUARDAR")
+    
     setUsuarioData((prev) => ({
       ...prev,
       rol: Rol.Cliente,
@@ -97,7 +98,9 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
     };
 
     try {
+      
       const cliente = await ClienteService.agregarcliente(clienteCompleto);
+      console.log(cliente.domicilios)
       if (cliente) {
         setSuccess("Registro Exitoso");
         setTimeout(() => {
@@ -131,6 +134,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
   };
 
   const handleDomicilioSubmit = (domicilio: any) => {
+    console.log(domicilio)
     handleSubmitDomicilio(domicilio);
   };
 

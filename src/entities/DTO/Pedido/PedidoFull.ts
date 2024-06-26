@@ -1,7 +1,8 @@
+import { Estado } from "../../enums/Estado";
 import { TipoEnvio } from "../../enums/TipoEnvio";
 import { Base } from "../Base";
 import { Cliente } from "../Cliente/Cliente";
-import { DomicilioShort } from "../Domicilio/DomicilioShort";
+import { Domicilio } from "../Domicilio/Domicilio";
 import { DetallePedido } from "./DetallePedido";
 
 export default class PedidoFull extends Base {
@@ -12,7 +13,7 @@ export default class PedidoFull extends Base {
     tipoEnvio?: TipoEnvio;
     formaDePago: string = '';
     fechaPedido: Date = new Date();
-    domicilioShort: DomicilioShort = new DomicilioShort();
+    domicilio: Domicilio = new Domicilio();
     cliente: Cliente = new Cliente();
     detallePedidos: DetallePedido[] = [];
 }
