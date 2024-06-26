@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import { useAuth } from "../../Auth/Auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
@@ -19,7 +18,6 @@ import { ValidationEnum } from "../../utils/ValidationEnum";
 import { AgregarInsumosModal } from "./AgregarInsumosModal";
 import ImagenCarousel from "../../components/carousel/ImagenCarousel";
 import { Imagen } from "../../entities/DTO/Imagen";
-
 
 export const FormularioArtManuf = () => {
   const { id } = useParams();
@@ -52,7 +50,7 @@ export const FormularioArtManuf = () => {
   const { activeSucursal } = useAuth();
 
   useEffect(() => {
-    if (!id || id == "0") {
+    if (!id || id === "0") {
       const artNuevo = new ArticuloManufacturado();
       artNuevo.articuloManufacturadoDetalles = [];
       setArticuloManufacturado(artNuevo);
@@ -87,7 +85,7 @@ export const FormularioArtManuf = () => {
       setCategorias(categorias);
     };
     fetchData();
-  }, []);
+  }, [activeSucursal]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -126,14 +124,16 @@ export const FormularioArtManuf = () => {
   const handleFileChange = (newFiles: File[]) => {
     setFiles(newFiles);
   };
+
   const handleImagenesChange = (newImages: Imagen[]) => {
-    if (articuloManufacturado != null && articuloManufacturado != undefined) {
+    if (articuloManufacturado != null && articuloManufacturado !== undefined) {
       setArticuloManufacturado((prev) => ({
         ...prev,
         imagenes: newImages,
       }));
     }
   };
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -149,13 +149,16 @@ export const FormularioArtManuf = () => {
       setSubmitError("Completa todos los campos");
       return;
     }
+
     const hasErrors = Object.values(fieldErrors).some((errors) =>
       Object.values(errors).some((error) => !error.isValid)
     );
+
     if (hasErrors) {
       setSubmitError("Completa todos los campos");
       return;
     }
+
     const detallesConCero =
       articuloManufacturado.articuloManufacturadoDetalles?.filter(
         (detalle) => detalle.cantidad === 0
@@ -177,27 +180,28 @@ export const FormularioArtManuf = () => {
     if (articuloManufacturado.id === 0) {
       ProductServices.create(articuloManufacturado, activeSucursal)
         .then(() => {
-          setExito("ENTIDAD CREADA CON EXITO");
+          setExito("ENTIDAD CREADA CON ÉXITO");
           setTimeout(() => {
             navigate("/productos");
           }, 1500); // 1.5 segundos de delay
         })
         .catch((error) => {
-          console.log("Algo salio mal CREATE", error);
+          console.log("Algo salió mal CREATE", error);
         });
     } else {
       ProductServices.update(articuloManufacturado.id, articuloManufacturado)
         .then(() => {
-          setExito("ENTIDAD ACTUALIZADA CON EXITO");
+          setExito("ENTIDAD ACTUALIZADA CON ÉXITO");
           setTimeout(() => {
             navigate("/productos");
           }, 1500); // 1.5 segundos de delay
         })
         .catch((error) => {
-          console.log("Algo salio mal UPDATE", error);
+          console.log("Algo salió mal UPDATE", error);
         });
     }
   };
+
   const handleCantidadChange = (index: number, newCantidad: number) => {
     setDetalles((prevDetalles) => {
       const updatedDetalles = [...prevDetalles];
@@ -210,11 +214,10 @@ export const FormularioArtManuf = () => {
   };
 
   const handleOpenModal = (newTitle: string) => {
-    console.log("clicked");
-
     setTitle(newTitle);
     setShowModal(true);
   };
+
   function handleSeleccionInsumos(articulosInsumo: ArticuloInsumo[]): void {
     // Crear un mapa para un acceso rápido a los insumos nuevos
     const nuevosInsumosMap = new Map<number, ArticuloInsumo>();
@@ -255,8 +258,6 @@ export const FormularioArtManuf = () => {
       }
     });
 
-    console.log("detalles actualizados", detallesActualizados);
-
     // Actualizar el estado con los nuevos detalles
     setDetalles(detallesActualizados);
 
@@ -267,7 +268,7 @@ export const FormularioArtManuf = () => {
     <>
       {error && (
         <Alert variant="danger" className="text-center mt-5">
-          <Alert.Heading>Oops!</Alert.Heading>
+          <Alert.Heading>¡Oops!</Alert.Heading>
           <p>{error}</p>
           <span>Redirigiendo...</span>
         </Alert>
@@ -275,7 +276,7 @@ export const FormularioArtManuf = () => {
 
       {exito && (
         <Alert variant="success" className="text-center mt-5">
-          <Alert.Heading>OK!</Alert.Heading>
+          <Alert.Heading>¡OK!</Alert.Heading>
           <p>{exito}</p>
           <span>Redirigiendo...</span>
         </Alert>
@@ -284,146 +285,160 @@ export const FormularioArtManuf = () => {
       {/* Mostrar formulario en caso de que no hay errores  */}
       {!error && articuloManufacturado && (
         <>
-          <p></p>
           <h2>Formulario de Articulo Manufacturado</h2>
           <Form onSubmit={handleSubmit}>
             <Row className="m-4">
-              <MyFormGroupInput
-                onChange={update}
-                name={"denominacion"}
-                label={"Denominacion"}
-                orientation={Col}
-                type={"text"}
-                attribute={articuloManufacturado.denominacion}
-                validationRules={[
-                  {
-                    rule: ValidationEnum.Empty,
-                    errorMessage: "El campo no puede estar vacío",
-                  },
-                  {
-                    rule: ValidationEnum.MinLength,
-                    errorMessage: `El campo debe tener al menos ${5} caracteres`,
-                    min: 5,
-                  },
-                ]}
-                setFieldErrors={handleSetFieldErrors}
-              />
-              <MyFormGroupInput
-                onChange={update}
-                name={"descripcion"}
-                label={"Descripcion"}
-                orientation={Row}
-                type={"text"}
-                attribute={articuloManufacturado.descripcion}
-                validationRules={[
-                  {
-                    rule: ValidationEnum.Empty,
-                    errorMessage: "El campo no puede estar vacío",
-                  },
-                  {
-                    rule: ValidationEnum.MinLength,
-                    errorMessage: `El campo debe tener al menos ${10} caracteres`,
-                    min: 25,
-                  },
-                ]}
-                setFieldErrors={handleSetFieldErrors}
-              />
-              <MyFormGroupInput
-                onChange={update}
-                name={"preparacion"}
-                label={"Preparacion"}
-                orientation={Row}
-                type={"text"}
-                attribute={articuloManufacturado.preparacion}
-                validationRules={[
-                  {
-                    rule: ValidationEnum.Empty,
-                    errorMessage: "El campo no puede estar vacío",
-                  },
-                  {
-                    rule: ValidationEnum.MinLength,
-                    errorMessage: `El campo debe tener al menos ${10} caracteres`,
-                    min: 30,
-                  },
-                ]}
-                setFieldErrors={handleSetFieldErrors}
-              />
-
-              <MyFormGroupInput
-                onChange={update}
-                name={"tiempoEstimadoMinutos"}
-                label={"Tiempo de Preparacion (minutos)"}
-                orientation={Col}
-                type={"number"}
-                attribute={articuloManufacturado.tiempoEstimadoMinutos.toString()}
-                validationRules={[
-                  {
-                    rule: ValidationEnum.Empty,
-                    errorMessage: "El campo no puede estar vacío",
-                  },
-                  {
-                    rule: ValidationEnum.Positive,
-                    errorMessage: "El campo debe ser un numero positivo",
-                  },
-                ]}
-                setFieldErrors={handleSetFieldErrors}
-              />
-              <MyFormGroupInput
-                onChange={update}
-                name={"precioVenta"}
-                label={"Precio Venta"}
-                orientation={Col}
-                type={"number"}
-                attribute={articuloManufacturado.precioVenta.toString()}
-                validationRules={[
-                  {
-                    rule: ValidationEnum.Empty,
-                    errorMessage: "El campo no puede estar vacío",
-                  },
-                  {
-                    rule: ValidationEnum.Positive,
-                    errorMessage: "El campo debe ser un numero positivo",
-                  },
-                ]}
-                setFieldErrors={handleSetFieldErrors}
-              />
-              <FormGroupSelect<Categoria>
-                orientation={Col}
-                options={categorias}
-                getOptionLabel={(cat) => cat.denominacion}
-                getOptionValue={(cat) => String(cat.id)}
-                onChange={(option: any | null, name: string) => {
-                  onChange(option, name);
-                  setSelectedCategoria(option);
-                }}
-                selectedOption={articuloManufacturado.categoria}
-                label={"Seleccionar una Categoria"}
-                name="categoria"
-              />
-              <FormGroupSelect<UnidadMedida>
-                orientation={Col}
-                options={unidadesMedida}
-                getOptionLabel={(unidad) => unidad.denominacion}
-                getOptionValue={(unidad) => String(unidad.id)}
-                onChange={(option: any | null, name: string) => {
-                  onChange(option, name);
-                  console.log(selectedUnidadMedida);
-
-                  setSelectedUnidadMedida(option);
-                  console.log(selectedUnidadMedida);
-                }}
-                selectedOption={articuloManufacturado.unidadMedida}
-                label={"Seleccionar una Medida"}
-                name="unidadMedida"
-              />
+              <Col>
+                <MyFormGroupInput
+                  onChange={update}
+                  name={"denominacion"}
+                  label={"Denominación"}
+                  orientation={Col}
+                  type={"text"}
+                  attribute={articuloManufacturado.denominacion}
+                  validationRules={[
+                    {
+                      rule: ValidationEnum.Empty,
+                      errorMessage: "El campo no puede estar vacío",
+                    },
+                    {
+                      rule: ValidationEnum.MinLength,
+                      errorMessage: `El campo debe tener al menos ${5} caracteres`,
+                      min: 5,
+                    },
+                  ]}
+                  setFieldErrors={handleSetFieldErrors}
+                />
+              </Col>
+              <Col>
+                <MyFormGroupInput
+                  onChange={update}
+                  name={"descripcion"}
+                  label={"Descripción"}
+                  orientation={Col}
+                  type={"text"}
+                  attribute={articuloManufacturado.descripcion}
+                  validationRules={[
+                    {
+                      rule: ValidationEnum.Empty,
+                      errorMessage: "El campo no puede estar vacío",
+                    },
+                    {
+                      rule: ValidationEnum.MinLength,
+                      errorMessage: `El campo debe tener al menos ${25} caracteres`,
+                      min: 25,
+                    },
+                  ]}
+                  setFieldErrors={handleSetFieldErrors}
+                />
+              </Col>
+              <Col>
+                <MyFormGroupInput
+                  onChange={update}
+                  name={"preparacion"}
+                  label={"Preparación"}
+                  orientation={Col}
+                  type={"text"}
+                  attribute={articuloManufacturado.preparacion}
+                  validationRules={[
+                    {
+                      rule: ValidationEnum.Empty,
+                      errorMessage: "El campo no puede estar vacío",
+                    },
+                    {
+                      rule: ValidationEnum.MinLength,
+                      errorMessage: `El campo debe tener al menos ${30} caracteres`,
+                      min: 30,
+                    },
+                  ]}
+                  setFieldErrors={handleSetFieldErrors}
+                />
+              </Col>
             </Row>
 
-            <Row>
-              <ImagenCarousel
-                imagenesExistentes={articuloManufacturado.imagenes}
-                onFilesChange={handleFileChange}
-                onImagenesChange={handleImagenesChange}
-              />
+            <Row className="m-4">
+              <Col>
+                <MyFormGroupInput
+                  onChange={update}
+                  name={"tiempoEstimadoMinutos"}
+                  label={"Tiempo de Preparación (minutos)"}
+                  orientation={Col}
+                  type={"number"}
+                  attribute={articuloManufacturado.tiempoEstimadoMinutos.toString()}
+                  validationRules={[
+                    {
+                      rule: ValidationEnum.Empty,
+                      errorMessage: "El campo no puede estar vacío",
+                    },
+                    {
+                      rule: ValidationEnum.Positive,
+                      errorMessage: "El campo debe ser un número positivo",
+                    },
+                  ]}
+                  setFieldErrors={handleSetFieldErrors}
+                />
+              </Col>
+              <Col>
+                <MyFormGroupInput
+                  onChange={update}
+                  name={"precioVenta"}
+                  label={"Precio Venta"}
+                  orientation={Col}
+                  type={"number"}
+                  attribute={articuloManufacturado.precioVenta.toString()}
+                  validationRules={[
+                    {
+                      rule: ValidationEnum.Empty,
+                      errorMessage: "El campo no puede estar vacío",
+                    },
+                    {
+                      rule: ValidationEnum.Positive,
+                      errorMessage: "El campo debe ser un número positivo",
+                    },
+                  ]}
+                  setFieldErrors={handleSetFieldErrors}
+                />
+              </Col>
+              <Col>
+                <FormGroupSelect<Categoria>
+                  orientation={Col}
+                  options={categorias}
+                  getOptionLabel={(cat) => cat.denominacion}
+                  getOptionValue={(cat) => String(cat.id)}
+                  onChange={(option: any | null) => {
+                    onChange(option, "categoria");
+                    setSelectedCategoria(option);
+                  }}
+                  selectedOption={articuloManufacturado.categoria}
+                  label={"Seleccionar una Categoría"}
+                  name="categoria"
+                />
+              </Col>
+              <Col>
+                <FormGroupSelect<UnidadMedida>
+                  orientation={Col}
+                  options={unidadesMedida}
+                  getOptionLabel={(unidad) => unidad.denominacion}
+                  getOptionValue={(unidad) => String(unidad.id)}
+                  onChange={(option: any | null) => {
+                    onChange(option, "unidadMedida");
+                    setSelectedUnidadMedida(option);
+                  }}
+                  selectedOption={articuloManufacturado.unidadMedida}
+                  label={"Seleccionar una Medida"}
+                  name="unidadMedida"
+                />
+              </Col>
+            </Row>
+
+            <Row className="justify-content-end">
+              <Col xs={13} md={13} lg={13}>
+                <ImagenCarousel
+                  imagenesExistentes={articuloManufacturado.imagenes}
+                  onFilesChange={handleFileChange}
+                  onImagenesChange={handleImagenesChange}
+                />
+              </Col>
             </Row>
 
             {showModal && (
@@ -466,6 +481,7 @@ export const FormularioArtManuf = () => {
             <Button className="m-2 p-2" variant="primary" type="submit">
               Guardar
             </Button>
+
             <Row>
               {submitError && <h4 className="text-danger">{submitError}</h4>}
             </Row>

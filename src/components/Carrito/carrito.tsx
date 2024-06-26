@@ -8,6 +8,7 @@ import { useAuth } from '../../Auth/Auth';
 import { Sucursal } from '../../entities/DTO/Sucursal/Sucursal';
 import SucursalService from '../../services/SucursalService';
 import ModalDomicilios from '../../pages/Domicilio/ModalDomicilios';
+import { Domicilio } from '../../entities/DTO/Domicilio/Domicilio';
 
 const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista }) => {
   const { pedido, quitarDelCarrito, agregarAlCarrito, vaciarCarrito, handleCompra, handleCantidadChange, error, preferenceId } = useCart();
@@ -17,6 +18,7 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
   const { activeSucursal } = useAuth();
   const [sucursal, setSucursal] = useState<Sucursal>();
   const [showModalDomicilios, setShowModalDomicilios] = useState(false); // Estado para controlar la visibilidad del modal
+  const [domicilioEntrega, setDomicilioEntrega] = useState<Domicilio>();
 
   useEffect(() => {
     if (activeSucursal) {
@@ -46,11 +48,20 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
     await actualizarLista();
   };
 
-  const handleSeleccionarDomicilio = (domicilioId: any) => {
+  const handleSeleccionarDomicilio = (domicilio: Domicilio) => {
     // Implementa la lógica para seleccionar el domicilio
-    console.log('Domicilio seleccionado:', domicilioId);
+    console.log('Domicilio seleccionado:', domicilio);
     setShowModalDomicilios(false); // Ocultar el modal después de seleccionar un domicilio
+    setDomicilioEntrega(domicilio);
+
   };
+
+  useEffect(() => {
+    if (tipoEnvio === 'retiro' && sucursal && sucursal.domicilio) {
+      setDomicilioEntrega(sucursal.domicilio);
+    }
+  }, [tipoEnvio, sucursal]);
+
 
   return (
     <div className="carrito-container">
@@ -125,7 +136,10 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
             <h3>Elige tu Forma de Entrega</h3>
             <Row>
               <Col>
-                <Form.Select onChange={(e) => setTipoEnvio(e.target.value)}>
+                <Form.Select onChange={(e) => {
+                  setDomicilioEntrega(undefined)
+                  setTipoEnvio(e.target.value)
+                }}>
                   <option value={""}>Seleccionar una forma de retiro</option>
                   <option value={"retiro"}>Retiro en Sucursal</option>
                   <option value={"envio"}>Envío a Domicilio</option>
@@ -139,16 +153,12 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
                 </Form.Select>
               </Col>
             </Row>
-            {tipoEnvio === "retiro" && sucursal && sucursal.domicilio ? (
-              <div>
+            <div>
+              {tipoEnvio === "retiro" && (
                 <h5>Domicilio de Retiro</h5>
-                <p>{sucursal.domicilio.calle} {sucursal.domicilio.numero}</p>
-                <p>{sucursal.domicilio.cp}</p>
-                <p>{sucursal.domicilio.localidad.nombre}, {sucursal.domicilio.localidad.provincia.nombre}</p>
-              </div>
-            ) : (
-              tipoEnvio === "envio" && (
-                <div>
+              )}
+              {tipoEnvio === "envio" && (
+                <>
                   <h5>Domicilio de Entrega</h5>
                   <Button variant="primary" onClick={() => setShowModalDomicilios(true)}>Seleccionar Domicilio</Button>
                   <ModalDomicilios
@@ -156,15 +166,22 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
                     onHide={() => setShowModalDomicilios(false)}
                     onSelectDomicilio={handleSeleccionarDomicilio}
                   />
+                </>
+              )}
+              {domicilioEntrega && (
+                <div>
+                  <p>{domicilioEntrega.calle} {domicilioEntrega.numero}</p>
+                  <p>{domicilioEntrega.cp}</p>
+                  <p>{domicilioEntrega.localidad.nombre}, {domicilioEntrega.localidad.provincia.nombre}</p>
                 </div>
-              )
-            )}
+              )}
+            </div>
           </div>
           {preferenceId ? (
             <CheckoutMP preferenceId={preferenceId} />
           ) : (
             <div className="botones">
-              <Button variant="primary" onClick={RealizarCompra} disabled={tipoEnvio.trim() === "" || tipoPago.trim() === ""}>Pagar</Button>
+              <Button variant="primary" onClick={RealizarCompra} disabled={(tipoEnvio.trim() === "" || tipoPago.trim() === "") && domicilioEntrega != undefined}>Pagar</Button>
             </div>
           )}
         </div>

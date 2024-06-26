@@ -9,6 +9,6 @@ export class Cliente extends Base {
     email: string = '';
     fechaNacimiento: string | null = '';
     imagenes: Imagen[] = [];
-    domicilios: Domicilio[] | null = null;
+    domicilios: Domicilio[] = [];
     usuario: Usuario = new Usuario();
 }

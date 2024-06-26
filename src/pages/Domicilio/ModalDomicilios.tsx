@@ -3,22 +3,29 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import DomicilioService from '../../services/DomicilioService';
 import ClienteService from '../../services/ClienteService'; // Importa tu servicio de cliente
 import { Domicilio } from '../../entities/DTO/Domicilio/Domicilio'; // Asegúrate de importar la entidad Domicilio correcta
-
-const ModalDomicilios = ({ show, onHide, onSelectDomicilio }) => {
-  const [domicilios, setDomicilios] = useState([]);
+import { useAuth } from '../../Auth/Auth';
+import { Cliente } from '../../entities/DTO/Cliente/Cliente';
+interface Props {
+  show: boolean;
+  onHide: () => void;
+  onSelectDomicilio: (domicilio: Domicilio) => void;
+}
+const ModalDomicilios = ({ show, onHide, onSelectDomicilio }: Props) => {
   const [showForm, setShowForm] = useState(false);
   const [calle, setCalle] = useState('');
   const [numero, setNumero] = useState('');
   const [cp, setCp] = useState('');
+  const [provincias, setProvincias] = useState<any[]>([]);
+  const [localidades, setLocalidades] = useState<any[]>([]);
   const [provincia, setProvincia] = useState('');
   const [localidad, setLocalidad] = useState('');
   const [loading, setLoading] = useState(false);
-  const [cliente, setCliente] = useState(null); // Estado para almacenar el cliente activo
+  const [cliente, setCliente] = useState<Cliente>();
+  const { activeUser } = useAuth();
 
   useEffect(() => {
     if (show) {
-      fetchClienteActivo(); // Al mostrar el modal, cargar el cliente activo
-      fetchDomicilios(); // También cargar los domicilios del cliente activo
+      fetchClienteActivo();
     }
   }, [show]);
 
@@ -26,38 +33,68 @@ const ModalDomicilios = ({ show, onHide, onSelectDomicilio }) => {
     try {
       // Lógica para obtener el cliente activo desde tu servicio o contexto de autenticación
       // Aquí estoy asumiendo que tienes una función para obtener el cliente activo
-      const clienteActivo = await ClienteService.obtenerClienteActivo(); // Implementa esta función en ClienteService
+      const clienteActivo = await ClienteService.obtenerClienteByUsername(activeUser); // Implementa esta función en ClienteService
       setCliente(clienteActivo);
     } catch (error) {
       console.error('Error fetching active client:', error);
     }
   };
 
-  const fetchDomicilios = async () => {
+  const fetchProvincias = async () => {
     try {
-      if (cliente) {
-        const data = await DomicilioService.getDomicilioById(cliente.id); // Obtener domicilios por el id del cliente
-        setDomicilios(data);
-      }
+      const provincias = await DomicilioService.getProvinciasByPais();
+      setProvincias(provincias);
     } catch (error) {
-      console.error('Error fetching domicilios:', error);
+      if (error instanceof Error) {
+        console.log(error.message);
+      } else {
+        console.log("Error inesperado");
+      }
     }
   };
 
-  const handleSubmitNuevoDomicilio = async (e) => {
+  useEffect(() => {
+    fetchProvincias();
+  }, []);
+
+  const fetchLocalidades = async (idProvincia: number) => {
+    try {
+      const localidades = await DomicilioService.getLocalidadesByProvincia(idProvincia);
+      setLocalidades(localidades);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+      } else {
+        console.log("Error inesperado");
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (provincia) {
+      fetchLocalidades(Number(provincia));
+    }
+  }, [provincia]);
+
+  const handleSubmitNuevoDomicilio = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const nuevoDomicilio = {
-        calle,
-        numero,
-        cp,
-        provincia,
-        localidad,
-        clienteId: cliente.id, // Incluir el id del cliente activo en el nuevo domicilio
-      };
-      await DomicilioService.saveDomicilio(nuevoDomicilio); // Método para guardar domicilio del cliente
-      await fetchDomicilios();
+
+      if (cliente) {
+        const domicilioNuevo = new Domicilio();
+        domicilioNuevo.calle = calle;
+        domicilioNuevo.numero = Number(numero);
+        domicilioNuevo.localidad.id = Number(localidad);
+        domicilioNuevo.localidad.provincia.id = Number(provincia);
+        cliente?.domicilios?.push(domicilioNuevo);
+
+        const clienteGuardado = await ClienteService.actualizarCliente(cliente.id, cliente)
+        if (clienteGuardado) {
+          onSelectDomicilio(clienteGuardado.domicilios[clienteGuardado.domicilios.length - 1]) //TODO: Verificar si el ultimo de la lista siempre va a ser el mas reciente creado
+
+        }
+      }
       setShowForm(false);
     } catch (error) {
       console.error('Error creating domicilio:', error);
@@ -66,8 +103,8 @@ const ModalDomicilios = ({ show, onHide, onSelectDomicilio }) => {
     }
   };
 
-  const handleSelectDomicilio = (domicilioId) => {
-    onSelectDomicilio(domicilioId);
+  const handleSelectDomicilio = (domicilio: Domicilio) => {
+    onSelectDomicilio(domicilio);
     onHide();
   };
 
@@ -78,10 +115,10 @@ const ModalDomicilios = ({ show, onHide, onSelectDomicilio }) => {
       </Modal.Header>
       <Modal.Body>
         <h5>Domicilios Registrados:</h5>
-        {domicilios.map((domicilio) => (
+        {cliente && cliente.domicilios.map((domicilio) => (
           <div key={domicilio.id}>
-            <p>{domicilio.calle} {domicilio.numero}, {domicilio.cp}, {domicilio.localidad.nombre}, {domicilio.provincia.nombre}</p>
-            <Button variant="primary" onClick={() => handleSelectDomicilio(domicilio.id)}>Seleccionar</Button>
+            <p>{domicilio.calle} {domicilio.numero}, {domicilio.cp}, {domicilio.localidad.nombre}, {domicilio.localidad.provincia.nombre}</p>
+            <Button variant="primary" onClick={() => handleSelectDomicilio(domicilio)}>Seleccionar</Button>
           </div>
         ))}
         <hr />
@@ -102,11 +139,31 @@ const ModalDomicilios = ({ show, onHide, onSelectDomicilio }) => {
             </Form.Group>
             <Form.Group controlId="provincia">
               <Form.Label>Provincia</Form.Label>
-              <Form.Control type="text" value={provincia} onChange={(e) => setProvincia(e.target.value)} required />
+              <Form.Control
+                as="select"
+                value={provincia}
+                onChange={(e) => setProvincia(e.target.value)}
+                required
+              >
+                <option value="">Selecciona una provincia</option>
+                {provincias.map((prov) => (
+                  <option key={prov.id} value={prov.id}>{prov.nombre}</option>
+                ))}
+              </Form.Control>
             </Form.Group>
             <Form.Group controlId="localidad">
               <Form.Label>Localidad</Form.Label>
-              <Form.Control type="text" value={localidad} onChange={(e) => setLocalidad(e.target.value)} required />
+              <Form.Control
+                as="select"
+                value={localidad}
+                onChange={(e) => setLocalidad(e.target.value)}
+                required
+              >
+                <option value="">Selecciona una localidad</option>
+                {localidades.map((loc) => (
+                  <option key={loc.id} value={loc.id}>{loc.nombre}</option>
+                ))}
+              </Form.Control>
             </Form.Group>
             <Button variant="primary" type="submit" disabled={loading}>
               {loading ? 'Guardando...' : 'Guardar Nuevo Domicilio'}

@@ -29,6 +29,23 @@ class ClienteService {
         }
     }
 
+    static async actualizarCliente(idCliente : number, cliente: Cliente): Promise<Cliente> {
+        try {
+            const responseData = await this.request(`/${idCliente}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(cliente),
+                mode: 'cors'
+            });
+            return responseData as Cliente; 
+        } catch (error) {
+            console.error('Error al agregar el cliente:', error);
+            throw error;
+        }
+    }
+
     static async obtenerclienteById(id: number): Promise<Cliente> {
         try {
             return await this.request(`/${id}`, {
@@ -61,6 +78,22 @@ class ClienteService {
                 mode: 'cors'
             });
             return responseData as Cliente[];
+        } catch (error) {
+            console.error('Error al obtener los Clientes:', error);
+            throw error;
+        }
+    }
+
+    static async obtenerClienteByUsername(username : string): Promise<Cliente> {
+        try {
+            const responseData = await this.request(`/username/${username}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                mode: 'cors'
+            });
+            return responseData as Cliente;
         } catch (error) {
             console.error('Error al obtener los Clientes:', error);
             throw error;

@@ -46,6 +46,23 @@ export class ProductServices {
     }
   }
 
+  static async getAllproductsfromSucursal(idSucursal : string): Promise<ArticuloManufacturado[]> {
+    try {
+      const responseData = await this.request(`/sucursal/${idSucursal}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },  
+        mode: 'cors'
+      });
+      console.log(responseData)
+      return responseData as ArticuloManufacturado[];
+    } catch (error) {
+      console.error('Error al obtener todas los ArticuloManufacturados:', error);
+      throw error;
+    }
+  }
+
   static async getOne(id: number): Promise<ArticuloManufacturado> {
     try {
       return await this.request(`/${id}`, {

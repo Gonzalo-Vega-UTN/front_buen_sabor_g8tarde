@@ -51,8 +51,8 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
       rol: Rol.Cliente,
     }));
 
-    if (usuarioData.auth0Id.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres.");
+    if (usuarioData.auth0Id.length < 4) {
+      setError("La contraseña debe tener al menos 4 caracteres.");
       return;
     }
 

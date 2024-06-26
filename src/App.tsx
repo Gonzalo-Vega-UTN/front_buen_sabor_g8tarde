@@ -4,7 +4,6 @@ import AppRoutes from './routes/AppRoutes';
 import Footer from './components/Footer/Footer';
 import Sidebar from './components/Sidebar/Sidebar';
 import { AuthProvider } from './Auth/Auth';
-import './App.css'; 
 import { CartProvider } from './components/Carrito/ContextCarrito';
 
 const App: React.FC = () => {
