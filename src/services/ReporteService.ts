@@ -59,7 +59,7 @@ export class ReporteService {
         params.append("startDate", startDate);
         params.append("endDate", endDate);
 
-        const response = await fetch(`/reporte-diario/excel?${params}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/reportes/reporte-diario/excel?${params}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
