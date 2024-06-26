@@ -24,8 +24,6 @@ const CategoriaModal = ( {show, onHide, idpadre, activeSucursal} : ModalProps) =
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            console.log(categoria);
-
             const data = await CategoriaService.agregarCategoria(Number(idpadre) ,Number(activeSucursal),{ ...categoria, alta: true });
             if (data) {
                 onHide()
@@ -59,6 +57,8 @@ const CategoriaModal = ( {show, onHide, idpadre, activeSucursal} : ModalProps) =
             aria-labelledby="contained-modal-title-vcenter"
             centered
             show={show}
+            onHide={onHide}
+            backdrop="static"
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">

@@ -40,7 +40,7 @@ export class CategoriaService {
         },
         mode: 'cors'
       });
-      return responseData;
+      return responseData as Categoria[];
     } catch (error) {
       console.error('Error al obtener todas las categorias padre:', error);
       throw error;

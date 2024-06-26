@@ -91,7 +91,11 @@ const ModalDomicilios = ({ show, onHide, onSelectDomicilio }: Props) => {
 
         const clienteGuardado = await ClienteService.actualizarCliente(cliente.id, cliente)
         if (clienteGuardado) {
-          onSelectDomicilio(clienteGuardado.domicilios[clienteGuardado.domicilios.length - 1]) //TODO: Verificar si el ultimo de la lista siempre va a ser el mas reciente creado
+          console.log(clienteGuardado.domicilios)
+          onSelectDomicilio(clienteGuardado.domicilios.filter(domicilio => 
+            domicilio.calle == domicilioNuevo.calle && 
+            domicilio.cp == domicilioNuevo.cp 
+            && domicilio.numero == domicilioNuevo.numero )[0]) //TODO: Verificar si el ultimo de la lista siempre va a ser el mas reciente creado
 
         }
       }
@@ -122,7 +126,14 @@ const ModalDomicilios = ({ show, onHide, onSelectDomicilio }: Props) => {
           </div>
         ))}
         <hr />
-        <Button variant="secondary" onClick={() => setShowForm(!showForm)}>Agregar Nuevo Domicilio</Button>
+        <Button variant="secondary" onClick={() => {
+          setShowForm(!showForm)
+          setCalle("")
+          setNumero("")
+          setCp("")
+          setProvincia("")
+          setLocalidad("")
+        }}>Agregar Nuevo Domicilio</Button>
         {showForm && (
           <Form onSubmit={handleSubmitNuevoDomicilio}>
             <Form.Group controlId="calle">

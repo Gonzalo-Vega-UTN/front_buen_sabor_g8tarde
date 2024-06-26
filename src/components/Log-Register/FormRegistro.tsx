@@ -172,7 +172,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
                 required
               />
               <Form.Text className="text-muted">
-                La contraseña debe tener al menos 8 caracteres.
+                La contraseña debe tener al menos 4 caracteres.
               </Form.Text>
               <Button
                 variant="outline-secondary"
