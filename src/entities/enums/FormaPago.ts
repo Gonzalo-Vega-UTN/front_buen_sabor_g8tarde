@@ -1,4 +1,4 @@
 export enum FormaPago {
-    Efectivo,
-    MercadoPago
+    Efectivo = 'Efectivo',
+    MercadoPago = 'MercadoPago'
 }
