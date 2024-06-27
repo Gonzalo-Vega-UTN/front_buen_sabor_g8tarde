@@ -17,6 +17,8 @@ import ArticuloInsumoService from '../../services/ArticuloInsumoService';
 import { Articulo } from '../../entities/DTO/Articulo/Articulo';
 import { Cart, CartFill } from 'react-bootstrap-icons';
 import logo from '../../assets/images/Buen sabor logo 1.png';
+import { Promocion } from '../../entities/DTO/Promocion/Promocion';
+import { PromocionService } from '../../services/PromocionService';
 
 const Home: React.FC = () => {
   const [, setLoading] = useState<boolean>(true);
@@ -34,9 +36,12 @@ const Home: React.FC = () => {
   const [subCategoriaSelected, setSubCategoriaSelected] = useState<boolean>(false);
   const navigate = useNavigate();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [promociones, setPromociones] = useState<Promocion[]>([]);
+  const [showPromociones, setShowPromociones] = useState<boolean>(false);
 
   useEffect(() => {
     fetchEmpresas();
+    fetchPromociones();
   }, []);
 
   const fetchEmpresas = async () => {
@@ -47,6 +52,15 @@ const Home: React.FC = () => {
       console.error('Error fetching empresas:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPromociones = async () => {
+    try {
+      const data = await PromocionService.getAll();
+      setPromociones(data);
+    } catch (error) {
+      console.error('Error fetching promociones:', error);
     }
   };
 
@@ -68,7 +82,7 @@ const Home: React.FC = () => {
       setLoading(true);
       setSubCategoriaSelected(false);
       const data = await CategoriaService.obtenerCategoriasPadre(idSucursal.toString());
-      setCategorias(data);
+      setCategorias([...data, { id: 0, denominacion: "Promociones" } as Categoria]);
     } catch (error) {
       console.error('Error fetching categorias padre:', error);
     } finally {
@@ -118,15 +132,40 @@ const Home: React.FC = () => {
     setCurrentStep(3);
   };
 
-  const selectCategoria = (categoria: Categoria) => {
-    setSelectedCategoryId(categoria.id);
-    fetchProductos(categoria.id);
-    fetchCategoriaById(categoria.id);
+  const selectCategoria = (categoria: Categoria | null) => {
+    if (categoria === null) {
+      setSelectedCategoryId(undefined);
+      setShowPromociones(false);
+      fetchProductos(1);
+    } else if (categoria.denominacion === "Promociones") {
+      setSelectedCategoryId(undefined);
+      setShowPromociones(true);
+    } else {
+      setSelectedCategoryId(categoria.id);
+      setShowPromociones(false);
+      fetchProductos(categoria.id);
+      fetchCategoriaById(categoria.id);
+    }
   };
 
   const handleAgregarAlCarrito = (producto: Articulo) => {
     agregarAlCarrito(producto);
     setIsCartOpen(true);
+  };
+
+  const handleAgregarPromocionAlCarrito = (promocion: Promocion) => {
+    if (isAuthenticated) {
+      promocion.detallesPromocion.forEach(detalle => {
+        agregarAlCarrito({
+          ...detalle.articulo,
+          precioVenta: promocion.precioPromocional / promocion.detallesPromocion.length,
+          cantidad: detalle.cantidad
+        });
+      });
+      setIsCartOpen(true);
+    } else {
+      navigate("/registro");
+    }
   };
 
   return (
@@ -140,7 +179,6 @@ const Home: React.FC = () => {
               className="d-inline-block align-top"
               alt="Logo"
             />
-
           </Navbar.Brand>
           <h1>Buen Sabor </h1>
           {currentStep == 1 && <h1></h1>}
@@ -183,9 +221,7 @@ const Home: React.FC = () => {
                   <Card onClick={() => {
                     seleccionarSucursal(sucursal)
                     fetchProductos(1);
-
                   }} className="sucursal-card">
-
                     <Card.Img variant="top" src={sucursal.imagenes[0] ? sucursal.imagenes[0].url : "https://via.placeholder.com/150"} />
                     <Card.Body>
                       <Card.Title>{sucursal.nombre}</Card.Title>
@@ -199,23 +235,22 @@ const Home: React.FC = () => {
 
         {currentStep === 3 && (
           <>
-            {/* Carrusel de productos centrado */}
             <Container className="d-flex justify-content-center align-items-center mb-4">
               <Carousel style={{ maxWidth: '400px' }}>
-                {productos.slice(0, 3).map((producto) => (
-                  <Carousel.Item key={producto.id}>
+                {promociones.map((promocion) => (
+                  <Carousel.Item key={promocion.id}>
                     <img
                       className="d-block w-100"
-                      src={producto.imagenes[0] ? producto.imagenes[0].url : "https://via.placeholder.com/400x200"}
-                      alt={producto.denominacion}
+                      src={promocion.denominacion ? promocion.denominacion : "https://via.placeholder.com/400x200"}
+                      alt={promocion.denominacion}
                     />
                     <Carousel.Caption>
-                      <h5>{producto.denominacion}</h5>
-                      <p>{producto instanceof ArticuloManufacturado ? producto.descripcion : ""}</p>
-                      <p className="price">Precio: ${producto.precioVenta}</p>
+                      <h5>{promocion.denominacion}</h5>
+                      <p>{promocion.descripcionDescuento}</p>
+                      <p className="price">Precio: ${promocion.precioPromocional}</p>
                       {isAuthenticated ? (
-                        <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarAlCarrito(producto)}>
-                          Añadir al carrito
+                        <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarPromocionAlCarrito(promocion)}>
+                          Añadir promoción al carrito
                         </Button>
                       ) : (
                         <Button variant="primary" onClick={() => navigate("/registro")}>
@@ -228,7 +263,6 @@ const Home: React.FC = () => {
               </Carousel>
             </Container>
 
-            {/* Resto del contenido */}
             <Container>
               <h1 className="section-title">Nuestras Categorias</h1>
               <Row className="mb-4 categoria-container">
@@ -248,7 +282,7 @@ const Home: React.FC = () => {
                 {categorias.map((categoria) => (
                   <Col key={categoria.id}>
                     <div className={`category ${selectedCategoryId === categoria.id ? 'selected' : ''}`} onClick={() => selectCategoria(categoria)}>
-                      <img src={categoria.imagenes[0] ? categoria.imagenes[0].url : "https://via.placeholder.com/80"} alt={categoria.denominacion} className="category-image" />
+                      <img src={categoria.imagenes && categoria.imagenes[0] ? categoria.imagenes[0].url : "https://via.placeholder.com/80"} alt={categoria.denominacion} className="category-image" />
                       <p>{categoria.denominacion}</p>
                     </div>
                   </Col>
@@ -257,7 +291,24 @@ const Home: React.FC = () => {
 
               <h2 className="section-title">Nuestros Productos</h2>
               <div className="products-container">
-                {productos.length > 0 ? (
+                {showPromociones ? (
+                  promociones.map((promocion) => (
+                    <div key={promocion.id} className="product-card">
+                      <h3>{promocion.denominacion}</h3>
+                      <p>{promocion.descripcionDescuento}</p>
+                      <p className="price">Precio: ${promocion.precioPromocional}</p>
+                      {isAuthenticated ? (
+                        <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarPromocionAlCarrito(promocion)}>
+                          Añadir al carrito
+                        </Button>
+                      ) : (
+                        <Button variant="primary" onClick={() => navigate("/registro")}>
+                          Login
+                        </Button>
+                      )}
+                    </div>
+                  ))
+                ) : productos.length > 0 ? (
                   productos.map((producto) => (
                     <div key={producto.id} className="product-card">
                       <img src={producto.imagenes[0] ? producto.imagenes[0].url : "https://via.placeholder.com/100"} alt={producto.denominacion} className="product-image" />
@@ -282,9 +333,6 @@ const Home: React.FC = () => {
             </Container>
           </>
         )}
-
-
-
       </div>
 
       {isAuthenticated && <>

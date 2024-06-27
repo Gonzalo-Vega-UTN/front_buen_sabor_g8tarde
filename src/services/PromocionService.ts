@@ -1,7 +1,6 @@
 import { Promocion } from "../entities/DTO/Promocion/Promocion";
 import { TipoPromocion } from "../entities/enums/TipoPromocion";
 
-
 const BASE_URL = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/promociones`;
 
 export class PromocionService {

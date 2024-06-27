@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 import PedidoFull from '../../entities/DTO/Pedido/PedidoFull';
 import { useAuth } from '../../Auth/Auth';
 import ModalConfirm from '../modals/ModalConfirm';
@@ -8,10 +8,12 @@ import { Articulo } from '../../entities/DTO/Articulo/Articulo';
 import PedidoService from '../../services/PedidoService';
 import { Cliente } from '../../entities/DTO/Cliente/Cliente';
 import Usuario from '../../entities/DTO/Usuario/Usuario';
+import { Promocion } from '../../entities/DTO/Promocion/Promocion';
 
 interface CartContextType {
   pedido: PedidoFull;
   agregarAlCarrito: (producto: Articulo | undefined) => void;
+  agregarPromocionAlCarrito: (promocion: Promocion) => void;
   quitarDelCarrito: (index: number) => void;
   vaciarCarrito: () => void;
   handleCompra: () => Promise<void>;
@@ -19,7 +21,6 @@ interface CartContextType {
   error: string;
   preferenceId: string;
 }
-
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -57,13 +58,30 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       nuevoPedido.total += articulo.precioVenta;
-
       
       setPedido(nuevoPedido);
       setPreferenceId('');
       setError('');
     }
   };
+
+  const agregarPromocionAlCarrito = (promocion: Promocion) => {
+    const nuevoPedido = { ...pedido };
+    promocion.detallesPromocion.forEach(detalle => {
+      const nuevoDetalle = new DetallePedido();
+      nuevoDetalle.articulo = detalle.articulo;
+      nuevoDetalle.cantidad = detalle.cantidad;
+      nuevoDetalle.subTotal = promocion.precioPromocional / promocion.detallesPromocion.length;
+      nuevoPedido.detallePedidos.push(nuevoDetalle);
+    });
+
+    nuevoPedido.total += promocion.precioPromocional;
+    
+    setPedido(nuevoPedido);
+    setPreferenceId('');
+    setError('');
+  };
+
   const quitarDelCarrito = (index: number) => {
     const detalle = pedido.detallePedidos[index];
     if (detalle.articulo && detalle.articulo.precioVenta) {
@@ -75,14 +93,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
       pedido.total -= detalle.articulo.precioVenta;
 
-      
       setPedido({ ...pedido });
-      
       setPreferenceId('');
     }
   };
-  
-  
   
   const handleCantidadChange = (index: number, cantidad: number) => {
     setPedido(prevPedido => {
@@ -104,16 +118,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
     setPreferenceId('');
   };
-  
 
   const vaciarCarrito = () => {
     setPedido(new PedidoFull());
     setPreferenceId('');
   };
 
-
   const handleCompra = async () => {
-    
     if (pedido.detallePedidos.length === 0) {
       setError('El carrito debe tener al menos un producto.');
       return;
@@ -130,10 +141,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         try {
           console.log(pedido)
           console.log(pedido.detallePedidos)
-          pedido.cliente=new Cliente();
-          pedido.cliente.usuario=new Usuario();
+          pedido.cliente = new Cliente();
+          pedido.cliente.usuario = new Usuario();
           console.log(activeUser);
-          pedido.cliente.usuario.username=activeUser;
+          pedido.cliente.usuario.username = activeUser;
   
           const data = await PedidoService.agregarPedido({ ...pedido });
           if (data > 0) {
@@ -155,17 +166,17 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const pedidoFull: PedidoFull = {
         id: pedidoId,
-        alta:true,
-        horaEstimadaFinalizacion: '', // Asigna un valor adecuado
-        total: pedido.total, // Asegúrate de que el total esté correctamente asignado
+        alta: true,
+        horaEstimadaFinalizacion: '',
+        total: pedido.total,
         totalCosto: pedido.totalCosto,
-        estado: pedido.estado, // Asigna el estado si está disponible
-        tipoEnvio: pedido.tipoEnvio, // Asigna el tipo de envío si está disponible
-        formaDePago: pedido.formaDePago, // Asigna la forma de pago si está disponible
+        estado: pedido.estado,
+        tipoEnvio: pedido.tipoEnvio,
+        formaDePago: pedido.formaDePago,
         fechaPedido: pedido.fechaPedido,
-        domicilioShort: pedido.domicilioShort, // Asegúrate de que esté asignado correctamente
+        domicilioShort: pedido.domicilioShort,
         detallePedidos: pedido.detallePedidos,
-        cliente:pedido.cliente
+        cliente: pedido.cliente
       };
   
       const response = await createPreferenceMP(pedidoFull);
@@ -177,11 +188,19 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error(error);
     }
   };
-  
-  
 
   return (
-    <CartContext.Provider value={{ pedido, agregarAlCarrito, quitarDelCarrito, vaciarCarrito, handleCompra, error, handleCantidadChange, preferenceId }}>
+    <CartContext.Provider value={{ 
+      pedido, 
+      agregarAlCarrito, 
+      agregarPromocionAlCarrito,
+      quitarDelCarrito, 
+      vaciarCarrito, 
+      handleCompra, 
+      error, 
+      handleCantidadChange, 
+      preferenceId 
+    }}>
       {children}
       <ModalConfirm
         show={showModal}
