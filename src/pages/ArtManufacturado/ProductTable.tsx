@@ -14,7 +14,7 @@ import FiltroProductos from "../../components/Filtrado/FiltroArticulo";
 import { useAuth } from "../../Auth/Auth";
 import ProductModal from "./ProductModal";
 import { FaSave } from "react-icons/fa";
-
+import "./tableProdict.css"
 export default function ProductTable() {
   const navigate = useNavigate();
   //Producto seleccionado que se va a pasar como prop al modal
@@ -32,7 +32,7 @@ export default function ProductTable() {
   const [unidadMedidaSeleccionada, setUnidadMedidaSeleccionada] = useState<number>();
   const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
 
-  const {activeSucursal} =  useAuth();
+  const { activeSucursal } = useAuth();
 
 
   //Logica del modal
@@ -101,7 +101,7 @@ export default function ProductTable() {
   }, [categoriaSeleccionada, unidadMedidaSeleccionada, searchedDenominacion]);
 
 
-  const handleDelete = async (id :number) => {
+  const handleDelete = async (id: number) => {
     try {
       await ProductServices.delete(id);
       setShowModal(false)
@@ -140,7 +140,7 @@ export default function ProductTable() {
         </thead>
         <tbody>
           {products.map((product) => (
-            <tr  key={product.id} className={"text-center" + product.alta ? "" : "bg-secondary"} >
+            <tr key={product.id} className={"text-center"}  >
               <td className={product.alta ? "" : "bg-secondary"}>{product.id}</td>
               <td className={product.alta ? "" : "bg-secondary"}>{product.denominacion}</td>
               <td className={product.alta ? "" : "bg-secondary"}>{product.tiempoEstimadoMinutos} min</td>
@@ -157,7 +157,7 @@ export default function ProductTable() {
                   handleClickEliminar(
                     "Alta/Baja Articulo",
                     product,
-                    
+
                   )
                 } />
 

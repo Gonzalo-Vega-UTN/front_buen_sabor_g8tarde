@@ -3,7 +3,7 @@ import { Cliente } from '../../entities/DTO/Cliente/Cliente';
 import { useAuth } from '../../Auth/Auth';
 
 const ClienteFormulario: React.FC = () => {
-  const { activeUser } = useAuth(); 
+  const { activeUser } = useAuth();
   const [cliente, setCliente] = useState<Cliente>(new Cliente());
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -46,6 +46,7 @@ const ClienteFormulario: React.FC = () => {
     }
   };
 
+  
   if (loading) {
     return <div className="container">Cargando...</div>;
   }
@@ -66,10 +67,7 @@ const ClienteFormulario: React.FC = () => {
           <label className="form-label">Teléfono:</label>
           <input type="text" className="form-control" name="telefono" value={cliente.telefono} onChange={handleChange} />
         </div>
-        <div className="mb-3">
-          <label className="form-label">Email:</label>
-          <input type="email" className="form-control" name="email" value={cliente.email} onChange={handleChange} />
-        </div>
+
         <div className="mb-3">
           <label className="form-label">Fecha de Nacimiento:</label>
           <input type="date" className="form-control" name="fechaNacimiento" value={cliente.fechaNacimiento || ''} onChange={handleChange} />

@@ -30,6 +30,22 @@ class ArticuloInsumoService {
     }
   }
 
+  static async obtenerArticulosInsumosByCategoriaAndSubCategoria(idSucursal : string, idCategoria : number): Promise<ArticuloInsumo[]> {
+    try {
+      const responseData = await this.request(`/${idSucursal}/categoria/${idCategoria}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },  
+        mode: 'cors'
+      });
+      return responseData as ArticuloInsumo[];
+    } catch (error) {
+      console.error('Error al obtener todas los ArticuloInsumo:', error);
+      throw error;
+    }
+  }
+
   static async obtenerArticulosInsumosFiltrados(idSucursal:string, idCategoria?: number, idUnidadMedida?: number, denominacion?: string): Promise<ArticuloInsumo[]> {
     console.log(idSucursal)
     const params = new URLSearchParams();

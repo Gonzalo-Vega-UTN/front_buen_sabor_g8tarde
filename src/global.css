@@ -28,4 +28,9 @@ html, body {
   .sticky-footer {
     flex-shrink: 0;
   }
-  
+  /* Layout.css */
+
+.layout {
+  background-color: #343a40; /* Color de fondo oscuro */
+  color: #fff; /* Texto en color claro */
+}

@@ -1,12 +1,18 @@
 import React, { useState } from "react";
-import { Modal, Form, Button, Alert } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Modal, Form, Button, Alert, Spinner } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
 import Usuario from "../../entities/DTO/Usuario/Usuario";
 import { Cliente } from "../../entities/DTO/Cliente/Cliente";
 import UsuarioService from "../../services/UsuarioService";
 import ClienteService from "../../services/ClienteService";
+import { useAuth } from "../../Auth/Auth";
+
 import ImagenCarousel from "../carousel/ImagenCarousel";
 import { Imagen } from "../../entities/DTO/Imagen";
+import { Rol } from "../../entities/enums/Rol";
+import { GoogleLogin } from '@react-oauth/google';
+import FormularioDomicilio from "../../pages/Domicilio/FormDomicilio";
+import { Domicilio } from "../../entities/DTO/Domicilio/Domicilio";
 
 interface RegistroUsuarioClienteProps {
   closeModal: () => void;
@@ -18,10 +24,13 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
   const [step, setStep] = useState(1);
   const [usuarioData, setUsuarioData] = useState<Usuario>(new Usuario());
   const [clienteData, setClienteData] = useState<Cliente>(new Cliente());
+  const [domicilioData, setDomicilioData] = useState({});
   const [files, setFiles] = useState<File[]>([]);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const { login, googleRegister } = useAuth();
   const navigate = useNavigate();
 
   const handleChangeUsuario = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,24 +40,40 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
 
   const handleChangeCliente = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setClienteData({ ...clienteData, [name]: value });
+    const year = new Date(value).getFullYear();
+    const currentYear = new Date().getFullYear();
+
+    if (name === "fechaNacimiento" && (year < 1930 || year > currentYear)) {
+      setError(`El año debe estar entre 1930 y ${currentYear}`);
+    } else {
+      setError("");
+      setClienteData({ ...clienteData, [name]: value });
+    }
   };
 
   const handleSubmitUsuario = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (usuarioData.auth0Id.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres.");
+    console.log("ANTES DE GUARDAR");
+
+    setUsuarioData((prev) => ({
+      ...prev,
+      rol: Rol.Cliente,
+    }));
+
+    if (usuarioData.auth0Id.length < 4) {
+      setError("La contraseña debe tener al menos 4 caracteres.");
       return;
     }
 
     try {
-      console.log("Validando Usuario");
       const data = await UsuarioService.validarExistenciaUsuario(
         usuarioData.username
       );
       if (!data) {
+        setLoading(true);
         setError("");
         setTimeout(() => {
+          setLoading(false);
           setStep(2);
         }, 1500);
       } else {
@@ -59,22 +84,36 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
         setError(error.message);
       }
     }
+    console.log("DESPUES DE GUARDAR");
   };
 
   const handleSubmitCliente = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
+    setTimeout(() => {
+      setLoading(false);
+      setStep(3);
+    }, 1500);
+  };
+
+  const handleSubmitDomicilio = async (domicilio: Domicilio) => {
+    setDomicilioData(domicilio);
     const clienteCompleto = {
       ...clienteData,
       usuario: usuarioData,
+      domicilios: [domicilio],
     };
-    console.log(clienteCompleto);
+
     try {
       const cliente = await ClienteService.agregarcliente(clienteCompleto);
+      console.log(cliente.domicilios);
       if (cliente) {
         setSuccess("Registro Exitoso");
         setTimeout(() => {
           navigate("/");
           closeModal(); // Cerrar el modal después de registrar
+          login(cliente.usuario.email, cliente.usuario.username, cliente.usuario.rol || Rol.Cliente);
         }, 1500);
       }
     } catch (error) {
@@ -83,18 +122,25 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
       }
     }
   };
+
   const handleImagenesChange = (newImages: Imagen[]) => {
     setClienteData((prev) => ({
       ...prev,
       imagenes: newImages,
     }));
   };
+
   const handleFileChange = (newFiles: File[]) => {
     setFiles(newFiles);
   };
+
   const handleBack = () => {
-    setStep(1);
-    navigate("/"); // Redirigir al usuario a la página principal al volver
+    setStep((prevStep) => prevStep - 1);
+  };
+
+  const handleDomicilioSubmit = (domicilio: any) => {
+    console.log(domicilio);
+    handleSubmitDomicilio(domicilio);
   };
 
   return (
@@ -102,6 +148,17 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
       <Modal.Body>
         {step === 1 && (
           <Form onSubmit={handleSubmitUsuario}>
+            <Form.Group controlId="formEmail">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="text"
+                name="email"
+                value={usuarioData.email}
+                onChange={handleChangeUsuario}
+                placeholder="Ingrese su email"
+                required
+              />
+            </Form.Group>
             <Form.Group controlId="formUsername">
               <Form.Label>Nombre de usuario</Form.Label>
               <Form.Control
@@ -124,7 +181,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
                 required
               />
               <Form.Text className="text-muted">
-                La contraseña debe tener al menos 8 caracteres.
+                La contraseña debe tener al menos 4 caracteres.
               </Form.Text>
               <Button
                 variant="outline-secondary"
@@ -133,13 +190,42 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
                 {passwordVisible ? "Ocultar" : "Mostrar"}
               </Button>
             </Form.Group>
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                try {
+                  const user = await googleRegister(credentialResponse); //registro google googleRegister
+                  setUsuarioData(user);
+                  setLoading(true);
+                  setTimeout(() => {
+                    setLoading(false);
+                    setStep(2);
+                  }, 1500);
+                } catch (error) {
+                  setLoading(false);
+                  if (error instanceof Error) {
+                    setError(error.message);
+                  }
+                }
+              }}
+              onError={() => {
+                setError("Hubo un error con tu login con google");
+              }}
+            />
             <div className="d-flex justify-content-between mt-3">
               <Button variant="secondary" onClick={handleBack}>
-                Volver
+                <Link to="/" className="btn btn-secondary">
+                  Volver
+                </Link>
               </Button>
-              <Button variant="primary" type="submit">
-                Siguiente
-              </Button>
+              {loading ? (
+                <Button variant="primary" type="submit">
+                  Siguiente <Spinner size="sm" />
+                </Button>
+              ) : (
+                <Button variant="primary" type="submit">
+                  Siguiente
+                </Button>
+              )}
             </div>
             {error && (
               <Alert variant="danger" className="mt-3">
@@ -184,17 +270,6 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
                 required
               />
             </Form.Group>
-            <Form.Group controlId="formEmail">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                name="email"
-                value={clienteData.email}
-                onChange={handleChangeCliente}
-                placeholder="Ingrese su email"
-                required
-              />
-            </Form.Group>
             <Form.Group controlId="formFechaNacimiento">
               <Form.Label>Fecha de Nacimiento</Form.Label>
               <Form.Control
@@ -210,14 +285,19 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
               onFilesChange={handleFileChange}
               onImagenesChange={handleImagenesChange}
             />
-
             <div className="d-flex justify-content-between mt-3">
               <Button variant="secondary" onClick={() => setStep(1)}>
                 Volver
               </Button>
-              <Button variant="primary" type="submit">
-                Registrar
-              </Button>
+              {loading ? (
+                <Button variant="primary" type="submit">
+                  Siguiente <Spinner size="sm" />
+                </Button>
+              ) : (
+                <Button variant="primary" type="submit">
+                  Siguiente
+                </Button>
+              )}
             </div>
             {success && (
               <Alert variant="success" className="mt-3">
@@ -230,6 +310,13 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
               </Alert>
             )}
           </Form>
+        )}
+
+        {step === 3 && (
+          <FormularioDomicilio
+            onBack={handleBack}
+            onSubmit={handleDomicilioSubmit}
+          />
         )}
       </Modal.Body>
     </Modal>

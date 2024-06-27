@@ -1,44 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Form, Button } from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
+import { Form, Button, Spinner } from "react-bootstrap";
+import DomicilioService from "../../services/DomicilioService";
 
-const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmit: (domicilio: any) => void; }) => {
-  const [provincias, setProvincias] = useState([]);
-  const [localidades, setLocalidades] = useState([]);
-  const [provincia, setProvincia] = useState('');
-  const [localidad, setLocalidad] = useState('');
-  const [calle, setCalle] = useState('');
-  const [numero, setNumero] = useState('');
-  const [cp, setCp] = useState('');
+interface FormularioDomicilioProps {
+  onBack: () => void;
+  onSubmit: (domicilio: any) => void;
+}
+
+const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
+  onBack,
+  onSubmit,
+}) => {
+  const [provincias, setProvincias] = useState<any[]>([]);
+  const [localidades, setLocalidades] = useState<any[]>([]);
+  const [provincia, setProvincia] = useState("");
+  const [localidad, setLocalidad] = useState("");
+  const [calle, setCalle] = useState("");
+  const [numero, setNumero] = useState("");
+  const [cp, setCp] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const fetchProvincias = async () => {
+    try {
+      //Aca se rompe por el tema de que se cargan 2 paises verlo
+      const provincias = await DomicilioService.getProvinciasByPais(2);
+      setProvincias(provincias);
+      console.log(provincias)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+      } else {
+        console.log("Error inesperado");
+      }
+    }
+  };
 
   useEffect(() => {
-    // Obtener provincias
-    axios.get('https://apis.datos.gob.ar/georef/api/provincias')
-      .then(response => {
-        setProvincias(response.data.provincias);
-      })
-      .catch(error => {
-        console.error('Error al obtener provincias:', error);
-      });
+    fetchProvincias();
   }, []);
+
+  const fetchLocalidades = async (idProvincia: number) => {
+    try {
+      const localidades = await DomicilioService.getLocalidadesByProvincia(
+        idProvincia
+      );
+
+      setLocalidades(localidades);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+      } else {
+        console.log("Error inesperado");
+      }
+    }
+  };
 
   useEffect(() => {
     if (provincia) {
-      // Obtener municipios de la provincia seleccionada
-      axios.get(`https://apis.datos.gob.ar/georef/api/municipios?provincia=${provincia}&campos=id,nombre&max=100`)
-        .then(response => {
-          setLocalidades(response.data.municipios);
-        })
-        .catch(error => {
-          console.error('Error al obtener municipios:', error);
-        });
+      fetchLocalidades(Number(provincia));
     }
   }, [provincia]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const domicilio = { calle, numero, cp, provincia, localidad };
+    setLoading(true);
+    const domicilio = {
+      calle,
+      numero,
+      cp,
+      localidad: {
+        id: localidad,
+        provincia: {
+          id: provincia,
+          pais: {
+            id: 2,
+          },
+        },
+      },
+    };
     onSubmit(domicilio);
+    setLoading(false);
   };
 
   return (
@@ -80,8 +121,10 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
           required
         >
           <option value="">Selecciona una provincia</option>
-          {provincias.map((prov: any) => (
-            <option key={prov.id} value={prov.nombre}>{prov.nombre}</option>
+          {provincias.map((prov) => (
+            <option key={prov.id} value={prov.id}>
+              {prov.nombre}
+            </option>
           ))}
         </Form.Control>
       </Form.Group>
@@ -94,12 +137,25 @@ const FormularioDomicilio = ({ onBack, onSubmit }: { onBack: () => void; onSubmi
           required
         >
           <option value="">Selecciona una localidad</option>
-          {localidades.map((loc: any) => (
-            <option key={loc.id} value={loc.nombre}>{loc.nombre}</option>
+          {localidades.map((loc) => (
+            <option key={loc.id} value={loc.id}>
+              {loc.nombre}
+            </option>
           ))}
         </Form.Control>
       </Form.Group>
-      
+      <Button variant="secondary" onClick={onBack}>
+        Volver
+      </Button>
+      {loading ? (
+        <Button variant="primary" type="submit">
+          Guadando... <Spinner size="sm" />
+        </Button>
+      ) : (
+        <Button variant="primary" type="submit">
+          Guardar
+        </Button>
+      )}
     </Form>
   );
 };

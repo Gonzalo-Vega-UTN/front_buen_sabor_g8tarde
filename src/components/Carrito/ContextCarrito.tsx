@@ -132,7 +132,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           console.log(pedido.detallePedidos)
           pedido.cliente=new Cliente();
           pedido.cliente.usuario=new Usuario();
+          console.log(activeUser);
           pedido.cliente.usuario.username=activeUser;
+  
           const data = await PedidoService.agregarPedido({ ...pedido });
           if (data > 0) {
             await getPreferenceMP(data);

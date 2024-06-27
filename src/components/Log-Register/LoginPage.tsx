@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Button, Form, Alert } from 'react-bootstrap';
+import { Button, Form, Alert, Spinner } from 'react-bootstrap';
 import { useAuth } from '../../Auth/Auth';
 import Usuario from '../../entities/DTO/Usuario/Usuario';
 import UsuarioService from '../../services/UsuarioService';
 import { GoogleLogin } from '@react-oauth/google';
+import { Rol } from '../../entities/enums/Rol';
 
 interface LoginProps {
   closeModal: () => void;
@@ -14,6 +15,7 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
   const [username, setUsername] = useState<string>('');
   const [auth0Id, setAuth0Id] = useState<string>('');
   const [mensaje, setMensaje] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,9 +30,16 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
         email: ''
       };
       const data = await UsuarioService.login(usuario);
+      console.log("data del back", data)
       if (data && data.rol) {
-        login(data.email,data.username, data.rol);
-        closeModal();
+
+
+        setLoading(true)
+        setTimeout(() => {
+          setLoading(false)
+          login(data.email, data.username, data.rol || Rol.Cliente);
+          closeModal();
+        }, 1500);
       }
     } catch (err) {
       setMensaje('Credenciales incorrectas, por favor vuelva a intentarlo.');
@@ -67,20 +76,37 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
             required
           />
         </Form.Group>
-        <Button variant="primary" type="submit">
+        {!loading ? <Button variant="primary" type="submit">
           Login
         </Button>
+          : <Button variant="primary" disabled>
+            Loging in<Spinner size={"sm"}></Spinner>
+          </Button>}
+
 
         {mensaje && <Alert variant="danger">{mensaje}</Alert>}
       </Form>
 
       <GoogleLogin
-        onSuccess={(credentialResponse) => {
-          googleLogin(credentialResponse);
-          closeModal();
+        onSuccess={ async (credentialResponse) => {
+          try{
+            await googleLogin(credentialResponse);
+          setLoading(true)
+          setTimeout(() => {
+            setLoading(false)
+            closeModal();
+          }, 1500);
+          }catch(error){
+            setLoading(false)
+            if(error instanceof Error){
+              setMensaje(error.message)
+            }
+          }
+
         }}
         onError={() => {
           console.log('Login Failed');
+          setMensaje("Hubo un error con tu login con google")
         }}
       />
     </>

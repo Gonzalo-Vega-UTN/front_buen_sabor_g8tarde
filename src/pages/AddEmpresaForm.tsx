@@ -116,6 +116,7 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
             required
           />
         </Form.Group>
+        <br></br>
         <ImagenCarousel
           imagenesExistentes={empresa.imagenes}
           onFilesChange={handleFileChange}
