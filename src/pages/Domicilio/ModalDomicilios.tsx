@@ -42,7 +42,7 @@ const ModalDomicilios = ({ show, onHide, onSelectDomicilio }: Props) => {
 
   const fetchProvincias = async () => {
     try {
-      const provincias = await DomicilioService.getProvinciasByPais(2);
+      const provincias = await DomicilioService.getProvinciasByPais(1);
       setProvincias(provincias);
     } catch (error) {
       if (error instanceof Error) {
