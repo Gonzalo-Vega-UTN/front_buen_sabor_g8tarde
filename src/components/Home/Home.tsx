@@ -18,11 +18,8 @@ import { Cart, CartFill } from 'react-bootstrap-icons';
 import logo from '../../assets/images/Buen sabor logo 1.png';
 import { Promocion } from '../../entities/DTO/Promocion/Promocion';
 import { PromocionService } from '../../services/PromocionService';
-import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
+import { useAuth0Extended } from '../../Auth/Auth0ProviderWithNavigate';
 
-interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
-  activeSucursal: string ;
-}
 
 const Home: React.FC = () => {
   const [, setLoading] = useState<boolean>(true);
@@ -35,7 +32,7 @@ const Home: React.FC = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [productos, setProductos] = useState<Articulo[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>(undefined);
-  const { isAuthenticated, activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>;
+  const { isAuthenticated, activeSucursal, selectSucursal } = useAuth0Extended();
   const { agregarAlCarrito } = useCart();
   const [subCategoriaSelected, setSubCategoriaSelected] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -43,8 +40,6 @@ const Home: React.FC = () => {
   const [promociones, setPromociones] = useState<Promocion[]>([]);
   const [showPromociones, setShowPromociones] = useState<boolean>(false);
 
-
-  
   useEffect(() => {
     fetchEmpresas();
     fetchPromociones();
@@ -133,7 +128,7 @@ const Home: React.FC = () => {
 
   const seleccionarSucursal = (sucursal: Sucursal) => {
     setSelectedSucursal(sucursal);
-    activeSucursal(sucursal.id)
+    selectSucursal(sucursal.id);
     fetchCategoriasPadresBySucursal(sucursal.id);
     setCurrentStep(3);
   };
@@ -187,7 +182,7 @@ const Home: React.FC = () => {
             />
           </Navbar.Brand>
           <h1>Buen Sabor </h1>
-          {currentStep == 1 && <h1></h1>}
+          {currentStep === 1 && <h1></h1>}
           {currentStep >= 2 && (
             <Button
               className="button_change"

@@ -1,4 +1,3 @@
-// SucursalList.tsx
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Dropdown, DropdownButton, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,15 +5,9 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import SucursalForm from './SucursalForm';
 import { Sucursal } from '../entities/DTO/Sucursal/Sucursal';
 import { Empresa } from '../entities/DTO/Empresa/Empresa';
-import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
-import './styles.css'; // Importar tu archivo de estilos
+import { useAuth0Extended } from '../Auth/Auth0ProviderWithNavigate'; // Importa el hook extendido
+import './styles.css';
 import SucursalService from '../services/SucursalService';
-
-// Define the extended interface
-interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
-  selectSucursal: (sucursalId: number) => void;
-  activeSucursal: string | null;
-}
 
 interface SucursalListProps {
   refresh: boolean;
@@ -27,7 +20,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
   const [sucursalEditando, setSucursalEditando] = useState<Sucursal | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  const { selectSucursal, activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>; // Cast to the extended interface
+  const { selectSucursal, activeSucursal } = useAuth0Extended(); // Usar el hook extendido
 
   useEffect(() => {
     const getSucursales = async () => {
@@ -88,8 +81,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
     try {
       const sucursal = sucursales.find(suc => suc.id === sucursalId);
       if (sucursal) {
-        // Assuming SucursalService.BajaSucursal is an async function
-        await SucursalService.BajaSucursal(sucursal.id); // Ensure to await the async operation
+        await SucursalService.BajaSucursal(sucursal.id);
       }
     } catch (error) {
       if (error instanceof Error) {

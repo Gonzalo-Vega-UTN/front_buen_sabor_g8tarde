@@ -22,7 +22,6 @@ class UsuarioService {
         body: JSON.stringify(usuario),
         mode: 'cors',
       });
-      console.log(responseData)
       return responseData;
     } catch (error) {
       console.error('Error al hacer el Login', error);
@@ -63,9 +62,6 @@ class UsuarioService {
     }
   }
 
- 
-
-  // Nuevo método para eliminar un usuario
   static async deleteUsuario(id: string): Promise<void> {
     try {
       await this.request(`/${id}`, {
