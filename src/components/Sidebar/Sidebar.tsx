@@ -6,17 +6,21 @@ import { LiaCashRegisterSolid } from "react-icons/lia";
 import { MdDeliveryDining, MdOutlineCategory } from "react-icons/md";
 import { Link, useLocation } from 'react-router-dom';
 import './style.css';
-import { useAuth } from '../../Auth/Auth';
+import { useAuth0 } from "@auth0/auth0-react";
+
 import { Rol } from '../../entities/enums/Rol';
-import logo from '../../assets/images/Buen sabor logo 1.png'; // Importa el logo
-import BotonLogin from '../Log-Register/BotonLogin';
-import BotonLogout from '../Log-Register/BotonLogout';
+import logo from '../../assets/images/Buen sabor logo 1.png';
+import LoginButton from '../Log-Register/LoginButton';
+import RegistroButton from '../Log-Register/RegistroButton';
+import LogoutButton from '../Log-Register/LogoutButton';
+
+
 
 const Sidebar = () => {
     const [expanded, setExpanded] = useState(false);
     const [selected, setSelected] = useState('');
     const location = useLocation();
-    const { userRol, isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth0();
 
     const handleMouseEnter = () => setExpanded(true);
     const handleMouseLeave = () => setExpanded(false);
@@ -24,6 +28,8 @@ const Sidebar = () => {
     const handleClick = (path: React.SetStateAction<string>) => {
         setSelected(path);
     };
+
+    const userRol = user?.['https://example.com/roles'] || Rol.Cliente;
 
     const roleRoutes = {
         [Rol.Admin]: [
@@ -53,6 +59,7 @@ const Sidebar = () => {
         [Rol.Delivery]: [
             { path: '/PedidosDelivery', icon: MdDeliveryDining, label: 'Delivery' },
         ],
+        [Rol.Cliente]: [],
     };
 
     const defaultRoutes = [
@@ -69,11 +76,11 @@ const Sidebar = () => {
             onMouseLeave={handleMouseLeave}
         >
             <div className="ms-4 my-3">
-                <img src={logo} alt="Logo" className="logo" /> {/* Muestra el logo en lugar de "Buen Sabor" */}
+                <img src={logo} alt="Logo" className="logo" />
             </div>
 
             <hr className="text-white" />
-            <ul className="nav flex-column flex-grow-1"> {/* Aplica flex-grow-1 para que ocupe todo el espacio vertical disponible */}
+            <ul className="nav flex-column flex-grow-1">
                 {defaultRoutes.map(({ path, icon: Icon, label }) => (
                     <li className="nav-item" key={path}>
                         <Link
@@ -87,22 +94,38 @@ const Sidebar = () => {
                     </li>
                 ))}
 
-                {isAuthenticated ? <BotonLogout /> : <BotonLogin />}
+                {!isAuthenticated && (
+                    <>
+                        <li className="nav-item">
+                            <LoginButton />
+                        </li>
+                        <li className="nav-item">
+                            <RegistroButton />
+                        </li>
+                    </>
+                )}
 
-                {routesToDisplay.map(({ path, icon: Icon, label }) => (
-                    <li className="nav-item" key={path}>
-                        <Link
-                            to={path}
-                            className={`nav-link text-white ${location.pathname === path || selected === path ? 'active' : ''}`}
-                            onClick={() => handleClick(path)}
-                        >
-                            <Icon size={24} className="me-2" />
-                            <span className="nav-text">{label}</span>
-                        </Link>
-                    </li>
-                ))}
+                {isAuthenticated && (
+                    <>
+                        <li className="nav-item">
+                            <LogoutButton />
+                        </li>
+                        {routesToDisplay.map(({ path, icon: Icon, label }) => (
+                            <li className="nav-item" key={path}>
+                                <Link
+                                    to={path}
+                                    className={`nav-link text-white ${location.pathname === path || selected === path ? 'active' : ''}`}
+                                    onClick={() => handleClick(path)}
+                                >
+                                    <Icon size={24} className="me-2" />
+                                    <span className="nav-text">{label}</span>
+                                </Link>
+                            </li>
+                        ))}
+                    </>
+                )}
             </ul>
-            <div className="mt-auto"></div> {/* Alinea los elementos al fondo del sidebar */}
+            <div className="mt-auto"></div>
         </div>
     );
 }

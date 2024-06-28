@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
+import { useAuth0 } from "@auth0/auth0-react";
 import PedidoFull from '../../entities/DTO/Pedido/PedidoFull';
-import { useAuth } from '../../Auth/Auth';
 import ModalConfirm from '../modals/ModalConfirm';
 import { createPreferenceMP } from '../../services/MPService';
 import { DetallePedido } from '../../entities/DTO/Pedido/DetallePedido';
@@ -35,7 +35,7 @@ export function useCart() {
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [pedido, setPedido] = useState<PedidoFull>(new PedidoFull());
   const [error, setError] = useState<string>('');
-  const { activeUser } = useAuth();
+  const { user, isAuthenticated } = useAuth0();
   const [showModal, setShowModal] = useState(false);
   const [modalConfig, setModalConfig] = useState({ title: '', text: '', onConfirm: () => {}, onCancel: () => {} });
   const [preferenceId, setPreferenceId] = useState<string>('');
@@ -125,6 +125,11 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const handleCompra = async () => {
+    if (!isAuthenticated) {
+      setError('Debes iniciar sesión para realizar una compra.');
+      return;
+    }
+
     if (pedido.detallePedidos.length === 0) {
       setError('El carrito debe tener al menos un producto.');
       return;
@@ -139,12 +144,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       onConfirm: async () => {
         setShowModal(false);
         try {
-          console.log(pedido)
-          console.log(pedido.detallePedidos)
           pedido.cliente = new Cliente();
           pedido.cliente.usuario = new Usuario();
-          console.log(activeUser);
-          pedido.cliente.usuario.username = activeUser;
+          pedido.cliente.usuario.username = user?.email || '';
   
           const data = await PedidoService.agregarPedido({ ...pedido });
           if (data > 0) {
@@ -172,9 +174,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         totalCosto: pedido.totalCosto,
         estado: pedido.estado,
         tipoEnvio: pedido.tipoEnvio,
-        formaDePago: pedido.formaDePago,
+        formaDePago: pedido.formaPago,
         fechaPedido: pedido.fechaPedido,
-        domicilioShort: pedido.domicilioShort,
+        domicilio: pedido.domicilio,
         detallePedidos: pedido.detallePedidos,
         cliente: pedido.cliente
       };

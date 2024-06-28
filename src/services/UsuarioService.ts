@@ -63,20 +63,7 @@ class UsuarioService {
     }
   }
 
-  static async guardarUsuario(usuario: Usuario): Promise<Usuario> {
-    try {
-      const responseData = await this.register(usuario);
-      return responseData;
-    } catch (error) {
-      if (error.message === 'Usuario ya registrado') {
-        // Si el error indica que el usuario ya está registrado, intentar iniciar sesión
-        return await this.login(usuario.email);
-      } else {
-        console.error('Error al guardar usuario:', error);
-        throw error;
-      }
-    }
-  }
+ 
 
   // Nuevo método para eliminar un usuario
   static async deleteUsuario(id: string): Promise<void> {

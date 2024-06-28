@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../Auth/Auth';
+import { useAuth0 } from "@auth0/auth0-react";
 import { Rol } from '../entities/enums/Rol';
 
 interface PrivateRouteProps {
@@ -9,7 +9,7 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ element: Component, roles }) => {
-  const { isAuthenticated, userRol } = useAuth();
+  const { isAuthenticated, userRol } = useAuth0();
   const location = useLocation();
 
   if (!isAuthenticated) {

@@ -8,8 +8,7 @@ import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import { Rol } from "../entities/enums/Rol";
 import { PedidosList } from "../pages/PedidosList";
 import { CategoriaPage } from "../pages/Categoria/CategoriaPage";
-import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
-import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
+
 
 import { Estadisticas } from "../pages/Estadisticas";
 
@@ -41,8 +40,7 @@ export default function AppRoutes() {
         <Route path="/acerca-de" element={<AcercaDe />} />
         <Route path="/formulario-empleado" element={<FormularioTrabajo />} />
       
-      <Route path="/registro" element={<RegistroUsuarioCliente closeModal={() => console.log("")} />} />
-      <Route path="/perfil" element={<ClienteFormulario />} />
+    
       <Route
         path="/productos"
         element={

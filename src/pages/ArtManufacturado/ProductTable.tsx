@@ -11,10 +11,15 @@ import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
 import UnidadMedidaServices from "../../services/UnidadMedidaServices";
 import GenericButton from "../../components/generic/GenericButton";
 import FiltroProductos from "../../components/Filtrado/FiltroArticulo";
-import { useAuth } from "../../Auth/Auth";
+import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
 import ProductModal from "./ProductModal";
 import { FaSave } from "react-icons/fa";
 import "./tableProdict.css"
+
+interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
+  activeSucursal: string ;
+}
+
 export default function ProductTable() {
   const navigate = useNavigate();
   //Producto seleccionado que se va a pasar como prop al modal
@@ -32,7 +37,7 @@ export default function ProductTable() {
   const [unidadMedidaSeleccionada, setUnidadMedidaSeleccionada] = useState<number>();
   const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
 
-  const { activeSucursal } = useAuth();
+  const { activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>;
 
 
   //Logica del modal

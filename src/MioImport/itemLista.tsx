@@ -1,7 +1,8 @@
 import React from 'react';
 import { useCart } from '../components/Carrito/ContextCarrito';
-import { useAuth } from '../Auth/Auth';
+
 import { ArticuloManufacturado } from '../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado';
+import { useAuth0 } from '@auth0/auth0-react';
 
 interface ItemLista {
   producto: ArticuloManufacturado;
@@ -9,7 +10,7 @@ interface ItemLista {
 
 const ItemProducto: React.FC<ItemLista> = ({ producto }) => {
   const { agregarAlCarrito } = useCart();
-  const { isAuthenticated } = useAuth(); // Obtener el estado de autenticación del contexto
+  const { isAuthenticated } = useAuth0(); // Obtener el estado de autenticación del contexto
 
   const handleAgregarAlCarrito = () => {
     agregarAlCarrito(producto);

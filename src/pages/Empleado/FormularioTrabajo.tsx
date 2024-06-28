@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import Usuario from '../../entities/DTO/Usuario/Usuario';
 import { Empleado } from '../../entities/DTO/Empleado/Empleado';
 import { Alert, Button, Form, Spinner } from 'react-bootstrap';
@@ -8,12 +8,11 @@ import FormularioDomicilio from '../Domicilio/FormDomicilio';
 import ImagenCarousel from '../../components/carousel/ImagenCarousel';
 import { Domicilio } from '../../entities/DTO/Domicilio/Domicilio';
 import { Imagen } from '../../entities/DTO/Imagen';
-import { useAuth } from '../../Auth/Auth';
+import { useAuth0 } from "@auth0/auth0-react"; // Importar useAuth0
 import { Rol } from '../../entities/enums/Rol';
 import { EmpleadoService } from '../../services/EmpleadoService';
 
 const FormularioTrabajo = () => {
-
     const [step, setStep] = useState(1);
     const [usuarioData, setUsuarioData] = useState<Usuario>(new Usuario());
     const [empleadoData, setEmpleadoData] = useState<Empleado>(new Empleado());
@@ -25,7 +24,7 @@ const FormularioTrabajo = () => {
     const [error, setError] = useState<string>("");
     const [success, setSuccess] = useState<string>("");
     const navigate = useNavigate();
-    const {login} = useAuth();
+    const { loginWithRedirect } = useAuth0(); // Utilizar loginWithRedirect en lugar de login
 
     const handleChangeUsuario = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -33,7 +32,6 @@ const FormularioTrabajo = () => {
     };
 
     const handleChangeRol = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        console.log(event.target.value as Rol)
         setSelectedRole(event.target.value as Rol);
     };
 
@@ -43,7 +41,7 @@ const FormularioTrabajo = () => {
             setError("La contraseña debe tener al menos 4 caracteres.");
             return;
         }
-        setStep(2)
+        setStep(2);
     };
 
     const handleSubmitDomicilio = async (domicilio: Domicilio) => {
@@ -52,20 +50,22 @@ const FormularioTrabajo = () => {
             ...empleadoData,
             alta: false,
             usuario: usuarioData,
-            
             domicilios: [domicilio],
-        }
-        empleadoCompleto.usuario.rol=selectedRole
-        console.log(empleadoCompleto)
-         const response = await EmpleadoService.create(empleadoCompleto)
-         
-         if(response && response.usuario.rol){
-            console.log("EXITO", response)
-            login(response.usuario.email, response.usuario.username, response.usuario.rol)
-            navigate("/")
+        };
+        empleadoCompleto.usuario.rol = selectedRole;
 
-         }
-    
+        try {
+            const response = await EmpleadoService.create(empleadoCompleto);
+            if (response && response.usuario.rol) {
+                // Aquí se debe redirigir al usuario al completar el registro
+                navigate("/");
+            } else {
+                setError("Hubo un problema al registrar el empleado.");
+            }
+        } catch (error) {
+            console.error("Error al crear empleado:", error);
+            setError("Hubo un problema al registrar el empleado.");
+        }
     };
 
     const handleSubmitEmpleado = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -77,7 +77,6 @@ const FormularioTrabajo = () => {
             setStep(3);
         }, 1500);
     };
-
 
     const handleChangeEmpleado = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -91,7 +90,6 @@ const FormularioTrabajo = () => {
             setEmpleadoData({ ...empleadoData, [name]: value });
         }
     };
-
 
     const handleBack = () => {
         setStep((prevStep) => prevStep - 1);
@@ -155,9 +153,8 @@ const FormularioTrabajo = () => {
                             {passwordVisible ? "Ocultar" : "Mostrar"}
                         </Button>
                     </Form.Group>
-                    
+
                     <div className="d-flex justify-content-between mt-3">
-                       
                         {loading ? (
                             <Button variant="primary" type="submit">
                                 Siguiente <Spinner size="sm" />
@@ -176,7 +173,7 @@ const FormularioTrabajo = () => {
                 </Form>
             )}
 
-            {step == 2 && (
+            {step === 2 && (
                 <Form onSubmit={handleSubmitEmpleado}>
                     <Form.Group controlId="formNombre">
                         <Form.Label>Nombre</Form.Label>
@@ -250,14 +247,14 @@ const FormularioTrabajo = () => {
                             </Button>
                         )}
                     </div>
-                    {success && (
-                        <Alert variant="success" className="mt-3">
-                            {success}
-                        </Alert>
-                    )}
                     {error && (
                         <Alert variant="danger" className="mt-3">
                             {error}
+                        </Alert>
+                    )}
+                    {success && (
+                        <Alert variant="success" className="mt-3">
+                            {success}
                         </Alert>
                     )}
                 </Form>
@@ -270,8 +267,7 @@ const FormularioTrabajo = () => {
                 />
             )}
         </>
-    )
-}
+    );
+};
 
-
-export default FormularioTrabajo
+export default FormularioTrabajo;

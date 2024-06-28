@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../Auth/Auth';
+
 import { ArticuloManufacturado } from '../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado';
 import { ProductServices } from '../services/ProductServices';
 import Carrito from '../components/Carrito/carrito';
 import ItemProducto from './itemLista';
+import { useAuth0 } from '@auth0/auth0-react';
 
 interface ListaProps {
   selectedCategoryId: number | null;
 }
 
 const Lista: React.FC<ListaProps> = ({ selectedCategoryId }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth0();
   const [productos, setProductos] = useState<ArticuloManufacturado[]>([]);
   const [filteredProductos, setFilteredProductos] = useState<ArticuloManufacturado[]>([]);
 

@@ -3,7 +3,7 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import DomicilioService from '../../services/DomicilioService';
 import ClienteService from '../../services/ClienteService'; // Importa tu servicio de cliente
 import { Domicilio } from '../../entities/DTO/Domicilio/Domicilio'; // Asegúrate de importar la entidad Domicilio correcta
-import { useAuth } from '../../Auth/Auth';
+import { useAuth0 } from "@auth0/auth0-react";
 import { Cliente } from '../../entities/DTO/Cliente/Cliente';
 interface Props {
   show: boolean;
@@ -21,19 +21,19 @@ const ModalDomicilios = ({ show, onHide, onSelectDomicilio }: Props) => {
   const [localidad, setLocalidad] = useState('');
   const [loading, setLoading] = useState(false);
   const [cliente, setCliente] = useState<Cliente>();
-  const { activeUser } = useAuth();
+  const { user  } = useAuth0();
 
   useEffect(() => {
-    if (show) {
-      fetchClienteActivo();
+    if (show && user) {
+      fetchClienteActivo(user); // Llama a fetchClienteActivo con el usuario activo
     }
-  }, [show]);
+  }, [show, user]);
 
-  const fetchClienteActivo = async () => {
+
+  const fetchClienteActivo = async (activeUser: any) => {
     try {
-      // Lógica para obtener el cliente activo desde tu servicio o contexto de autenticación
-      // Aquí estoy asumiendo que tienes una función para obtener el cliente activo
-      const clienteActivo = await ClienteService.obtenerClienteByUsername(activeUser); // Implementa esta función en ClienteService
+      // Aquí deberías implementar ClienteService.obtenerClienteByUsername
+      const clienteActivo = await ClienteService.obtenerClienteByUsername(activeUser.username);
       setCliente(clienteActivo);
     } catch (error) {
       console.error('Error fetching active client:', error);

@@ -9,7 +9,6 @@ import { Categoria } from '../../entities/DTO/Categoria/Categoria';
 import { CategoriaService } from '../../services/CategoriaService';
 import { ProductServices } from '../../services/ProductServices';
 import { ArticuloManufacturado } from '../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado';
-import { useAuth } from '../../Auth/Auth';
 import { useCart } from '../Carrito/ContextCarrito';
 import Carrito from '../Carrito/carrito';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +18,11 @@ import { Cart, CartFill } from 'react-bootstrap-icons';
 import logo from '../../assets/images/Buen sabor logo 1.png';
 import { Promocion } from '../../entities/DTO/Promocion/Promocion';
 import { PromocionService } from '../../services/PromocionService';
+import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
+
+interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
+  activeSucursal: string ;
+}
 
 const Home: React.FC = () => {
   const [, setLoading] = useState<boolean>(true);
@@ -31,7 +35,7 @@ const Home: React.FC = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [productos, setProductos] = useState<Articulo[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>(undefined);
-  const { isAuthenticated, selectSucursal } = useAuth();
+  const { isAuthenticated, activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>;
   const { agregarAlCarrito } = useCart();
   const [subCategoriaSelected, setSubCategoriaSelected] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -39,6 +43,8 @@ const Home: React.FC = () => {
   const [promociones, setPromociones] = useState<Promocion[]>([]);
   const [showPromociones, setShowPromociones] = useState<boolean>(false);
 
+
+  
   useEffect(() => {
     fetchEmpresas();
     fetchPromociones();
@@ -127,7 +133,7 @@ const Home: React.FC = () => {
 
   const seleccionarSucursal = (sucursal: Sucursal) => {
     setSelectedSucursal(sucursal);
-    selectSucursal(sucursal.id)
+    activeSucursal(sucursal.id)
     fetchCategoriasPadresBySucursal(sucursal.id);
     setCurrentStep(3);
   };

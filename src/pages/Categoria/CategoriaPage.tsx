@@ -9,8 +9,12 @@ import {
   BsChevronUp,
 } from "react-icons/bs";
 import GenericButton from "../../components/generic/GenericButton";
-import { useAuth } from "../../Auth/Auth";
+import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
 import CategoriaModal from "./CategoriaModal";
+
+interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
+  activeSucursal: string ;
+}
 
 export const CategoriaPage = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -18,7 +22,8 @@ export const CategoriaPage = () => {
   const [activeItems, setActiveItems] = useState<number[]>([]);
   const [collapsedItems, setCollapsedItems] = useState<number[]>([]);
   const [modalShow, setModalShow] = useState(false);
-  const { activeSucursal } = useAuth();
+  const { activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>;
+
 
   const fetchCategorias = async () => {
     try {

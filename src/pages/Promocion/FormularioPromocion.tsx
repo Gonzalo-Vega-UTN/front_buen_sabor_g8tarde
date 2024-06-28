@@ -1,3 +1,4 @@
+// PromocionForm.tsx
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { Form, Button, Row, Col, Container, InputGroup, FormControl } from 'react-bootstrap';
 import { FaPlus, FaMinus } from 'react-icons/fa';
@@ -8,7 +9,12 @@ import { TipoPromocion } from '../../entities/enums/TipoPromocion';
 import { ProductServices } from '../../services/ProductServices';
 import PromocionService from '../../services/PromocionService';
 import ArticuloInsumoService from '../../services/ArticuloInsumoService';
-import { useAuth } from '../../Auth/Auth';
+import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
+
+// Definimos la interfaz extendida con nuestras propiedades adicionales
+interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
+  activeSucursal: string ;
+}
 
 const PromocionForm: React.FC = () => {
   const { id } = useParams();
@@ -17,8 +23,8 @@ const PromocionForm: React.FC = () => {
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [tipoPromocion, setTipoPromocion] = useState<string>("");
   const [submitError, setSubmitError] = useState<string>("");
-  const { activeSucursal } = useAuth();
-  
+  const { activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>;
+
   useEffect(() => {
     const fetchData = async () => {
       const parsedId = Number(id);
