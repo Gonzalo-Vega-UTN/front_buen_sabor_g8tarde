@@ -5,39 +5,41 @@ class UsuarioService {
 
   private static async request(endpoint: string, options: RequestInit) {
     const response = await fetch(`${this.urlServer}${endpoint}`, options);
-    const responseData = await response.json();
     if (!response.ok) {
-      throw new Error(responseData.message || 'Error al procesar la solicitud');
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Error al procesar la solicitud');
     }
-    return responseData;
+    return response.json();
   }
 
-  static async login(usuario: Usuario): Promise<Usuario> {
+  static async login(usuario: Usuario, token: string): Promise<Usuario> {
     try {
       const responseData = await this.request('/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(usuario),
-        mode: 'cors',
       });
-      return responseData;
+      
+      // Aquí asumes que el backend devuelve el usuario con el rol
+      return responseData as Usuario;
     } catch (error) {
       console.error('Error al hacer el Login', error);
       throw error;
     }
   }
 
-  static async register(usuario: Usuario): Promise<Usuario> {
+  static async register(usuario: Usuario, token: string): Promise<Usuario> {
     try {
       const responseData = await this.request('/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(usuario),
-        mode: 'cors',
       });
       return responseData;
     } catch (error) {
@@ -53,7 +55,6 @@ class UsuarioService {
         headers: {
           'Content-Type': 'application/json',
         },
-        mode: 'cors',
       });
       return responseData;
     } catch (error) {
@@ -62,14 +63,14 @@ class UsuarioService {
     }
   }
 
-  static async deleteUsuario(id: string): Promise<void> {
+  static async deleteUsuario(id: string, token: string): Promise<void> {
     try {
       await this.request(`/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        mode: 'cors',
       });
     } catch (error) {
       console.error('Error al eliminar usuario:', error);

@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Auth0Provider, AppState, Auth0ContextInterface, User, useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
-import UsuarioService from '../services/UsuarioService'; // Asegúrate de tener la ruta correcta
+import UsuarioService from '../services/UsuarioService';
+import { Rol } from '../entities/enums/Rol';
+
 
 interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
   selectSucursal: (sucursalId: number) => void;
@@ -16,7 +18,6 @@ type Props = {
 
 export const Auth0ProviderWithNavigate = ({ children }: Props) => {
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth0();
   const [activeSucursal, setActiveSucursal] = useState<string | null>(null);
 
   const domain = import.meta.env.VITE_AUTH0_DOMAIN as string;
@@ -32,25 +33,6 @@ export const Auth0ProviderWithNavigate = ({ children }: Props) => {
     setActiveSucursal(String(sucursalId));
   };
 
-  useEffect(() => {
-    const registerOrUpdateUser = async () => {
-      if (isAuthenticated && user) {
-        const usuario = {
-          email: user?.email,
-          username: user?.nickname,
-          auth0Id: user?.sub ?? '', // Ensure auth0Id is a string, even if undefined
-        };
-        try {
-          await UsuarioService.register(usuario);
-        } catch (error) {
-          console.error("Error al registrar o actualizar el usuario:", error);
-        }
-      }
-    };
-
-    registerOrUpdateUser();
-  }, [isAuthenticated, user]);
-
   if (!(domain && clientId && redirectUri)) {
     return null;
   }
@@ -59,14 +41,50 @@ export const Auth0ProviderWithNavigate = ({ children }: Props) => {
     <Auth0Provider
       domain={domain}
       clientId={clientId}
-      audience={audience}
-      redirectUri={redirectUri}
+      authorizationParams={{
+        redirect_uri: redirectUri,
+        audience: audience,
+      }}
       onRedirectCallback={onRedirectCallback}
     >
-      <Auth0Context.Provider value={{ selectSucursal, activeSucursal }}>
+      <Auth0ContextWrapper selectSucursal={selectSucursal} activeSucursal={activeSucursal}>
         {children}
-      </Auth0Context.Provider>
+      </Auth0ContextWrapper>
     </Auth0Provider>
+  );
+};
+
+const Auth0ContextWrapper = ({ children, selectSucursal, activeSucursal }: { children: JSX.Element, selectSucursal: (sucursalId: number) => void, activeSucursal: string | null }) => {
+  const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
+
+  useEffect(() => {
+    const registerOrUpdateUser = async () => {
+      if (isAuthenticated && user) {
+        try {
+          const token = await getAccessTokenSilently();
+          const usuario = {
+            auth0Id: user.sub,
+            username: user.name,
+            email: user.email,
+           
+            
+
+          };
+          const response = await UsuarioService.login(usuario, token);
+          console.log('Usuario registrado/actualizado:', response);
+        } catch (error) {
+          console.error("Error al registrar o actualizar el usuario:", error);
+        }
+      }
+    };
+
+    registerOrUpdateUser();
+  }, [isAuthenticated, user, getAccessTokenSilently]);
+
+  return (
+    <Auth0Context.Provider value={{ ...useAuth0(), selectSucursal, activeSucursal }}>
+      {children}
+    </Auth0Context.Provider>
   );
 };
 
