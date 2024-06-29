@@ -2,18 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Container, ListGroup, Button, Collapse } from "react-bootstrap";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { CategoriaService } from "../../services/CategoriaService";
-import {
-  BsPlusCircleFill,
-  BsTrash,
-  BsChevronDown,
-  BsChevronUp,
-} from "react-icons/bs";
+import { BsPlusCircleFill, BsTrash, BsChevronDown, BsChevronUp } from "react-icons/bs";
 import GenericButton from "../../components/generic/GenericButton";
 import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
 import CategoriaModal from "./CategoriaModal";
+import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 
 interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
-  activeSucursal: string ;
+  activeSucursal: string;
 }
 
 export const CategoriaPage = () => {
@@ -22,23 +18,22 @@ export const CategoriaPage = () => {
   const [activeItems, setActiveItems] = useState<number[]>([]);
   const [collapsedItems, setCollapsedItems] = useState<number[]>([]);
   const [modalShow, setModalShow] = useState(false);
-  const { activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>;
-
+  const { activeSucursal } = useAuth0Extended();
 
   const fetchCategorias = async () => {
-    try {
-      const categorias = await CategoriaService.obtenerCategoriasPadre(
-        activeSucursal
-      );
-      setCategorias(categorias);
-    } catch (error) {
-      console.log(error);
+    if (activeSucursal) {
+      try {
+        const categorias = await CategoriaService.obtenerCategoriasPadre(activeSucursal);
+        setCategorias(categorias);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
   useEffect(() => {
     fetchCategorias();
-  }, []);
+  }, [activeSucursal]);
 
   const handleItemClick = (id: number) => {
     const index = activeItems.indexOf(id);
@@ -56,19 +51,15 @@ export const CategoriaPage = () => {
     }
   };
 
-  const handleButtonClickDelete = async (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    id: number
-  ) => {
+  const handleButtonClickDelete = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
     event.stopPropagation();
-    await CategoriaService.eliminarCategoriaById(activeSucursal, id);
-    fetchCategorias();
+    if (activeSucursal) {
+      await CategoriaService.eliminarCategoriaById(activeSucursal, id);
+      fetchCategorias();
+    }
   };
 
-  const handleButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    idPadre: number = 0
-  ) => {
+  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, idPadre: number = 0) => {
     event.stopPropagation();
     setClickedCategoria(idPadre);
     setModalShow(true);
@@ -89,9 +80,7 @@ export const CategoriaPage = () => {
                 <ListGroup.Item
                   className={
                     "d-flex justify-content-between align-items-center" +
-                    (categoria.alta
-                      ? " text-primary"
-                      : " text-secondary text-opacity-50")
+                    (categoria.alta ? " text-primary" : " text-secondary text-opacity-50")
                   }
                   onClick={() => handleItemClick(categoria.id)}
                   aria-controls={`subcategoria-collapse-${categoria.id}`}
@@ -121,33 +110,27 @@ export const CategoriaPage = () => {
               </ListGroup>
               <Collapse in={!isCollapsed}>
                 <ListGroup>
-                  {categoria.subCategorias.filter(subcategoria => subcategoria.alta).length > 0 && (
-                    <ListGroup.Item className="border-0 ps-4">
-                      {categoria.subCategorias.filter(subcategoria => subcategoria.alta).map((subCategoria) => (
-                        <ListGroup.Item
-                          key={subCategoria.id}
-                          className={
-                            "d-flex justify-content-between align-items-center" +
-                            (subCategoria.alta
-                              ? " text-primary"
-                              : " text-secondary text-opacity-50")
-                          }
-                        >
-                          <span>{subCategoria.denominacion}</span>
-                          <div className="d-flex gap-2">
-                            <GenericButton
-                              color="#FBC02D"
-                              size={20}
-                              icon={BsTrash}
-                              onClick={(e) =>
-                                handleButtonClickDelete(e, subCategoria.id)
-                              }
-                            />
-                          </div>
-                        </ListGroup.Item>
-                      ))}
-                    </ListGroup.Item>
-                  )}
+                  {categoria.subCategorias
+                    .filter((subcategoria) => subcategoria.alta)
+                    .map((subCategoria) => (
+                      <ListGroup.Item
+                        key={subCategoria.id}
+                        className={
+                          "d-flex justify-content-between align-items-center" +
+                          (subCategoria.alta ? " text-primary" : " text-secondary text-opacity-50")
+                        }
+                      >
+                        <span>{subCategoria.denominacion}</span>
+                        <div className="d-flex gap-2">
+                          <GenericButton
+                            color="#FBC02D"
+                            size={20}
+                            icon={BsTrash}
+                            onClick={(e) => handleButtonClickDelete(e, subCategoria.id)}
+                          />
+                        </div>
+                      </ListGroup.Item>
+                    ))}
                 </ListGroup>
               </Collapse>
             </div>
@@ -163,7 +146,7 @@ export const CategoriaPage = () => {
           fetchCategorias();
         }}
         idpadre={String(clickedCategoria)}
-        activeSucursal={activeSucursal}
+        activeSucursal={activeSucursal ?? ""}
       />
     </Container>
   );

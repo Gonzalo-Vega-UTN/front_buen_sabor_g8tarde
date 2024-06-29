@@ -15,6 +15,7 @@ import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
 import ProductModal from "./ProductModal";
 import { FaSave } from "react-icons/fa";
 import "./tableProdict.css"
+import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 
 interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
   activeSucursal: string ;
@@ -37,7 +38,8 @@ export default function ProductTable() {
   const [unidadMedidaSeleccionada, setUnidadMedidaSeleccionada] = useState<number>();
   const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
 
-  const { activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>;
+  const { activeSucursal } = useAuth0Extended();
+
 
 
   //Logica del modal

@@ -11,6 +11,7 @@ import { CategoriaService } from "../../services/CategoriaService";
 import UnidadMedidaService from "../../services/UnidadMedidaServices";
 import ArticuloInsumoService from "../../services/ArticuloInsumoService";
 import ArticuloInsumoModal from "./ArticuloInsumoModal";
+import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 
 interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
   activeSucursal: string ;
@@ -21,7 +22,8 @@ export default function ArticuloInsumoPage() {
   //Estados
   const [showModalCrear, setShowModalCrear] = useState<boolean>(false);
   const [, setError] = useState<string>("");
-  const { activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>;
+  const { activeSucursal } = useAuth0Extended();
+
 
   //Estados Listas Entidades
   const [categorias, setCategorias] = useState<Categoria[]>([]);

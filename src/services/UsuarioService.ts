@@ -1,4 +1,5 @@
 import Usuario from "../entities/DTO/Usuario/Usuario";
+import { Rol } from "../entities/enums/Rol";
 
 class UsuarioService {
   private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/auth`;
@@ -12,18 +13,14 @@ class UsuarioService {
     return response.json();
   }
 
-  static async login(usuario: Usuario, token: string): Promise<Usuario> {
+  static async login(token: string): Promise<Usuario> {
     try {
       const responseData = await this.request('/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(usuario),
       });
-      
-      // Aquí asumes que el backend devuelve el usuario con el rol
       return responseData as Usuario;
     } catch (error) {
       console.error('Error al hacer el Login', error);
@@ -31,13 +28,12 @@ class UsuarioService {
     }
   }
 
-  static async register(usuario: Usuario, token: string): Promise<Usuario> {
+  static async register(usuario: Usuario): Promise<Usuario> {
     try {
       const responseData = await this.request('/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(usuario),
       });
@@ -52,9 +48,6 @@ class UsuarioService {
     try {
       const responseData = await this.request(`/validar/${username}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
       return responseData;
     } catch (error) {
@@ -63,17 +56,31 @@ class UsuarioService {
     }
   }
 
-  static async deleteUsuario(id: string, token: string): Promise<void> {
+  static async deleteUsuario(id: number, token: string): Promise<void> {
     try {
       await this.request(`/${id}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
       });
     } catch (error) {
       console.error('Error al eliminar usuario:', error);
+      throw error;
+    }
+  }
+
+  static async getAll(token: string): Promise<Usuario[]> {
+    try {
+      const responseData = await this.request('', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      });
+      return responseData;
+    } catch (error) {
+      console.error('Error al obtener todos los usuarios:', error);
       throw error;
     }
   }

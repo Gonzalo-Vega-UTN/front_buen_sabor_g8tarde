@@ -4,9 +4,7 @@ import { CartProvider } from './components/Carrito/ContextCarrito';
 import Home from './components/Home/Home';
 import AcercaDe from './pages/AcercaDe';
 import FormularioTrabajo from './pages/Empleado/FormularioTrabajo';
-import PrivateRoute from './PrivateRoute/PrivateRoute';
 import DashboardPage from './pages/ArtManufacturado/DashBoard';
-import { Rol } from './entities/enums/Rol';
 import { UnidadesMedidaList } from './pages/UnidadMedida/UnidadMedidaList';
 import { FormularioArtManuf } from './pages/ArtManufacturado/FormularioArtManuf';
 import ArticuloInsumoPage from './pages/ArticuloInsumo/ArticulosInsumosPage';
@@ -26,7 +24,6 @@ import Sidebar from './components/Sidebar/Sidebar';
 import Footer from './components/Footer/Footer';
 import { AuthenticationGuard } from './Auth/AuthenticationGuard';
 
-
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={
@@ -36,57 +33,23 @@ const AppRoutes = () => (
     } />
     <Route path="/acerca-de" element={<AcercaDe />} />
     <Route path="/formulario-empleado" element={<FormularioTrabajo />} />
-    <Route path="/productos" element={
-      <PrivateRoute element={DashboardPage} roles={[Rol.Admin]} />
-    } />
-    <Route path="/unidadmedida" element={
-      <PrivateRoute element={UnidadesMedidaList} roles={[Rol.Admin, Rol.Cocinero]} />
-    } />
-    <Route path="/create-product/:id" element={
-      <PrivateRoute element={FormularioArtManuf} roles={[Rol.Admin, Rol.Cocinero]} />
-    } />
-    <Route path="/ingredientes" element={
-      <PrivateRoute element={ArticuloInsumoPage} roles={[Rol.Admin, Rol.Cocinero]} />
-    } />
-    <Route path="/empresas" element={
-      <PrivateRoute element={EmpresasPage} roles={[Rol.Admin]} />
-    } />
-    <Route path="/sucursales" element={
-      <PrivateRoute element={SucursalesPage} roles={[Rol.Admin]} />
-    } />
-    <Route path="/sucursales/:id" element={
-      <PrivateRoute element={SucursalesPage} roles={[Rol.Admin]} />
-    } />
-    <Route path="/reportes" element={
-      <PrivateRoute element={Reportes} roles={[Rol.Admin]} />
-    } />
-    <Route path="/pedidos" element={
-      <PrivateRoute element={PedidosList} roles={[Rol.Admin]} />
-    } />
-    <Route path="/clientes" element={
-      <PrivateRoute element={ClientTable} roles={[Rol.Admin]} />
-    } />
-    <Route path="/categorias" element={
-      <PrivateRoute element={CategoriaPage} roles={[Rol.Admin]} />
-    } />
-    <Route path="/promociones" element={
-      <PrivateRoute element={PromocionesPage} roles={[Rol.Admin, Rol.Cocinero]} />
-    } />
-    <Route path="/create-promotion/:id" element={
-      <PrivateRoute element={PromocionForm} roles={[Rol.Admin, Rol.Cocinero]} />
-    } />
-    <Route path="/PedidosCajero" element={
-      <PrivateRoute element={PedidosCajero} roles={[Rol.Admin, Rol.Cajero]} />
-    } />
-    <Route path="/PedidosCocinero" element={
-      <PrivateRoute element={PedidosCocinero} roles={[Rol.Admin, Rol.Cocinero]} />
-    } />
-    <Route path="/PedidosDelivery" element={
-      <PrivateRoute element={PedidosDelivery} roles={[Rol.Admin, Rol.Delivery]} />
-    } />
-    <Route path="/Domicilio" element={
-      <PrivateRoute element={FormularioDomicilio} roles={[Rol.Admin]} />
-    } />
+    <Route path="/productos" element={<AuthenticationGuard component={DashboardPage} />} />
+    <Route path="/unidadmedida" element={<AuthenticationGuard component={UnidadesMedidaList} />} />
+    <Route path="/create-product/:id" element={<AuthenticationGuard component={FormularioArtManuf} />} />
+    <Route path="/ingredientes" element={<AuthenticationGuard component={ArticuloInsumoPage} />} />
+    <Route path="/empresas" element={<AuthenticationGuard component={EmpresasPage} />} />
+    <Route path="/sucursales" element={<AuthenticationGuard component={SucursalesPage} />} />
+    <Route path="/sucursales/:id" element={<AuthenticationGuard component={SucursalesPage} />} />
+    <Route path="/reportes" element={<AuthenticationGuard component={Reportes} />} />
+    <Route path="/pedidos" element={<AuthenticationGuard component={PedidosList} />} />
+    <Route path="/clientes" element={<AuthenticationGuard component={ClientTable} />} />
+    <Route path="/categorias" element={<AuthenticationGuard component={CategoriaPage} />} />
+    <Route path="/promociones" element={<AuthenticationGuard component={PromocionesPage} />} />
+    <Route path="/create-promotion/:id" element={<AuthenticationGuard component={PromocionForm} />} />
+    <Route path="/PedidosCajero" element={<AuthenticationGuard component={PedidosCajero} />} />
+    <Route path="/PedidosCocinero" element={<AuthenticationGuard component={PedidosCocinero} />} />
+    <Route path="/PedidosDelivery" element={<AuthenticationGuard component={PedidosDelivery} />} />
+    <Route path="/Domicilio" element={<AuthenticationGuard component={FormularioDomicilio} />} />
   </Routes>
 );
 

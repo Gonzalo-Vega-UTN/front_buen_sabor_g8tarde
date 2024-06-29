@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import UsuarioService from '../services/UsuarioService';
 import { Rol } from '../entities/enums/Rol';
 
-
 interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
   selectSucursal: (sucursalId: number) => void;
   activeSucursal: string | null;
+  
 }
 
 const Auth0Context = createContext<Auth0ContextInterfaceExtended<User> | undefined>(undefined);
@@ -19,7 +19,7 @@ type Props = {
 export const Auth0ProviderWithNavigate = ({ children }: Props) => {
   const navigate = useNavigate();
   const [activeSucursal, setActiveSucursal] = useState<string | null>(null);
-
+  console.log(activeSucursal);
   const domain = import.meta.env.VITE_AUTH0_DOMAIN as string;
   const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID as string;
   const redirectUri = import.meta.env.VITE_AUTH0_CALLBACK_URL as string;
@@ -55,31 +55,23 @@ export const Auth0ProviderWithNavigate = ({ children }: Props) => {
 };
 
 const Auth0ContextWrapper = ({ children, selectSucursal, activeSucursal }: { children: JSX.Element, selectSucursal: (sucursalId: number) => void, activeSucursal: string | null }) => {
-  const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
-    const registerOrUpdateUser = async () => {
-      if (isAuthenticated && user) {
+    const loginUser = async () => {
+      if (isAuthenticated) {
         try {
           const token = await getAccessTokenSilently();
-          const usuario = {
-            auth0Id: user.sub,
-            username: user.name,
-            email: user.email,
-           
-            
-
-          };
-          const response = await UsuarioService.login(usuario, token);
-          console.log('Usuario registrado/actualizado:', response);
+          const response = await UsuarioService.login(token);
+          console.log('Usuario logueado:', response);
         } catch (error) {
-          console.error("Error al registrar o actualizar el usuario:", error);
+          console.error("Error al hacer login del usuario:", error);
         }
       }
     };
 
-    registerOrUpdateUser();
-  }, [isAuthenticated, user, getAccessTokenSilently]);
+    loginUser();
+  }, [isAuthenticated, getAccessTokenSilently]);
 
   return (
     <Auth0Context.Provider value={{ ...useAuth0(), selectSucursal, activeSucursal }}>

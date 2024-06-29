@@ -14,10 +14,10 @@ export class CategoriaService {
     return responseData;
   }
 
-  static async obtenerCategorias(id:string): Promise<Categoria[]> {
+  static async obtenerCategorias(activeSucursalId: string): Promise<Categoria[]> {
     
     try {
-      const responseData = await this.request(`/all/${id}`, {
+      const responseData = await this.request(`/all/${activeSucursalId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -31,9 +31,9 @@ export class CategoriaService {
     }
   }
 
-  static async obtenerCategoriasPadre(id:string): Promise<Categoria[]> {
+  static async obtenerCategoriasPadre(activeSucursalId: string): Promise<Categoria[]> {
     try {
-      const responseData = await this.request(`/padres/${id}`, {
+      const responseData = await this.request(`/padres/${activeSucursalId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -62,12 +62,12 @@ export class CategoriaService {
     }
   }
 
-  static async agregarCategoria(idPadre: number, idSucursal:number,categoria: Categoria): Promise<Categoria> {
+  static async agregarCategoria(idPadre: number, activeSucursalId: string,categoria: Categoria): Promise<Categoria> {
     try {
-      console.log("Sucursal",idSucursal);
+      console.log("Sucursal",activeSucursalId);
       
       
-      const responseData = await this.request(`/${idSucursal}/${idPadre}`, {
+      const responseData = await this.request(`/${activeSucursalId}/${idPadre}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

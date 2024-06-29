@@ -10,6 +10,7 @@ import { ProductServices } from '../../services/ProductServices';
 import PromocionService from '../../services/PromocionService';
 import ArticuloInsumoService from '../../services/ArticuloInsumoService';
 import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
+import { useAuth0Extended } from '../../Auth/Auth0ProviderWithNavigate';
 
 // Definimos la interfaz extendida con nuestras propiedades adicionales
 interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
@@ -23,7 +24,8 @@ const PromocionForm: React.FC = () => {
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [tipoPromocion, setTipoPromocion] = useState<string>("");
   const [submitError, setSubmitError] = useState<string>("");
-  const { activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>;
+  const { activeSucursal } = useAuth0Extended();
+
 
   useEffect(() => {
     const fetchData = async () => {
