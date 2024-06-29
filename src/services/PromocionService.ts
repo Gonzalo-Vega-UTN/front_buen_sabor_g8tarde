@@ -31,6 +31,22 @@ export class PromocionService {
     }
   }
 
+  static async getAllBySucursal(idSucursal:number): Promise<Promocion[]> {
+    try {
+      const responseData = await this.request(`/sucursal/${idSucursal}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors'
+      });
+      return responseData as Promocion[];
+    } catch (error) {
+      console.error('Error al obtener todas las promociones:', error);
+      throw error;
+    }
+  }
+
   static async getOne(id: number): Promise<Promocion> {
     try {
       return await this.request(`/${id}`, {
@@ -83,7 +99,7 @@ export class PromocionService {
     }
   }
 
-  static async delete(id: number): Promise<Promocion> {
+  static async delete(idSucursal :number, id: number): Promise<Promocion> {
     try {
       return await this.request(`/${id}`, {
         method: 'DELETE',

@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import PedidoFull from '../../entities/DTO/Pedido/PedidoFull';
 import { useAuth } from '../../Auth/Auth';
 import ModalConfirm from '../modals/ModalConfirm';
@@ -9,6 +9,7 @@ import PedidoService from '../../services/PedidoService';
 import { Cliente } from '../../entities/DTO/Cliente/Cliente';
 import Usuario from '../../entities/DTO/Usuario/Usuario';
 import { Promocion } from '../../entities/DTO/Promocion/Promocion';
+import PromocionService from '../../services/PromocionService';
 
 interface CartContextType {
   pedido: PedidoFull;
@@ -35,12 +36,25 @@ export function useCart() {
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [pedido, setPedido] = useState<PedidoFull>(new PedidoFull());
   const [error, setError] = useState<string>('');
-  const { activeUser } = useAuth();
+  const { activeUser, activeSucursal } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [modalConfig, setModalConfig] = useState({ title: '', text: '', onConfirm: () => {}, onCancel: () => {} });
   const [preferenceId, setPreferenceId] = useState<string>('');
+  const [promociones, setPromociones] = useState<Promocion[]>([])
   
   const [msjPedido, setMsjPedido] = useState<string>('');
+
+  const fetchPromociones = async  () =>{
+    setPromociones(await PromocionService.getAllBySucursal(Number(activeSucursal)));
+  }
+
+
+  useEffect(()=>{
+    if(activeSucursal){
+      fetchPromociones();
+    }
+  }, [activeSucursal]);
+
 
   const agregarAlCarrito = (articulo: Articulo | undefined) => {
     if (articulo) {
@@ -60,10 +74,24 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       nuevoPedido.total += articulo.precioVenta;
       
       setPedido(nuevoPedido);
+      checkPromocion(pedido)
       setPreferenceId('');
       setError('');
     }
   };
+
+  const checkPromocion = (pedido : PedidoFull) =>{
+    if(promociones.length > 0){
+      promociones.forEach(promocion => {
+        let flag = false;
+        promocion.detallesPromocion.forEach(detalle =>{
+          if(pedido.detallePedidos){
+            //TODO: pensar como comparar los detallespedido con los detallepromocion
+          }
+        })
+      })
+    }
+  }
 
   const agregarPromocionAlCarrito = (promocion: Promocion) => {
     const nuevoPedido = { ...pedido };
