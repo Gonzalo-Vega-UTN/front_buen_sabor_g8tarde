@@ -13,7 +13,7 @@ import { TipoEnvio } from '../../entities/enums/TipoEnvio';
 import { FormaPago } from '../../entities/enums/FormaPago';
 
 const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista }) => {
-  const { pedido, quitarDelCarrito, agregarAlCarrito, vaciarCarrito, handleCompra, handleCantidadChange, error, preferenceId } = useCart();
+  const { pedido, promocionAplicada, quitarDelCarrito, agregarAlCarrito, vaciarCarrito, handleCompra, handleCantidadChange, error, preferenceId } = useCart();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [tipoEnvio, setTipoEnvio] = useState<TipoEnvio | "">("");
   const [tipoPago, setTipoPago] = useState<FormaPago | "">("");
@@ -64,18 +64,14 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
   };
 
   const handleSeleccionarDomicilio = (domicilio: Domicilio) => {
-    console.log('Domicilio seleccionado:', domicilio);
     setShowModalDomicilios(false);
     setDomicilioEntrega(domicilio);
   };
 
   useEffect(() => {
     if (tipoEnvio === TipoEnvio.TakeAway && sucursal && sucursal.domicilio) {
-      console.log("Sucursal",sucursal)
-      console.log("Domicilio",sucursal.domicilio)
       setDomicilioEntrega(sucursal.domicilio);
       
-      console.log(domicilioEntrega)
     }
   }, [tipoEnvio, sucursal]);
 
@@ -116,6 +112,7 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
             ))
           )}
           <p className="carrito-total text-black">Total del Pedido: ${pedido.total}</p>
+         {promocionAplicada &&  <h4 className='text-dark'>Se aplica: {promocionAplicada.denominacion}</h4>}
           <div className="botones">
             <Button variant="warning" onClick={vaciarCarrito}>Vaciar Carrito</Button>
             <Button variant="primary" onClick={() => setCurrentStep(1)}>Confirmar Compra</Button>

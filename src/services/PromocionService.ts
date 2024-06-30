@@ -31,7 +31,7 @@ export class PromocionService {
     }
   }
 
-  static async getAllBySucursal(idSucursal:number): Promise<Promocion[]> {
+  static async getAllBySucursal(idSucursal: number): Promise<Promocion[]> {
     try {
       const responseData = await this.request(`/sucursal/${idSucursal}`, {
         method: 'GET',
@@ -62,12 +62,12 @@ export class PromocionService {
     }
   }
 
-  static async create(promocion: Promocion): Promise<Promocion> {
+  static async create(idSucursal: string, promocion: Promocion): Promise<Promocion> {
     try {
-      if(!promocion.tipoPromocion) {
+      if (!promocion.tipoPromocion) {
         promocion.tipoPromocion = TipoPromocion.HappyHour;
       }
-      const responseData = await this.request('', {
+      const responseData = await this.request(`/${idSucursal}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ export class PromocionService {
     }
   }
 
-  static async delete(idSucursal :number, id: number): Promise<Promocion> {
+  static async delete(idSucursal: number, id: number): Promise<Promocion> {
     try {
       return await this.request(`/${id}`, {
         method: 'DELETE',

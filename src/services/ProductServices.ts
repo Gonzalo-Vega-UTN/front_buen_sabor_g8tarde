@@ -14,13 +14,13 @@ export class ProductServices {
     return responseData;
   }
 
-  static async getAll(idSucursal : string): Promise<ArticuloManufacturado[]> {
+  static async getAll(idSucursal: string): Promise<ArticuloManufacturado[]> {
     try {
       const responseData = await this.request(`/${idSucursal}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        },  
+        },
         mode: 'cors'
       });
       return responseData as ArticuloManufacturado[];
@@ -30,13 +30,13 @@ export class ProductServices {
     }
   }
 
-  static async getAllCategoriaAndSubCategoria(idSucursal : string, idCategoria : number): Promise<ArticuloManufacturado[]> {
+  static async getAllCategoriaAndSubCategoria(idSucursal: string, idCategoria: number): Promise<ArticuloManufacturado[]> {
     try {
       const responseData = await this.request(`/${idSucursal}/categoria/${idCategoria}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        },  
+        },
         mode: 'cors'
       });
       return responseData as ArticuloManufacturado[];
@@ -46,16 +46,15 @@ export class ProductServices {
     }
   }
 
-  static async getAllproductsfromSucursal(idSucursal : string): Promise<ArticuloManufacturado[]> {
+  static async getAllproductsfromSucursal(idSucursal: string): Promise<ArticuloManufacturado[]> {
     try {
       const responseData = await this.request(`/sucursal/${idSucursal}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        },  
+        },
         mode: 'cors'
       });
-      console.log(responseData)
       return responseData as ArticuloManufacturado[];
     } catch (error) {
       console.error('Error al obtener todas los ArticuloManufacturados:', error);
@@ -78,7 +77,7 @@ export class ProductServices {
     }
   }
 
-  static async create(ArticuloManufacturado: ArticuloManufacturado,idSucursal:string): Promise<ArticuloManufacturado> {
+  static async create(ArticuloManufacturado: ArticuloManufacturado, idSucursal: string): Promise<ArticuloManufacturado> {
     try {
       const responseData = await this.request(`/${idSucursal}`, {
         method: 'POST',
@@ -127,7 +126,7 @@ export class ProductServices {
     }
   }
 
-  static async getAllFiltered(idSucursal : string ,idCategoria?: number, idUnidadMedida?: number, denominacion?: string): Promise<ArticuloManufacturado[]> {
+  static async getAllFiltered(idSucursal: string, idCategoria?: number, idUnidadMedida?: number, denominacion?: string): Promise<ArticuloManufacturado[]> {
     try {
       const params = new URLSearchParams();
       if (idCategoria !== undefined) params.append("categoria_id", idCategoria.toString());

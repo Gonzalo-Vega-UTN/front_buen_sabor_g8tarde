@@ -1,14 +1,22 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
-import { Form, Button, Row, Col, Container, InputGroup, FormControl } from 'react-bootstrap';
-import { FaPlus, FaMinus } from 'react-icons/fa';
-import { useParams, useNavigate } from 'react-router';
-import { Articulo } from '../../entities/DTO/Articulo/Articulo';
-import { Promocion } from '../../entities/DTO/Promocion/Promocion';
-import { TipoPromocion } from '../../entities/enums/TipoPromocion';
-import { ProductServices } from '../../services/ProductServices';
-import PromocionService from '../../services/PromocionService';
-import ArticuloInsumoService from '../../services/ArticuloInsumoService';
-import { useAuth } from '../../Auth/Auth';
+import React, { useState, useEffect, ChangeEvent } from "react";
+import {
+  Form,
+  Button,
+  Row,
+  Col,
+  Container,
+  InputGroup,
+  FormControl,
+} from "react-bootstrap";
+import { FaPlus, FaMinus } from "react-icons/fa";
+import { useParams, useNavigate } from "react-router";
+import { Articulo } from "../../entities/DTO/Articulo/Articulo";
+import { Promocion } from "../../entities/DTO/Promocion/Promocion";
+import { TipoPromocion } from "../../entities/enums/TipoPromocion";
+import { ProductServices } from "../../services/ProductServices";
+import PromocionService from "../../services/PromocionService";
+import ArticuloInsumoService from "../../services/ArticuloInsumoService";
+import { useAuth } from "../../Auth/Auth";
 
 const PromocionForm: React.FC = () => {
   const { id } = useParams();
@@ -18,7 +26,7 @@ const PromocionForm: React.FC = () => {
   const [tipoPromocion, setTipoPromocion] = useState<string>("");
   const [submitError, setSubmitError] = useState<string>("");
   const { activeSucursal } = useAuth();
-  
+
   useEffect(() => {
     const fetchData = async () => {
       const parsedId = Number(id);
@@ -28,18 +36,28 @@ const PromocionForm: React.FC = () => {
           const promocion = await PromocionService.getOne(parsedId);
           setPromocion(promocion);
         } catch (error) {
-          console.error('Error obteniendo Promocion de ID: ' + id, error);
+          console.error("Error obteniendo Promocion de ID: " + id, error);
         }
       }
 
       try {
-        const manufacturados = await ProductServices.getAllFiltered(activeSucursal);
-        const insumos = (await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(activeSucursal)).filter(articulos => !articulos.esParaElaborar);
-        const idsArticulosExistentes = promocion.detallesPromocion.map(detalle => detalle.articulo.id);
-        const articulos = [...manufacturados, ...insumos].filter(articulo => !idsArticulosExistentes.includes(articulo.id));
+        const manufacturados = await ProductServices.getAllFiltered(
+          activeSucursal
+        );
+        const insumos = (
+          await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(
+            activeSucursal
+          )
+        ).filter((articulos) => !articulos.esParaElaborar);
+        const idsArticulosExistentes = promocion.detallesPromocion.map(
+          (detalle) => detalle.articulo.id
+        );
+        const articulos = [...manufacturados, ...insumos].filter(
+          (articulo) => !idsArticulosExistentes.includes(articulo.id)
+        );
         setArticulos(articulos);
       } catch (error) {
-        console.error('Error al obtener los articulos', error);
+        console.error("Error al obtener los articulos", error);
       }
     };
 
@@ -50,7 +68,7 @@ const PromocionForm: React.FC = () => {
     const { name, value } = event.target;
     setPromocion({
       ...promocion,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -64,7 +82,7 @@ const PromocionForm: React.FC = () => {
     }
     setPromocion({
       ...promocion,
-      tipoPromocion: tipo
+      tipoPromocion: tipo,
     });
   };
 
@@ -78,18 +96,24 @@ const PromocionForm: React.FC = () => {
   const addDetail = () => {
     setPromocion({
       ...promocion,
-      detallesPromocion: [...promocion.detallesPromocion, {
-        cantidad: 1, articulo: {} as Articulo,
-        id: 0,
-        alta: true
-      }]
+      detallesPromocion: [
+        ...promocion.detallesPromocion,
+        {
+          cantidad: 1,
+          articulo: {} as Articulo,
+          id: 0,
+          alta: true,
+        },
+      ],
     });
   };
 
   const removeDetail = (index: number) => {
     setPromocion({
       ...promocion,
-      detallesPromocion: promocion.detallesPromocion.filter((_, i) => i !== index)
+      detallesPromocion: promocion.detallesPromocion.filter(
+        (_, i) => i !== index
+      ),
     });
   };
 
@@ -114,7 +138,10 @@ const PromocionForm: React.FC = () => {
       setSubmitError("Agrega un horario hasta");
       return false;
     }
-    if (!promocion.descripcionDescuento || promocion.descripcionDescuento.trim().length === 0) {
+    if (
+      !promocion.descripcionDescuento ||
+      promocion.descripcionDescuento.trim().length === 0
+    ) {
       setSubmitError("Agrega una descripcion del descuento");
       return false;
     }
@@ -126,7 +153,10 @@ const PromocionForm: React.FC = () => {
       setSubmitError("Agrega un tipo de promocion");
       return false;
     }
-    if (promocion.detallesPromocion.length === 0 || !promocion.detallesPromocion[0].articulo.id) {
+    if (
+      promocion.detallesPromocion.length === 0 ||
+      !promocion.detallesPromocion[0].articulo.id
+    ) {
       setSubmitError("Agrega al menos un detalle de promocion");
       return false;
     }
@@ -141,11 +171,11 @@ const PromocionForm: React.FC = () => {
         if (promocion.id !== 0) {
           await PromocionService.update(promocion.id, promocion);
         } else {
-          await PromocionService.create(promocion);
+          await PromocionService.create(activeSucursal, promocion);
         }
         navigate("/promociones");
       } catch (error) {
-        console.error('Error saving promotion:', error);
+        console.error("Error saving promotion:", error);
       }
     }
   };
@@ -154,7 +184,9 @@ const PromocionForm: React.FC = () => {
     const selectedArticulosIds = promocion.detallesPromocion
       .filter((_, i) => i !== index)
       .map((detalle) => detalle.articulo.id);
-    return articulos.filter((articulo) => !selectedArticulosIds.includes(articulo.id));
+    return articulos.filter(
+      (articulo) => !selectedArticulosIds.includes(articulo.id)
+    );
   };
 
   return (
@@ -178,8 +210,17 @@ const PromocionForm: React.FC = () => {
             <Form.Control
               type="date"
               name="fechaDesde"
-              value={promocion.fechaDesde instanceof Date ? promocion.fechaDesde.toISOString().split('T')[0] : promocion.fechaDesde}
-              onChange={(e) => setPromocion({ ...promocion, fechaDesde: new Date(e.target.value) })}
+              value={
+                promocion.fechaDesde instanceof Date
+                  ? promocion.fechaDesde.toISOString().split("T")[0]
+                  : promocion.fechaDesde
+              }
+              onChange={(e) =>
+                setPromocion({
+                  ...promocion,
+                  fechaDesde: new Date(e.target.value),
+                })
+              }
             />
           </Form.Group>
           <Form.Group as={Col} controlId="fechaHasta">
@@ -187,8 +228,17 @@ const PromocionForm: React.FC = () => {
             <Form.Control
               type="date"
               name="fechaHasta"
-              value={promocion.fechaHasta instanceof Date ? promocion.fechaHasta.toISOString().split('T')[0] : promocion.fechaHasta}
-              onChange={(e) => setPromocion({ ...promocion, fechaHasta: new Date(e.target.value) })}
+              value={
+                promocion.fechaHasta instanceof Date
+                  ? promocion.fechaHasta.toISOString().split("T")[0]
+                  : promocion.fechaHasta
+              }
+              onChange={(e) =>
+                setPromocion({
+                  ...promocion,
+                  fechaHasta: new Date(e.target.value),
+                })
+              }
             />
           </Form.Group>
         </Row>
@@ -238,8 +288,14 @@ const PromocionForm: React.FC = () => {
 
           <Form.Group controlId="selectTipoPromocion" as={Col}>
             <Form.Label>Seleccione un Tipo de Promoción</Form.Label>
-            <Form.Control as="select" value={tipoPromocion} onChange={handleChangeSelect}>
-              <option value="" disabled>Seleccionar Opción</option>
+            <Form.Control
+              as="select"
+              value={tipoPromocion}
+              onChange={handleChangeSelect}
+            >
+              <option value="" disabled>
+                Seleccionar Opción
+              </option>
               {Object.values(TipoPromocion).map((tipo) => (
                 <option key={tipo} value={tipo}>
                   {tipo}
@@ -255,8 +311,15 @@ const PromocionForm: React.FC = () => {
             <InputGroup key={index} className="mb-2">
               <Form.Select
                 aria-label="Seleccionar Artículo"
-                value={detalle.articulo.id || ''}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) => handleDetailChange(index, 'articulo', articulos.find(a => a.id === parseInt(e.target.value)) || {} as Articulo)}
+                value={detalle.articulo.id || ""}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  handleDetailChange(
+                    index,
+                    "articulo",
+                    articulos.find((a) => a.id === parseInt(e.target.value)) ||
+                      ({} as Articulo)
+                  )
+                }
               >
                 <option value="">Seleccionar Artículo</option>
                 {getAvailableArticulos(index).map((articulo) => (
@@ -270,10 +333,19 @@ const PromocionForm: React.FC = () => {
                 disabled={!detalle.articulo.id}
                 readOnly={!detalle.articulo.id}
                 value={detalle.cantidad || 1}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => handleDetailChange(index, 'cantidad', parseInt(e.target.value))}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleDetailChange(
+                    index,
+                    "cantidad",
+                    parseInt(e.target.value)
+                  )
+                }
                 min={1}
               />
-              <Button variant="outline-danger" onClick={() => removeDetail(index)}>
+              <Button
+                variant="outline-danger"
+                onClick={() => removeDetail(index)}
+              >
                 <FaMinus />
               </Button>
             </InputGroup>
@@ -286,8 +358,15 @@ const PromocionForm: React.FC = () => {
         <Button type="submit" variant="primary">
           Guardar Promoción
         </Button>
+        <Button
+          className="mx-3"
+          variant="outline-secondary"
+          onClick={() => navigate("/promociones")}
+        >
+          Volver
+        </Button>
       </Form>
-      {submitError && <h4 className='text-danger'>{submitError}</h4>}
+      {submitError && <h4 className="text-danger">{submitError}</h4>}
     </Container>
   );
 };

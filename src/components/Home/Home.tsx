@@ -153,20 +153,19 @@ const Home: React.FC = () => {
     setIsCartOpen(true);
   };
 
-  const handleAgregarPromocionAlCarrito = (promocion: Promocion) => {
-    if (isAuthenticated) {
-      promocion.detallesPromocion.forEach(detalle => {
-        agregarAlCarrito({
-          ...detalle.articulo,
-          precioVenta: promocion.precioPromocional / promocion.detallesPromocion.length,
-          cantidad: detalle.cantidad
-        });
-      });
-      setIsCartOpen(true);
-    } else {
-      navigate("/registro");
-    }
-  };
+  // const handleAgregarPromocionAlCarrito = (promocion: Promocion) => {
+  //   if (isAuthenticated) {
+  //     promocion.detallesPromocion.forEach(detalle => {
+  //       for (let i = 0; i < detalle.cantidad; i++) {
+  //         agregarAlCarrito(detalle.articulo)
+  //       }
+        
+  //     });
+  //     setIsCartOpen(true);
+  //   } else {
+  //     navigate("/login");
+  //   }
+  // };
 
   return (
     <div className="home-container">
@@ -241,14 +240,14 @@ const Home: React.FC = () => {
                   <Carousel.Item key={promocion.id}>
                     <img
                       className="d-block w-100"
-                      src={promocion.denominacion ? promocion.denominacion : "https://via.placeholder.com/400x200"}
+                      src={promocion.imagenes[0] ? promocion.imagenes[0].url : "https://via.placeholder.com/400x200"}
                       alt={promocion.denominacion}
                     />
                     <Carousel.Caption>
                       <h5>{promocion.denominacion}</h5>
                       <p>{promocion.descripcionDescuento}</p>
                       <p className="price">Precio: ${promocion.precioPromocional}</p>
-                      {isAuthenticated ? (
+                      {/* {isAuthenticated ? (
                         <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarPromocionAlCarrito(promocion)}>
                           Añadir promoción al carrito
                         </Button>
@@ -256,7 +255,7 @@ const Home: React.FC = () => {
                         <Button variant="primary" onClick={() => navigate("/registro")}>
                           Login
                         </Button>
-                      )}
+                      )} */}
                     </Carousel.Caption>
                   </Carousel.Item>
                 ))}

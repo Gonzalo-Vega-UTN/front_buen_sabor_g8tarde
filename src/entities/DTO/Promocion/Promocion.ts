@@ -17,7 +17,7 @@ export class Promocion extends Base {
     imagenes: Imagen[] = [];
   }
 export class PromocionDetalle extends Base {
-    cantidad: number | null = 0;
+    cantidad: number = 0;
     articulo: Articulo = new Articulo();
 }
 
