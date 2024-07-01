@@ -14,12 +14,9 @@ import { useAuth } from "../../Auth/Auth";
 export default function PromotionTable() {
   const navigate = useNavigate();
 
-  const [promotion, setPromotion] = useState<Promocion>(new Promocion());
-  const [promotions, setPromotions] = useState<Promocion[]>([]);
+  const [promocion, setPromocion] = useState<Promocion>(new Promocion());
+  const [promociones, setPromociones] = useState<Promocion[]>([]);
 
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<number>();
-
-  const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
   // const para manejar el estado del modal
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
@@ -33,7 +30,7 @@ export default function PromotionTable() {
   const handleClickEliminar = (newTitle: string, promo: Promocion) => {
     setTitle(newTitle);
     setShowModal(true);
-    setPromotion(promo);
+    setPromocion(promo);
   };
 
   const handleDelete = async (id: number) => {
@@ -46,19 +43,16 @@ export default function PromotionTable() {
     }
   };
 
-  const fetchPromotions = async (idCategoria?: number, denominacion?: string) => {
-    const promotionsFiltered = await PromocionService.getAll(/*idCategoria, denominacion*/);
-    setPromotions(promotionsFiltered);
+  const fetchPromotions = async () => {
+    const promotionsFiltered = await PromocionService.getAllBySucursal(Number(activeSucursal));
+    setPromociones(promotionsFiltered);
   };
 
   useEffect(() => {
     fetchPromotions();
   }, []);
 
-  useEffect(() => {
-    fetchPromotions(categoriaSeleccionada, searchedDenominacion);
-  }, [categoriaSeleccionada, searchedDenominacion]);
-
+  
   return (
     <div className="container">
       <CustomButton
@@ -85,7 +79,7 @@ export default function PromotionTable() {
           </tr>
         </thead>
         <tbody>
-          {promotions.map((promotion) => (
+          {promociones.map((promotion) => (
             <tr
               key={promotion.id}
               className="text-center"
@@ -124,7 +118,7 @@ export default function PromotionTable() {
           onHide={() => setShowModal(false)}
           title={title}
           handleDelete={handleDelete}
-          promo={promotion}
+          promo={promocion}
         />
       )}
     </div>
