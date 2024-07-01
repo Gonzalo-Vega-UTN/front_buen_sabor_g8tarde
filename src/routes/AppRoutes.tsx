@@ -10,9 +10,6 @@ import { PedidosList } from "../pages/PedidosList";
 import { CategoriaPage } from "../pages/Categoria/CategoriaPage";
 import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
 import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
-
-import { Estadisticas } from "../pages/Estadisticas";
-
 import PromocionesPage from "../pages/Promocion/PromocionesPage";
 import PromocionForm from "../pages/Promocion/FormularioPromocion";
 import ClientTable from "../pages/ClientesList";
@@ -26,6 +23,7 @@ import FormularioDomicilio from "../pages/Domicilio/FormDomicilio";
 import { Reportes } from "../pages/Reportes/Reportes";
 import AcercaDe from "../pages/AcercaDe";
 import FormularioTrabajo from "../pages/Empleado/FormularioTrabajo";
+import { MisPedidosList } from "../pages/Cliente/mipedido";
 
 
 
@@ -43,6 +41,7 @@ export default function AppRoutes() {
       
       <Route path="/registro" element={<RegistroUsuarioCliente closeModal={() => console.log("")} />} />
       <Route path="/perfil" element={<ClienteFormulario />} />
+      <Route path="/misPedidos" element={<MisPedidosList />} />
       <Route
         path="/productos"
         element={

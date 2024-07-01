@@ -46,9 +46,23 @@ class PedidoService {
         }
     }
 
-    static async obtenerPedidos(fecha : string, flag? : boolean): Promise<PedidoFull[]> {
+    static async obtenerPedidos(fecha : string): Promise<PedidoFull[]> {
         try {
             return await this.request('/fecha/' + fecha , {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                mode: 'cors'
+            }) as PedidoFull[];
+        } catch (error) {
+            console.error('Error al obtener los pedidos:', error);
+            throw error;
+        }
+    }
+    static async obtenerPedidosCliente(id : string): Promise<PedidoFull[]> {
+        try {
+            return await this.request('/cliente/' + id , {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
