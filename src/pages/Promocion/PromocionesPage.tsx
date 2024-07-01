@@ -80,7 +80,7 @@ export default function PromotionTable() {
             <th>Hora Hasta</th>
             <th>Tipo Promocion</th>
             <th>Precio Promocional</th>
-            <th>Editar</th>
+          
             <th>Eliminar</th>
           </tr>
         </thead>
@@ -99,14 +99,7 @@ export default function PromotionTable() {
               <td>{promotion.horaHasta}</td>
               <td>{promotion.tipoPromocion}</td>
               <td>{promotion.precioPromocional}</td>
-              <td>
-                <CustomButton
-                  color="#FBC02D"
-                  size={23}
-                  icon={BsFillPencilFill}
-                  onClick={() => handleClick(promotion.id)}
-                />
-              </td>
+             
               <td>
                 <GenericButton
                   color={promotion.alta ? "#D32F2F" : "#50C878"}
