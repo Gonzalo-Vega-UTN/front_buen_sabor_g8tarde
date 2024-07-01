@@ -101,7 +101,7 @@ export class PromocionService {
 
   static async delete(idSucursal: number, id: number): Promise<Promocion> {
     try {
-      return await this.request(`/${id}`, {
+      return await this.request(`/sucursal/${idSucursal}/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
