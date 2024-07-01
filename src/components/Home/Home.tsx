@@ -1,25 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button, Navbar, Carousel } from 'react-bootstrap';
-import './Home.css';
-import { Empresa } from '../../entities/DTO/Empresa/Empresa';
-import { EmpresaService } from '../../services/EmpresaService';
-import { Sucursal } from '../../entities/DTO/Sucursal/Sucursal';
-import SucursalService from '../../services/SucursalService';
-import { Categoria } from '../../entities/DTO/Categoria/Categoria';
-import { CategoriaService } from '../../services/CategoriaService';
-import { ProductServices } from '../../services/ProductServices';
-import { ArticuloManufacturado } from '../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado';
-import { useCart } from '../Carrito/ContextCarrito';
-import Carrito from '../Carrito/carrito';
-import { useNavigate } from 'react-router-dom';
-import ArticuloInsumoService from '../../services/ArticuloInsumoService';
-import { Articulo } from '../../entities/DTO/Articulo/Articulo';
-import { Cart, CartFill } from 'react-bootstrap-icons';
-import logo from '../../assets/images/Buen sabor logo 1.png';
-import { Promocion } from '../../entities/DTO/Promocion/Promocion';
-import { PromocionService } from '../../services/PromocionService';
-import { useAuth0Extended } from '../../Auth/Auth0ProviderWithNavigate';
-
+import React, { useEffect, useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Navbar,
+  Carousel,
+} from "react-bootstrap";
+import "./Home.css";
+import { Empresa } from "../../entities/DTO/Empresa/Empresa";
+import { EmpresaService } from "../../services/EmpresaService";
+import { Sucursal } from "../../entities/DTO/Sucursal/Sucursal";
+import SucursalService from "../../services/SucursalService";
+import { Categoria } from "../../entities/DTO/Categoria/Categoria";
+import { CategoriaService } from "../../services/CategoriaService";
+import { ProductServices } from "../../services/ProductServices";
+import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
+import { useCart } from "../Carrito/ContextCarrito";
+import Carrito from "../Carrito/carrito";
+import { useNavigate } from "react-router-dom";
+import ArticuloInsumoService from "../../services/ArticuloInsumoService";
+import { Articulo } from "../../entities/DTO/Articulo/Articulo";
+import { Cart, CartFill } from "react-bootstrap-icons";
+import logo from "../../assets/images/Buen sabor logo 1.png";
+import { Promocion } from "../../entities/DTO/Promocion/Promocion";
+import { PromocionService } from "../../services/PromocionService";
+import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
+import LoginButton from "../Log-Register/LoginButton";
 
 const Home: React.FC = () => {
   const [, setLoading] = useState<boolean>(true);
@@ -28,13 +36,19 @@ const Home: React.FC = () => {
   const [, setSelectedEmpresa] = useState<Empresa | null>(null);
   const [, setShowSucursales] = useState<boolean>(false);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
-  const [selectedSucursal, setSelectedSucursal] = useState<Sucursal | null>(null);
+  const [selectedSucursal, setSelectedSucursal] = useState<Sucursal | null>(
+    null
+  );
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [productos, setProductos] = useState<Articulo[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>(undefined);
-  const { isAuthenticated, activeSucursal, selectSucursal } = useAuth0Extended();
+  const [selectedCategoryId, setSelectedCategoryId] = useState<
+    number | undefined
+  >(undefined);
+  const { isAuthenticated, activeSucursal, selectSucursal } =
+    useAuth0Extended();
   const { agregarAlCarrito } = useCart();
-  const [subCategoriaSelected, setSubCategoriaSelected] = useState<boolean>(false);
+  const [subCategoriaSelected, setSubCategoriaSelected] =
+    useState<boolean>(false);
   const navigate = useNavigate();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [promociones, setPromociones] = useState<Promocion[]>([]);
@@ -50,7 +64,7 @@ const Home: React.FC = () => {
       const data = await EmpresaService.getAll();
       setEmpresas(data);
     } catch (error) {
-      console.error('Error fetching empresas:', error);
+      console.error("Error fetching empresas:", error);
     } finally {
       setLoading(false);
     }
@@ -61,7 +75,7 @@ const Home: React.FC = () => {
       const data = await PromocionService.getAll();
       setPromociones(data);
     } catch (error) {
-      console.error('Error fetching promociones:', error);
+      console.error("Error fetching promociones:", error);
     }
   };
 
@@ -72,7 +86,7 @@ const Home: React.FC = () => {
       setSucursales(data);
       setShowSucursales(true);
     } catch (error) {
-      console.error('Error fetching sucursales:', error);
+      console.error("Error fetching sucursales:", error);
     } finally {
       setLoading(false);
     }
@@ -82,10 +96,15 @@ const Home: React.FC = () => {
     try {
       setLoading(true);
       setSubCategoriaSelected(false);
-      const data = await CategoriaService.obtenerCategoriasPadre(idSucursal.toString());
-      setCategorias([...data, { id: 0, denominacion: "Promociones" } as Categoria]);
+      const data = await CategoriaService.obtenerCategoriasPadre(
+        idSucursal.toString()
+      );
+      setCategorias([
+        ...data,
+        { id: 0, denominacion: "Promociones" } as Categoria,
+      ]);
     } catch (error) {
-      console.error('Error fetching categorias padre:', error);
+      console.error("Error fetching categorias padre:", error);
     } finally {
       setLoading(false);
     }
@@ -100,7 +119,7 @@ const Home: React.FC = () => {
         setSubCategoriaSelected(true);
       }
     } catch (error) {
-      console.error('Error fetching categorias padre:', error);
+      console.error("Error fetching categorias padre:", error);
     } finally {
       setLoading(false);
     }
@@ -109,11 +128,17 @@ const Home: React.FC = () => {
   const fetchProductos = async (idCategoria: number) => {
     if (selectedSucursal) {
       try {
-        const manufacturados = await ProductServices.getAllproductsfromSucursal(String(selectedSucursal.id));
-        const insumos = await ArticuloInsumoService.obtenerArticulosInsumosByCategoriaAndSubCategoria(String(selectedSucursal.id), idCategoria);
+        const manufacturados = await ProductServices.getAllproductsfromSucursal(
+          String(selectedSucursal.id)
+        );
+        const insumos =
+          await ArticuloInsumoService.obtenerArticulosInsumosByCategoriaAndSubCategoria(
+            String(selectedSucursal.id),
+            idCategoria
+          );
         setProductos([...manufacturados, ...insumos]);
       } catch (error) {
-        console.error('Error fetching productos:', error);
+        console.error("Error fetching productos:", error);
       }
     } else {
       setCurrentStep(2);
@@ -156,11 +181,12 @@ const Home: React.FC = () => {
 
   const handleAgregarPromocionAlCarrito = (promocion: Promocion) => {
     if (isAuthenticated) {
-      promocion.detallesPromocion.forEach(detalle => {
+      promocion.detallesPromocion.forEach((detalle) => {
         agregarAlCarrito({
           ...detalle.articulo,
-          precioVenta: promocion.precioPromocional / promocion.detallesPromocion.length,
-          cantidad: detalle.cantidad
+          precioVenta:
+            promocion.precioPromocional / promocion.detallesPromocion.length,
+          cantidad: detalle.cantidad,
         });
       });
       setIsCartOpen(true);
@@ -189,7 +215,7 @@ const Home: React.FC = () => {
               variant="outline-primary"
               onClick={() => setCurrentStep(currentStep - 1)}
             >
-              Cambiar {currentStep === 2 ? 'Empresa' : 'Sucursal'}
+              Cambiar {currentStep === 2 ? "Empresa" : "Sucursal"}
             </Button>
           )}
         </Container>
@@ -201,8 +227,18 @@ const Home: React.FC = () => {
             <Row>
               {empresas.map((empresa) => (
                 <Col key={empresa.id} sm={12} md={6} lg={4} className="mb-4">
-                  <Card onClick={() => selectEmpresa(empresa)} className="empresa-card">
-                    <Card.Img variant="top" src={empresa.imagenes[0] ? empresa.imagenes[0].url : "https://via.placeholder.com/150"} />
+                  <Card
+                    onClick={() => selectEmpresa(empresa)}
+                    className="empresa-card"
+                  >
+                    <Card.Img
+                      variant="top"
+                      src={
+                        empresa.imagenes[0]
+                          ? empresa.imagenes[0].url
+                          : "https://via.placeholder.com/150"
+                      }
+                    />
                     <Card.Body>
                       <Card.Title>{empresa.nombre}</Card.Title>
                     </Card.Body>
@@ -219,11 +255,21 @@ const Home: React.FC = () => {
             <Row>
               {sucursales.map((sucursal) => (
                 <Col key={sucursal.id} sm={12} md={6} lg={4} className="mb-4">
-                  <Card onClick={() => {
-                    seleccionarSucursal(sucursal)
-                    fetchProductos(1);
-                  }} className="sucursal-card">
-                    <Card.Img variant="top" src={sucursal.imagenes[0] ? sucursal.imagenes[0].url : "https://via.placeholder.com/150"} />
+                  <Card
+                    onClick={() => {
+                      seleccionarSucursal(sucursal);
+                      fetchProductos(1);
+                    }}
+                    className="sucursal-card"
+                  >
+                    <Card.Img
+                      variant="top"
+                      src={
+                        sucursal.imagenes[0]
+                          ? sucursal.imagenes[0].url
+                          : "https://via.placeholder.com/150"
+                      }
+                    />
                     <Card.Body>
                       <Card.Title>{sucursal.nombre}</Card.Title>
                     </Card.Body>
@@ -237,26 +283,36 @@ const Home: React.FC = () => {
         {currentStep === 3 && (
           <>
             <Container className="d-flex justify-content-center align-items-center mb-4">
-              <Carousel style={{ maxWidth: '400px' }}>
+              <Carousel style={{ maxWidth: "400px" }}>
                 {promociones.map((promocion) => (
                   <Carousel.Item key={promocion.id}>
                     <img
                       className="d-block w-100"
-                      src={promocion.denominacion ? promocion.denominacion : "https://via.placeholder.com/400x200"}
+                      src={
+                        promocion.denominacion
+                          ? promocion.denominacion
+                          : "https://via.placeholder.com/400x200"
+                      }
                       alt={promocion.denominacion}
                     />
                     <Carousel.Caption>
                       <h5>{promocion.denominacion}</h5>
                       <p>{promocion.descripcionDescuento}</p>
-                      <p className="price">Precio: ${promocion.precioPromocional}</p>
+                      <p className="price">
+                        Precio: ${promocion.precioPromocional}
+                      </p>
                       {isAuthenticated ? (
-                        <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarPromocionAlCarrito(promocion)}>
+                        <Button
+                          variant="primary"
+                          className="boton_add_cart"
+                          onClick={() =>
+                            handleAgregarPromocionAlCarrito(promocion)
+                          }
+                        >
                           Añadir promoción al carrito
                         </Button>
                       ) : (
-                        <Button variant="primary" onClick={() => navigate("/registro")}>
-                          Login
-                        </Button>
+                        <LoginButton />
                       )}
                     </Carousel.Caption>
                   </Carousel.Item>
@@ -269,21 +325,49 @@ const Home: React.FC = () => {
               <Row className="mb-4 categoria-container">
                 {subCategoriaSelected && (
                   <Col>
-                    <Button variant='outline-secondary' className="category-button" onClick={() => fetchCategoriasPadresBySucursal(selectedSucursal?.id)}>
+                    <Button
+                      variant="outline-secondary"
+                      className="category-button"
+                      onClick={() =>
+                        fetchCategoriasPadresBySucursal(selectedSucursal?.id)
+                      }
+                    >
                       Volver
                     </Button>
                   </Col>
                 )}
                 <Col>
-                  <div className={`category ${selectedCategoryId === null ? 'selected' : ''}`} onClick={() => selectCategoria(null)}>
-                    <img src="https://via.placeholder.com/80" alt="Todos" className="category-image" />
+                  <div
+                    className={`category ${
+                      selectedCategoryId === null ? "selected" : ""
+                    }`}
+                    onClick={() => selectCategoria(null)}
+                  >
+                    <img
+                      src="https://via.placeholder.com/80"
+                      alt="Todos"
+                      className="category-image"
+                    />
                     <p>Todos</p>
                   </div>
                 </Col>
                 {categorias.map((categoria) => (
                   <Col key={categoria.id}>
-                    <div className={`category ${selectedCategoryId === categoria.id ? 'selected' : ''}`} onClick={() => selectCategoria(categoria)}>
-                      <img src={categoria.imagenes && categoria.imagenes[0] ? categoria.imagenes[0].url : "https://via.placeholder.com/80"} alt={categoria.denominacion} className="category-image" />
+                    <div
+                      className={`category ${
+                        selectedCategoryId === categoria.id ? "selected" : ""
+                      }`}
+                      onClick={() => selectCategoria(categoria)}
+                    >
+                      <img
+                        src={
+                          categoria.imagenes && categoria.imagenes[0]
+                            ? categoria.imagenes[0].url
+                            : "https://via.placeholder.com/80"
+                        }
+                        alt={categoria.denominacion}
+                        className="category-image"
+                      />
                       <p>{categoria.denominacion}</p>
                     </div>
                   </Col>
@@ -292,71 +376,104 @@ const Home: React.FC = () => {
 
               <h2 className="section-title">Nuestros Productos</h2>
               <div className="products-container">
-                {showPromociones ? (
-                  promociones.map((promocion) => (
-                    <div key={promocion.id} className="product-card">
-                      <h3>{promocion.denominacion}</h3>
-                      <p>{promocion.descripcionDescuento}</p>
-                      <p className="price">Precio: ${promocion.precioPromocional}</p>
-                      {isAuthenticated ? (
-                        <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarPromocionAlCarrito(promocion)}>
-                          Añadir al carrito
-                        </Button>
-                      ) : (
-                        <Button variant="primary" onClick={() => navigate("/registro")}>
-                          Login
-                        </Button>
-                      )}
-                    </div>
-                  ))
-                ) : productos.length > 0 ? (
-                  productos.map((producto) => (
-                    <div key={producto.id} className="product-card">
-                      <img src={producto.imagenes[0] ? producto.imagenes[0].url : "https://via.placeholder.com/100"} alt={producto.denominacion} className="product-image" />
-                      <h3>{producto.denominacion}</h3>
-                      <p>{producto instanceof ArticuloManufacturado ? producto.descripcion : ""}</p>
-                      <p className="price">Precio: ${producto.precioVenta}</p>
-                      {isAuthenticated ? (
-                        <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarAlCarrito(producto)}>
-                          Añadir al carrito
-                        </Button>
-                      ) : (
-                        <Button variant="primary" onClick={() => navigate("/registro")}>
-                          Login
-                        </Button>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  selectedCategoryId && <p>Lo sentimos! No tenemos productos disponibles para esta Categoria!</p>
-                )}
+                {showPromociones
+                  ? promociones.map((promocion) => (
+                      <div key={promocion.id} className="product-card">
+                        <h3>{promocion.denominacion}</h3>
+                        <p>{promocion.descripcionDescuento}</p>
+                        <p className="price">
+                          Precio: ${promocion.precioPromocional}
+                        </p>
+                        {isAuthenticated ? (
+                          <Button
+                            variant="primary"
+                            className="boton_add_cart"
+                            onClick={() =>
+                              handleAgregarPromocionAlCarrito(promocion)
+                            }
+                          >
+                            Añadir al carrito
+                          </Button>
+                        ) : (
+                          <LoginButton />
+                        )}
+                      </div>
+                    ))
+                  : productos.length > 0
+                  ? productos.map((producto) => (
+                      <div key={producto.id} className="product-card">
+                        <img
+                          src={
+                            producto.imagenes[0]
+                              ? producto.imagenes[0].url
+                              : "https://via.placeholder.com/100"
+                          }
+                          alt={producto.denominacion}
+                          className="product-image"
+                        />
+                        <h3>{producto.denominacion}</h3>
+                        <p>
+                          {producto instanceof ArticuloManufacturado
+                            ? producto.descripcion
+                            : ""}
+                        </p>
+                        <p className="price">Precio: ${producto.precioVenta}</p>
+                        {isAuthenticated ? (
+                          <Button
+                            variant="primary"
+                            className="boton_add_cart"
+                            onClick={() => handleAgregarAlCarrito(producto)}
+                          >
+                            Añadir al carrito
+                          </Button>
+                        ) : (
+                          <LoginButton />
+                        )}
+                      </div>
+                    ))
+                  : selectedCategoryId && (
+                      <p>
+                        Lo sentimos! No tenemos productos disponibles para esta
+                        Categoria!
+                      </p>
+                    )}
               </div>
             </Container>
           </>
         )}
       </div>
 
-      {isAuthenticated && <>
-        <Button onClick={() => setIsCartOpen(!isCartOpen)} className="toggle-cart-btn">
-          {isCartOpen ? <CartFill size={24} /> : <Cart size={24} />}
-        </Button>
+      {isAuthenticated && (
+        <>
+          <Button
+            onClick={() => setIsCartOpen(!isCartOpen)}
+            className="toggle-cart-btn"
+          >
+            {isCartOpen ? <CartFill size={24} /> : <Cart size={24} />}
+          </Button>
 
-        <div className={`cart-sidebar ${isCartOpen ? 'open' : ''}`}>
-          <Carrito
-            actualizarLista={() => fetchProductos(selectedCategoryId!)}
-            isOpen={isCartOpen}
-            setIsOpen={setIsCartOpen}
-          />
-        </div>
-        <div className={`cart-sidebar ${isCartOpen ? 'open' : ''}`}>
-          <button className="close-cart-btn" onClick={() => setIsCartOpen(false)}>×</button>
-          <Carrito
-            actualizarLista={() => fetchProductos(selectedCategoryId!)}
-            isOpen={isCartOpen}
-            setIsOpen={setIsCartOpen}
-          />
-        </div>
-      </>}
+          <div className={`cart-sidebar ${isCartOpen ? "open" : ""}`}>
+            <Carrito
+              actualizarLista={() => fetchProductos(selectedCategoryId!)}
+              isOpen={isCartOpen}
+              setIsOpen={setIsCartOpen}
+            />
+          </div>
+          <div className={`cart-sidebar ${isCartOpen ? "open" : ""}`}>
+            <button
+              className="close-cart-btn"
+              onClick={() => setIsCartOpen(false)}
+            >
+              ×
+            </button>
+            <Carrito
+              actualizarLista={() => fetchProductos(selectedCategoryId!)}
+              isOpen={isCartOpen}
+              setIsOpen={setIsCartOpen}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

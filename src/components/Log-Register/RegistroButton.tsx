@@ -1,15 +1,20 @@
 import { useAuth0 } from "@auth0/auth0-react";
+import { Button } from "react-bootstrap";
+import { BsBoxArrowInUp } from "react-icons/bs";
+import { SlLogin } from "react-icons/sl";
 
 const RegistroButton = () => {
   const { loginWithRedirect } = useAuth0();
 
   return (
-    <button
-      className="inline-block px-8 py-3 text-sm font-semibold text-center text-white transition duration-100 bg-indigo-500 rounded-lg outline-none ring-indigo-300 hover:bg-indigo-600 focus-visible:ring active:bg-indigo-700 md:text-base"
+    <Button
+      variant="secondary"
+      className="mx-2 my-2"
+      size="sm"
       onClick={() =>
         loginWithRedirect({
           appState: {
-            returnTo: "/cliente/perfil",
+            returnTo: "/formulario-cliente",
           },
           authorizationParams: {
             screen_hint: "signup",
@@ -17,8 +22,8 @@ const RegistroButton = () => {
         })
       }
     >
-      Sign up
-    </button>
+      <BsBoxArrowInUp /> Register
+    </Button>
   );
 };
 

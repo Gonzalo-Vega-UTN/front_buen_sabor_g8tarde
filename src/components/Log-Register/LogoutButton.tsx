@@ -1,17 +1,21 @@
 import { useAuth0 } from "@auth0/auth0-react";
-
+import { Button } from "react-bootstrap";
+import { BsBoxArrowInLeft } from "react-icons/bs";
 const LogoutButton = () => {
   const { logout } = useAuth0();
 
   return (
-    <button
+    <Button
+      variant="outline-danger"
+      className="mx-2 my-2"
+      size="sm"
       onClick={() =>
         logout({ logoutParams: { returnTo: window.location.origin } })
       }
-      className="inline-block px-4 py-3 text-sm font-semibold text-center text-gray-500 transition duration-100 rounded-lg outline-none ring-indigo-300 hover:text-indigo-500 focus-visible:ring active:text-indigo-600 md:text-base"
     >
-      Log Out
-    </button>
+      <BsBoxArrowInLeft />
+      Logout
+    </Button>
   );
 };
 

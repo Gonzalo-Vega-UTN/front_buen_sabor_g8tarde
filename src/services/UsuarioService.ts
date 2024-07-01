@@ -28,26 +28,29 @@ class UsuarioService {
     }
   }
 
-  static async register(usuario: Usuario): Promise<Usuario> {
+  static async register(token: string): Promise<Usuario> {
     try {
       const responseData = await this.request('/register', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(usuario),
+        
       });
-      return responseData;
+      return responseData as Usuario;
     } catch (error) {
       console.error('Error al registrar:', error);
       throw error;
     }
   }
 
-  static async validarExistenciaUsuario(username: string): Promise<boolean> {
+  static async validarExistenciaUsuario(token: string): Promise<boolean> {
     try {
-      const responseData = await this.request(`/validar/${username}`, {
+      const responseData = await this.request(`/validar`, {
         method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
       });
       return responseData;
     } catch (error) {
