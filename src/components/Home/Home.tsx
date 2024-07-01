@@ -153,19 +153,19 @@ const Home: React.FC = () => {
     setIsCartOpen(true);
   };
 
-  // const handleAgregarPromocionAlCarrito = (promocion: Promocion) => {
-  //   if (isAuthenticated) {
-  //     promocion.detallesPromocion.forEach(detalle => {
-  //       for (let i = 0; i < detalle.cantidad; i++) {
-  //         agregarAlCarrito(detalle.articulo)
-  //       }
+  const handleAgregarPromocionAlCarrito = (promocion: Promocion) => {
+    if (isAuthenticated) {
+     promocion.detallesPromocion.forEach(detalle => {
+       for (let i = 0; i < detalle.cantidad; i++) {
+          agregarAlCarrito(detalle.articulo)
+        }
         
-  //     });
-  //     setIsCartOpen(true);
-  //   } else {
-  //     navigate("/login");
-  //   }
-  // };
+      });
+      setIsCartOpen(true);
+    } else {
+       navigate("/login");
+    }
+   };
 
   return (
     <div className="home-container">
@@ -239,12 +239,12 @@ const Home: React.FC = () => {
                 {promociones.map((promocion) => (
                   <Carousel.Item key={promocion.id}>
                     <img
-                      className="d-block w-100 carousel-image"
+                      className="carousel-image"
                       src={promocion.imagenes[0] ? promocion.imagenes[0].url : "https://via.placeholder.com/400x200"}
                       alt={promocion.denominacion}
                     />
                     <Carousel.Caption>
-                    
+                   
                       <p className="price">Precio: ${promocion.precioPromocional}</p>
                       {/* {isAuthenticated ? (
                         <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarPromocionAlCarrito(promocion)}>
@@ -296,7 +296,7 @@ const Home: React.FC = () => {
                       <p>{promocion.descripcionDescuento}</p>
                       <p className="price">Precio: ${promocion.precioPromocional}</p>
                       {isAuthenticated ? (
-                        <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarAlCarrito(promocion)}>
+                        <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarPromocionAlCarrito(promocion)}>
                           Añadir al carrito
                         </Button>
                       ) : (

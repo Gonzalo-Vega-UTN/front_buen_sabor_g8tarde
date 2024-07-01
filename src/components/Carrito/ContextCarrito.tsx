@@ -19,7 +19,7 @@ import PromocionService from "../../services/PromocionService";
 
 interface CartContextType {
   pedido: PedidoFull;
-  promocionAplicada: Promocion | null;
+  promocionesAplicadas: Promocion[];
   agregarAlCarrito: (producto: Articulo | undefined) => void;
   quitarDelCarrito: (index: number) => void;
   vaciarCarrito: () => void;
@@ -42,18 +42,16 @@ export function useCart() {
 export const CartProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [promocionAplicada, setPromocionAplicada] = useState<Promocion | null>(
-    null
-  );
+  const [promocionesAplicada, setPromocionesAplicada] = useState<Promocion[]>([]);
   const [pedido, setPedido] = useState<PedidoFull>(new PedidoFull());
   const [error, setError] = useState<string>("");
-  const { activeUser, activeSucursal } = useAuth();
+  const {activeUser, activeSucursal } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [modalConfig, setModalConfig] = useState({
     title: "",
     text: "",
-    onConfirm: () => {},
-    onCancel: () => {},
+    onConfirm: () => { },
+    onCancel: () => { },
   });
   const [preferenceId, setPreferenceId] = useState<string>("");
   const [promociones, setPromociones] = useState<Promocion[]>([]);
@@ -78,7 +76,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
       const detalleExistente = nuevoPedido.detallePedidos.find(
         (detalle) => detalle.articulo?.id === articulo.id
       );
-  
+
+      
       if (detalleExistente) {
         detalleExistente.cantidad++;
         detalleExistente.subTotal = articulo.precioVenta * detalleExistente.cantidad;
@@ -89,100 +88,49 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         nuevoDetalle.subTotal = articulo.precioVenta;
         nuevoPedido.detallePedidos.push(nuevoDetalle);
       }
-  
+      //Verificar Promocion
+      const promocionesAplicables = verificarPromociones(nuevoPedido, promociones);
+      console.log(promocionesAplicables)
+      setPromocionesAplicada(promocionesAplicables)
       // Sumar el precio del artículo al total
       nuevoPedido.total += articulo.precioVenta;
-  
-      // Restablecer el total del pedido quitando el descuento previo
-      if (promocionAplicada) {
-        const precioOriginal = calcularMontoOriginalPromocion(promocionAplicada);
-        nuevoPedido.total += (precioOriginal - promocionAplicada.precioPromocional);
-        setPromocionAplicada(null);
-      }
-  
-      // Verificar y aplicar promociones
-      const promocionesAplicables = verificarPromociones(nuevoPedido, promociones);
-      const promocionElegida = elegirMejorPromocion(promocionesAplicables);
-  
-      if (promocionElegida) {
-        const precioOriginal = calcularMontoOriginalPromocion(promocionElegida);
-  
-        if (nuevoPedido.total >= precioOriginal) {
-          nuevoPedido.total -= (precioOriginal - promocionElegida.precioPromocional);
-          setPromocionAplicada(promocionElegida); // Actualizar el estado de la promoción aplicada
-        }
-      }
-  
+
       setPedido(nuevoPedido);
       setPreferenceId("");
       setError("");
     }
   };
-  
-  const elegirMejorPromocion = (promociones: Promocion[]): Promocion => {
-    // Filtrar las promociones que tengan el descuento mas grande
-    const maxDescuento = Math.max(
-      ...promociones.map((promocion) => {
-        return calcularMontoOriginalPromocion(promocion) - promocion.precioPromocional
-      })
-    );
-    return promociones.filter(
-      (promocion) => promocion.precioPromocional === maxDescuento
-    )[0]; //Si hay 2 promociones con el mismo precio de descuento maximo, elegimos la primera;
-  };
 
-  const calcularMontoOriginalPromocion = (promocion : Promocion)=>{
-    return promocion.detallesPromocion.reduce(
-      (total, detallePromocion) => {
-        return (
-          total +
-          detallePromocion.articulo.precioVenta *
-            (detallePromocion.cantidad || 0)
-        );
-      },
-      0
-    );
-  }
-
-  const verificarPromociones = (
-    pedido: PedidoFull,
-    promociones: Promocion[]
-  ): Promocion[] => {
+  const verificarPromociones = (pedido: PedidoFull, promociones: Promocion[]): Promocion[] => {
     return promociones.filter((promocion) =>
       aplicarDescuento(pedido, promocion)
     );
   };
-  const aplicarDescuento = (
-    pedido: PedidoFull,
-    promocion: Promocion
-  ): boolean => {
-    const pedidoMap = new Map<number, number>();
 
+  const aplicarDescuento = (pedido: PedidoFull, promocion: Promocion): boolean => {
+    const pedidoMap = new Map<Articulo, number>();
     // Mapear los artículos y sus cantidades en el pedido
     pedido.detallePedidos.forEach((detalle) => {
-      const articuloId = detalle.articulo.id;
       pedidoMap.set(
-        articuloId,
-        (pedidoMap.get(articuloId) || 0) + detalle.cantidad
+        detalle.articulo,
+        detalle.cantidad
       );
     });
 
     // Verificar si los artículos y cantidades de la promoción están en el pedido
     for (const detallePromocion of promocion.detallesPromocion) {
-      const articuloId = detallePromocion.articulo.id;
-      const cantidadNecesaria = detallePromocion.cantidad || 0;
-
+      const cantidadNecesaria = detallePromocion.cantidad;
       if (
-        !pedidoMap.has(articuloId) ||
-        pedidoMap.get(articuloId)! < cantidadNecesaria
+        !pedidoMap.has(detallePromocion.articulo) || pedidoMap.get(detallePromocion.articulo)! < cantidadNecesaria
       ) {
+        console.log("RECONOCE EL ARTICULO", !pedidoMap.has(detallePromocion.articulo))
+        console.log("RECONOCE LA CANTIDAD", pedidoMap.get(detallePromocion.articulo)! < cantidadNecesaria)
         return false;
       }
     }
 
     return true;
   };
-
 
   const quitarDelCarrito = (index: number) => {
     const detalle = pedido.detallePedidos[index];
@@ -223,7 +171,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
 
   const vaciarCarrito = () => {
     setPedido(new PedidoFull());
-    setPromocionAplicada(null)
+    setPromocionesAplicada([])
     setPreferenceId("");
   };
 
@@ -272,11 +220,12 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         totalCosto: pedido.totalCosto,
         estado: pedido.estado,
         tipoEnvio: pedido.tipoEnvio,
-        formaDePago: pedido.formaDePago,
+        formaPago: pedido.formaPago,
         fechaPedido: pedido.fechaPedido,
-        domicilioShort: pedido.domicilioShort,
+        domicilio: pedido.domicilio,
         detallePedidos: pedido.detallePedidos,
         cliente: pedido.cliente,
+        sucursal: pedido.sucursal
       };
 
       const response = await createPreferenceMP(pedidoFull);
@@ -293,7 +242,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
     <CartContext.Provider
       value={{
         pedido,
-        promocionAplicada,
+        promocionesAplicadas: promocionesAplicada,
         agregarAlCarrito,
         quitarDelCarrito,
         vaciarCarrito,

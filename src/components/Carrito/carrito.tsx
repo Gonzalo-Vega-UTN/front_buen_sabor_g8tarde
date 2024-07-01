@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useCart } from './ContextCarrito';
 import { Alert, Button, Col, Form, Row } from 'react-bootstrap';
 import CheckoutMP from './MP/CheckoutMP';
+import { useNavigate } from 'react-router-dom';
 
 import './Carrito.css';
 import { useAuth } from '../../Auth/Auth';
@@ -13,7 +14,7 @@ import { TipoEnvio } from '../../entities/enums/TipoEnvio';
 import { FormaPago } from '../../entities/enums/FormaPago';
 
 const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista }) => {
-  const { pedido, promocionAplicada, quitarDelCarrito, agregarAlCarrito, vaciarCarrito, handleCompra, handleCantidadChange, error, preferenceId } = useCart();
+  const { pedido, promocionesAplicadas: promocionAplicada, quitarDelCarrito, agregarAlCarrito, vaciarCarrito, handleCompra, handleCantidadChange, error, preferenceId } = useCart();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [tipoEnvio, setTipoEnvio] = useState<TipoEnvio | "">("");
   const [tipoPago, setTipoPago] = useState<FormaPago | "">("");
@@ -21,6 +22,8 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
   const [sucursal, setSucursal] = useState<Sucursal>();
   const [showModalDomicilios, setShowModalDomicilios] = useState(false);
   const [domicilioEntrega, setDomicilioEntrega] = useState<Domicilio>();
+  const navigate = useNavigate();
+  const [pedidoGuardado, setPedidoGuardado] = useState(false);
 
   useEffect(() => {
     if (activeSucursal) {
@@ -45,7 +48,7 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
     }
   };
 
-  const RealizarCompra = async () => {
+  const guardarPedido = async () => {
     if (domicilioEntrega) {
       pedido.domicilio = domicilioEntrega;
     }
@@ -54,13 +57,25 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
       pedido.formaPago = tipoPago as FormaPago;
     }
 
-    if (tipoEnvio ) {
+    if (tipoEnvio) {
       pedido.tipoEnvio = tipoEnvio as TipoEnvio;
     }
-    pedido.sucursal.id=Number(activeSucursal);
+    pedido.sucursal.id = Number(activeSucursal);
 
-    await handleCompra();
-    await actualizarLista();
+    try {
+      await handleCompra();
+      await actualizarLista();
+      setPedidoGuardado(true);
+    } catch (error) {
+      console.error("Error al guardar el pedido:", error);
+      // Aquí puedes manejar el error, por ejemplo, mostrando un mensaje al usuario
+    }
+  };
+
+  const finalizarCompra = () => {
+    if (tipoEnvio === TipoEnvio.TakeAway && tipoPago === FormaPago.Efectivo) {
+      navigate('/misPedidos');
+    }
   };
 
   const handleSeleccionarDomicilio = (domicilio: Domicilio) => {
@@ -71,7 +86,6 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
   useEffect(() => {
     if (tipoEnvio === TipoEnvio.TakeAway && sucursal && sucursal.domicilio) {
       setDomicilioEntrega(sucursal.domicilio);
-      
     }
   }, [tipoEnvio, sucursal]);
 
@@ -112,7 +126,7 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
             ))
           )}
           <p className="carrito-total text-black">Total del Pedido: ${pedido.total}</p>
-         {promocionAplicada &&  <h4 className='text-dark'>Se aplica: {promocionAplicada.denominacion}</h4>}
+          {promocionAplicada && <h4 className='text-dark'>Se aplica: {promocionAplicada.denominacion}</h4>}
           <div className="botones">
             <Button variant="warning" onClick={vaciarCarrito}>Vaciar Carrito</Button>
             <Button variant="primary" onClick={() => setCurrentStep(1)}>Confirmar Compra</Button>
@@ -169,7 +183,6 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
             <div>
               {tipoEnvio === TipoEnvio.TakeAway && (
                 <h5>Domicilio de Retiro</h5>
-
               )}
               {tipoEnvio === TipoEnvio.Delivery && (
                 <>
@@ -195,7 +208,24 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
             <CheckoutMP preferenceId={preferenceId} />
           ) : (
             <div className="botones">
-              <Button variant="primary" onClick={RealizarCompra} disabled={tipoEnvio === "" || tipoPago === "" || !domicilioEntrega}>Pagar</Button>
+              {!pedidoGuardado ? (
+                <Button 
+                  variant="primary" 
+                  onClick={guardarPedido} 
+                  disabled={tipoEnvio === "" || tipoPago === "" || !domicilioEntrega}
+                >
+                  Guardar Pedido
+                </Button>
+              ) : (
+                <Button 
+                  variant="success" 
+                  onClick={finalizarCompra}
+                >
+                  {tipoEnvio === TipoEnvio.TakeAway && tipoPago === FormaPago.Efectivo
+                    ? "Finalizar Compra y Ver Mis Pedidos"
+                    : "Finalizar Compra"}
+                </Button>
+              )}
             </div>
           )}
         </div>

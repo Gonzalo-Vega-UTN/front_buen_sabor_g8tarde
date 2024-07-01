@@ -72,7 +72,7 @@ const ArticuloInsumoTable = ({ categorias, unidadesMedida, articulosInsumo, hand
                             <td className={articulo.alta ? "" : "bg-secondary"}>{articulo.denominacion}</td>
                             <td className={articulo.alta ? "" : "bg-secondary"}>{articulo.categoria?.denominacion}</td>
                             <td className={articulo.alta ? "" : "bg-secondary"}>{articulo.unidadMedida?.denominacion}</td>
-                            <td className={articulo.alta ? "" : "bg-secondary"}>{`${articulo.stockActual} / ${articulo.stockMaximo}`}</td>
+                            <td className={articulo.alta ? "" : "bg-secondary"}>{`${articulo.stockActual.toFixed(2)} / ${articulo.stockMaximo}`}</td>
                             <td className={articulo.alta ? "" : "bg-secondary"}> {articulo.precioCompra}</td>
                             <td className={articulo.alta ? "" : "bg-secondary"}>
                                 <Button color="#FBC02D" size={23} icon={BsFillPencilFill} onClick={() =>
