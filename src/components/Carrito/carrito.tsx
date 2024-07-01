@@ -14,7 +14,7 @@ import { TipoEnvio } from '../../entities/enums/TipoEnvio';
 import { FormaPago } from '../../entities/enums/FormaPago';
 
 const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista }) => {
-  const { pedido, promocionesAplicadas: promocionAplicada, quitarDelCarrito, agregarAlCarrito, vaciarCarrito, handleCompra, handleCantidadChange, error, preferenceId } = useCart();
+  const { pedido, promocionesAplicadas: promocionesAplicadas, quitarDelCarrito, agregarAlCarrito, vaciarCarrito, handleCompra, handleCantidadChange, error, preferenceId } = useCart();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [tipoEnvio, setTipoEnvio] = useState<TipoEnvio | "">("");
   const [tipoPago, setTipoPago] = useState<FormaPago | "">("");
@@ -126,7 +126,11 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
             ))
           )}
           <p className="carrito-total text-black">Total del Pedido: ${pedido.total}</p>
-          {promocionAplicada && <h4 className='text-dark'>Se aplica: {promocionAplicada.denominacion}</h4>}
+          {promocionesAplicadas.length > 0 && 
+          <>
+            <h4 className='text-black'>Promociones Aplicadas: </h4>
+          {promocionesAplicadas.map(promocion => <p key={promocion.promocionId} className='text-dark'>[{promocion.denominacion}] x{promocion.vecesAplicada}</p>)}
+          </>}
           <div className="botones">
             <Button variant="warning" onClick={vaciarCarrito}>Vaciar Carrito</Button>
             <Button variant="primary" onClick={() => setCurrentStep(1)}>Confirmar Compra</Button>

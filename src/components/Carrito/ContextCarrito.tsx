@@ -19,7 +19,7 @@ import PromocionService from "../../services/PromocionService";
 
 interface CartContextType {
   pedido: PedidoFull;
-  promocionesAplicadas: Promocion[];
+  promocionesAplicadas: PromocionAplicada[];
   agregarAlCarrito: (producto: Articulo | undefined) => void;
   quitarDelCarrito: (index: number) => void;
   vaciarCarrito: () => void;
@@ -27,6 +27,13 @@ interface CartContextType {
   handleCantidadChange: (index: number, cantidad: number) => void;
   error: string;
   preferenceId: string;
+}
+
+interface PromocionAplicada {
+  promocionId: number;
+  denominacion: string;
+  vecesAplicada: number;
+  ahorroTotal: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -42,7 +49,7 @@ export function useCart() {
 export const CartProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [promocionesAplicada, setPromocionesAplicada] = useState<Promocion[]>([]);
+  const [promocionesAplicadas, setPromocionesAplicadas] = useState<PromocionAplicada[]>([]);
   const [pedido, setPedido] = useState<PedidoFull>(new PedidoFull());
   const [error, setError] = useState<string>("");
   const {activeUser, activeSucursal } = useAuth();
@@ -89,48 +96,59 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         nuevoPedido.detallePedidos.push(nuevoDetalle);
       }
       //Verificar Promocion
-      const promocionesAplicables = verificarPromociones(nuevoPedido, promociones);
-      console.log(promocionesAplicables)
-      setPromocionesAplicada(promocionesAplicables)
       // Sumar el precio del artículo al total
       nuevoPedido.total += articulo.precioVenta;
 
       setPedido(nuevoPedido);
+      aplicarPromociones();
       setPreferenceId("");
       setError("");
     }
   };
 
-  const verificarPromociones = (pedido: PedidoFull, promociones: Promocion[]): Promocion[] => {
-    return promociones.filter((promocion) =>
-      aplicarDescuento(pedido, promocion)
-    );
-  };
-
-  const aplicarDescuento = (pedido: PedidoFull, promocion: Promocion): boolean => {
-    const pedidoMap = new Map<Articulo, number>();
-    // Mapear los artículos y sus cantidades en el pedido
-    pedido.detallePedidos.forEach((detalle) => {
-      pedidoMap.set(
-        detalle.articulo,
-        detalle.cantidad
-      );
+  const aplicarPromociones = () => {
+    const nuevoPedido = { ...pedido };
+    const nuevasPromocionesAplicadas: PromocionAplicada[] = [];
+  
+    nuevoPedido.total = 0;
+    nuevoPedido.detallePedidos.forEach(detalle => {
+      detalle.subTotal = detalle.articulo.precioVenta * detalle.cantidad;
+  
+      promociones.forEach(promo => {
+        promo.detallesPromocion.forEach(detallePromo => {
+          if (detallePromo.articulo.id === detalle.articulo.id) {
+            const cantidadNecesaria = detallePromo.cantidad;
+            if (detalle.cantidad >= cantidadNecesaria) {
+              const vecesAplicable = Math.floor(detalle.cantidad / cantidadNecesaria);
+              const ahorro = detalle.articulo.precioVenta * (cantidadNecesaria - 1) * vecesAplicable;
+  
+              detalle.subTotal -= ahorro;
+  
+              // Buscar si la promoción ya existe en nuevasPromocionesAplicadas
+              const promocionExistenteIndex = nuevasPromocionesAplicadas.findIndex(p => p.promocionId === promo.id);
+              if (promocionExistenteIndex !== -1) {
+                nuevasPromocionesAplicadas[promocionExistenteIndex].vecesAplicada += vecesAplicable;
+                nuevasPromocionesAplicadas[promocionExistenteIndex].ahorroTotal += ahorro;
+              } else {
+                nuevasPromocionesAplicadas.push({
+                  promocionId: promo.id,
+                  denominacion: promo.denominacion,
+                  vecesAplicada: vecesAplicable,
+                  ahorroTotal: ahorro
+                });
+              }
+            }
+          }
+        });
+      });
+  
+      nuevoPedido.total += detalle.subTotal;
     });
-
-    // Verificar si los artículos y cantidades de la promoción están en el pedido
-    for (const detallePromocion of promocion.detallesPromocion) {
-      const cantidadNecesaria = detallePromocion.cantidad;
-      if (
-        !pedidoMap.has(detallePromocion.articulo) || pedidoMap.get(detallePromocion.articulo)! < cantidadNecesaria
-      ) {
-        console.log("RECONOCE EL ARTICULO", !pedidoMap.has(detallePromocion.articulo))
-        console.log("RECONOCE LA CANTIDAD", pedidoMap.get(detallePromocion.articulo)! < cantidadNecesaria)
-        return false;
-      }
-    }
-
-    return true;
+  
+    setPedido(nuevoPedido);
+    setPromocionesAplicadas(nuevasPromocionesAplicadas);
   };
+
 
   const quitarDelCarrito = (index: number) => {
     const detalle = pedido.detallePedidos[index];
@@ -142,7 +160,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         detalle.subTotal = detalle.articulo.precioVenta * detalle.cantidad;
       }
       pedido.total -= detalle.articulo.precioVenta;
-
+      aplicarPromociones();
       setPedido({ ...pedido });
       setPreferenceId("");
     }
@@ -171,7 +189,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
 
   const vaciarCarrito = () => {
     setPedido(new PedidoFull());
-    setPromocionesAplicada([])
+    setPromocionesAplicadas([])
     setPreferenceId("");
   };
 
@@ -242,7 +260,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
     <CartContext.Provider
       value={{
         pedido,
-        promocionesAplicadas: promocionesAplicada,
+        promocionesAplicadas: promocionesAplicadas,
         agregarAlCarrito,
         quitarDelCarrito,
         vaciarCarrito,
