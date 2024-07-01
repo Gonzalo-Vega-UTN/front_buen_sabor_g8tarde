@@ -277,6 +277,7 @@
 
 .price {
   font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
 }
 
 .btn-primary {
@@ -295,4 +296,10 @@
 
 body {
   font-family: 'Roboto', sans-serif;
+}
+
+.carousel-image {
+  width: 800px;
+  height: 400px;
+  object-fit: cover;
 }

@@ -239,13 +239,12 @@ const Home: React.FC = () => {
                 {promociones.map((promocion) => (
                   <Carousel.Item key={promocion.id}>
                     <img
-                      className="d-block w-100"
+                      className="d-block w-100 carousel-image"
                       src={promocion.imagenes[0] ? promocion.imagenes[0].url : "https://via.placeholder.com/400x200"}
                       alt={promocion.denominacion}
                     />
                     <Carousel.Caption>
-                      <h5>{promocion.denominacion}</h5>
-                      <p>{promocion.descripcionDescuento}</p>
+                    
                       <p className="price">Precio: ${promocion.precioPromocional}</p>
                       {/* {isAuthenticated ? (
                         <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarPromocionAlCarrito(promocion)}>
@@ -297,7 +296,7 @@ const Home: React.FC = () => {
                       <p>{promocion.descripcionDescuento}</p>
                       <p className="price">Precio: ${promocion.precioPromocional}</p>
                       {isAuthenticated ? (
-                        <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarPromocionAlCarrito(promocion)}>
+                        <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarAlCarrito(promocion)}>
                           Añadir al carrito
                         </Button>
                       ) : (

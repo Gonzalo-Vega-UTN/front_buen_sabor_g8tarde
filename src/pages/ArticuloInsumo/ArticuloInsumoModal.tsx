@@ -46,6 +46,13 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
         }
     };
 
+    const handleBlur = (name: string) => {
+        setArticuloInsumo(prev => ({
+            ...prev,
+            [name]: parseFloat(prev[name].toFixed(2))
+        }));
+    };
+
     const handleImagenesChange = (newImages: Imagen[]) => {
         setArticuloInsumo(prev => ({
             ...prev,
@@ -96,7 +103,6 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
         if (validarFormulario()) {
             setLoading(true); // Activar indicador de carga
             try {
-                console.log("el submit", files)
                 await handleSubmit(articuloInsumo, files);
                 onHide(); // Ocultar el modal después de guardar
             } catch (error) {
@@ -225,33 +231,61 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                                     <Form.Control
                                         name="stockActual"
                                         type="number"
-                                        value={String(articuloInsumo?.stockActual)}
+                                        value={articuloInsumo?.stockActual}
                                         onChange={({ target: { name, value } }) => handleChange(name, Number(value))}
+                                        onBlur={({ target: { name } }) => handleBlur(name)}
                                         min={0}
                                     />
                                 </Form.Group>
+
                                 <Form.Group as={Col} controlId="formStockMaximo">
                                     <Form.Label>Stock Máximo</Form.Label>
                                     <Form.Control
                                         name="stockMaximo"
                                         type="number"
-                                        value={String(articuloInsumo?.stockMaximo)}
+                                        value={articuloInsumo?.stockMaximo}
                                         onChange={({ target: { name, value } }) => handleChange(name, Number(value))}
+                                        onBlur={({ target: { name } }) => handleBlur(name)}
                                         min={0}
                                     />
                                 </Form.Group>
                             </Row>
-                            <Row className="my-2">
-                                
-                            <ImagenCarousel
-                                    imagenesExistentes={articuloInsumo.imagenes}
-                                    onFilesChange={handleFileChange}
-                                    onImagenesChange={handleImagenesChange}
-                                />
-                                
-                                
+
+                            <Row>
+                                <Form.Group as={Col} controlId="formDescripcion">
+                                    <Form.Label>Descripción</Form.Label>
+                                    <Form.Control
+                                        name="descripcion"
+                                        as="textarea"
+                                        value={articuloInsumo?.descripcion}
+                                        onChange={({ target: { name, value } }) => handleChange(name, value)}
+                                    />
+                                </Form.Group>
                             </Row>
-                            {error && <h5 className="text-danger my-2">{error}</h5>}
+
+                            <Row>
+                                <Form.Group as={Col} controlId="formAlta">
+                                    <Form.Check
+                                        name="alta"
+                                        type="checkbox"
+                                        label="Dar de alta"
+                                        checked={articuloInsumo?.alta}
+                                        onChange={({ target: { name, checked } }) => handleChange(name, checked)}
+                                    />
+                                </Form.Group>
+                            </Row>
+
+                            {error && (
+                                <div className="alert alert-danger" role="alert">
+                                    {error}
+                                </div>
+                            )}
+
+                            <Row>
+                                <Col>
+                                    <ImagenCarousel imagenes={articuloInsumo?.imagenes || []} onChange={handleImagenesChange} onFileChange={handleFileChange} />
+                                </Col>
+                            </Row>
 
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={onHide}>
