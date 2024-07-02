@@ -1,5 +1,6 @@
 
 export class ReporteService {
+    
     private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/reportes`;
 
     private static async request(endpoint: string, options: RequestInit) {
@@ -71,6 +72,24 @@ export class ReporteService {
         }
         return response.blob();
 
+    }
+
+    static async getReporteCompleto(startDate: string, endDate: string) {
+        const params = new URLSearchParams();
+        params.append("startDate", startDate);
+        params.append("endDate", endDate);
+
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/reportes/pedidos/excel?${params}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors'
+        });
+        if (!response.ok) {
+            throw new Error('Error al generar el reporte Excel');
+        }
+        return response.blob();
     }
 
 

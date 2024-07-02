@@ -12,7 +12,7 @@ interface Props {
     fetchData: (startDate: string, endDate: string) => void
     data: any[]
     typeChart: string
-    generateExcel : () => void
+    generateExcel : (desde: string, hasta: string) => void
 }
 export const ReporteComponente = ({ fetchData, titulo, data, typeChart, generateExcel }: Props) => {
 
