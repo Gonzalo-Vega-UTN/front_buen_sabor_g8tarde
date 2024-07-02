@@ -210,10 +210,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
     let ahorroTotal = 0;
       for (let i = 0; i < nuevasPromocionesAplicadas.length; i++) {
         ahorroTotal += nuevasPromocionesAplicadas[i].ahorroTotal
-        console.log(nuevasPromocionesAplicadas[i].ahorroTotal);
-
-        console.log(ahorroTotal);
-
+        
       }
       if (ahorroTotal < 0) {
         if (nuevasPromocionesAplicadas.length > 0) {
