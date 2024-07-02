@@ -63,8 +63,8 @@ export const FormularioArtManuf = () => {
         setDetalles(
           articuloManufacturado.articuloManufacturadoDetalles
             ? articuloManufacturado.articuloManufacturadoDetalles.filter(
-                (detalle) => detalle.alta
-              )
+              (detalle) => detalle.alta
+            )
             : []
         );
       } catch (error: any) {
@@ -134,7 +134,7 @@ export const FormularioArtManuf = () => {
     }
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!articuloManufacturado) {
@@ -177,29 +177,33 @@ export const FormularioArtManuf = () => {
       return;
     }
 
-    if (articuloManufacturado.id === 0) {
-      ProductServices.create(articuloManufacturado, activeSucursal)
-        .then(() => {
+    try {
+
+      //quitar blobs
+      articuloManufacturado.imagenes = articuloManufacturado.imagenes.filter(imagen => !imagen.url.includes("blob"))
+      let response: ArticuloManufacturado;
+      if (articuloManufacturado.id === 0) {
+        response = await ProductServices.create(articuloManufacturado, activeSucursal);
+      } else {
+        response = await ProductServices.update(articuloManufacturado.id, articuloManufacturado);
+      }
+
+      if (response) {
+        if (response.id) {
+          const images = await ProductServices.uploadFiles(response.id, files);
           setExito("ENTIDAD CREADA CON ÉXITO");
           setTimeout(() => {
             navigate("/productos");
           }, 1500); // 1.5 segundos de delay
-        })
-        .catch((error) => {
-          console.log("Algo salió mal CREATE", error);
-        });
-    } else {
-      ProductServices.update(articuloManufacturado.id, articuloManufacturado)
-        .then(() => {
-          setExito("ENTIDAD ACTUALIZADA CON ÉXITO");
-          setTimeout(() => {
-            navigate("/productos");
-          }, 1500); // 1.5 segundos de delay
-        })
-        .catch((error) => {
-          console.log("Algo salió mal UPDATE", error);
-        });
+        }
+      }
+
+    } catch (error) {
+      console.log("Algo salió mal UPDATE", error);
+      setError("Hubo un error")
     }
+
+
   };
 
   const handleCantidadChange = (index: number, newCantidad: number) => {
@@ -450,11 +454,11 @@ export const FormularioArtManuf = () => {
                   articulosExistentes={
                     detalles
                       ? detalles
-                          .filter((detalle) => detalle.articuloInsumo !== null)
-                          .map(
-                            (detalle) =>
-                              detalle.articuloInsumo as ArticuloInsumo
-                          )
+                        .filter((detalle) => detalle.articuloInsumo !== null)
+                        .map(
+                          (detalle) =>
+                            detalle.articuloInsumo as ArticuloInsumo
+                        )
                       : []
                   }
                   handleSave={handleSeleccionInsumos}
