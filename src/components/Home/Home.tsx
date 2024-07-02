@@ -292,6 +292,7 @@ const Home: React.FC = () => {
                 {showPromociones ? (
                   promociones.map((promocion) => (
                     <div key={promocion.id} className="product-card">
+                       <img src={promocion.imagenes && promocion.imagenes[0] ? promocion.imagenes[0].url : "https://via.placeholder.com/80"} alt={promocion.denominacion} className="product-image" />
                       <h3>{promocion.denominacion}</h3>
                       <p>{promocion.descripcionDescuento}</p>
                       <p className="price">Precio: ${promocion.precioPromocional}</p>

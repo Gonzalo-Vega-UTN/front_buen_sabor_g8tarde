@@ -1,7 +1,10 @@
 .sidebar {
-    transition: width 0.3s, height 0.3s; /* Agrega transición para la altura */
+    transition: width 0.3s, height 0.3s;
     overflow: hidden;
-    height: 100vh;
+    height: 100%; /* Asegura que el sidebar use todo el alto de la pantalla */
+    display: flex;
+    flex-direction: column;
+    width: 90px; /* Default collapsed width */
 }
 
 .sidebar.collapsed {
@@ -42,4 +45,12 @@
 
 .sidebar .logo {
     margin-left: -20px; /* Ajusta el margen izquierdo del logo */
+}
+
+.nav {
+    flex-grow: 1; /* Hace que la lista de navegación ocupe todo el espacio disponible */
+}
+
+.mt-auto {
+    margin-top: auto; /* Alinea los elementos al fondo del sidebar */
 }

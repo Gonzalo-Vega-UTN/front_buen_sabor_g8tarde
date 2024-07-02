@@ -6,22 +6,22 @@ import { useAuth } from '../../Auth/Auth';
 
 export const MisPedidosList = () => {
     const [pedidos, setPedidos] = useState<PedidoFull[]>();
-    const{activeUser}=useAuth()
+    const { activeUser } = useAuth();
 
     const fetchPedidos = async () => {
         try {
             const pedidos = await PedidoService.obtenerPedidosCliente(activeUser);
             const sortedPedidos = pedidos.sort((a, b) => new Date(b.fechaPedido).getTime() - new Date(a.fechaPedido).getTime());
-            setPedidos(sortedPedidos);;
+            setPedidos(sortedPedidos);
         } catch (error) {
             console.log(error);
-
         }
     };
 
     useEffect(() => {
         fetchPedidos();
     }, []);
+
     const formatHora = (hora) => {
         // Asumimos que la hora viene en formato HH:MM:SS
         if (hora && hora.length >= 5) {
@@ -29,6 +29,14 @@ export const MisPedidosList = () => {
         }
         return "Hora No disponible";
     };
+
+    const obtenerEstadoPedido = (pedido) => {
+        if (pedido.tipoEnvio === "TakeAway" && pedido.estado === "Pendiente") {
+            return "Listo para Retirar";
+        }
+        return pedido.estado;
+    };
+
     return (
         <>
             <h1>Lista de Pedidos</h1>
@@ -38,17 +46,17 @@ export const MisPedidosList = () => {
                         <Accordion.Header className='mx-'>
                             <div className="d-flex justify-content-between px-5 w-100">
                                 <div>{pedido.fechaPedido ? new Date(pedido.fechaPedido).toLocaleDateString() : "Fecha No disponible"}</div>
-                                <div>Estado: {pedido.estado}</div>
-                                <div>Tipo de envio: {pedido.tipoEnvio}</div>
+                                <div>Estado: {obtenerEstadoPedido(pedido)}</div>
+                                <div>Tipo de envío: {pedido.tipoEnvio}</div>
                                 <div>Hora de entrega: {formatHora(pedido.horaEstimadaFinalizacion)}</div>
                                 <div>
-                                {pedido.domicilio ? (
-                                    <>
-                                    <p>Calle: {pedido.domicilio.calle} Número: {pedido.domicilio.numero}</p>
-                                    </>
-                                ) : (
-                                    <p>Dirección no disponible</p>
-                                )}
+                                    {pedido.domicilio ? (
+                                        <>
+                                            <p>Calle: {pedido.domicilio.calle} Número: {pedido.domicilio.numero}</p>
+                                        </>
+                                    ) : (
+                                        <p>Dirección no disponible</p>
+                                    )}
                                 </div>
                                 <div>{pedido.total}</div>
                             </div>
@@ -62,7 +70,6 @@ export const MisPedidosList = () => {
                         </Accordion.Body>
                     </Accordion.Item>
                 </Accordion>
-
             ) : <p>No hay Pedidos realizados </p>}
         </>
     );

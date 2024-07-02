@@ -56,7 +56,6 @@ const Sidebar = () => {
         [Rol.Cliente]: [
             { path: '/misPedidos', icon: MdDeliveryDining, label: 'Mis Pedidos' },
         ],
-
     };
 
     const defaultRoutes = [
@@ -65,6 +64,10 @@ const Sidebar = () => {
     ];
 
     const routesToDisplay = isAuthenticated ? roleRoutes[userRol] || [] : [];
+
+    console.log('User Role:', userRol);
+    console.log('Is Authenticated:', isAuthenticated);
+    console.log('Routes to Display:', routesToDisplay);
 
     return (
         <div
@@ -91,7 +94,6 @@ const Sidebar = () => {
                     </li>
                 ))}
 
-
                 {routesToDisplay.map(({ path, icon: Icon, label }) => (
                     <li className="nav-item" key={path}>
                         <Link
@@ -105,8 +107,9 @@ const Sidebar = () => {
                     </li>
                 ))}
             </ul>
-            {isAuthenticated ? <BotonLogout /> : <BotonLogin />}
-            <div className="mt-auto"></div> {/* Alinea los elementos al fondo del sidebar */}
+            <div className="mt-auto">
+                {isAuthenticated ? <BotonLogout /> : <BotonLogin />}
+            </div>
         </div>
     );
 }
