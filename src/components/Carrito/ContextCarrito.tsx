@@ -52,7 +52,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
   const [promocionesAplicadas, setPromocionesAplicadas] = useState<PromocionAplicada[]>([]);
   const [pedido, setPedido] = useState<PedidoFull>(new PedidoFull());
   const [error, setError] = useState<string>("");
-  const {activeUser, activeSucursal } = useAuth();
+  const { activeUser, activeSucursal } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [modalConfig, setModalConfig] = useState({
     title: "",
@@ -84,7 +84,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         (detalle) => detalle.articulo?.id === articulo.id
       );
 
-      
+
       if (detalleExistente) {
         detalleExistente.cantidad++;
         detalleExistente.subTotal = articulo.precioVenta * detalleExistente.cantidad;
@@ -105,50 +105,131 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
       setError("");
     }
   };
-
+  /*
+    const aplicarPromociones = () => {
+      const nuevoPedido = { ...pedido };
+      const nuevasPromocionesAplicadas: PromocionAplicada[] = [];
+    
+      nuevoPedido.total = 0;
+      nuevoPedido.detallePedidos.forEach(detalle => {
+        detalle.subTotal = detalle.articulo.precioVenta * detalle.cantidad;
+    
+        promociones.forEach(promo => {
+          promo.detallesPromocion.forEach(detallePromo => {
+            if (detallePromo.articulo.id === detalle.articulo.id) {
+              const cantidadNecesaria = detallePromo.cantidad;
+              if (detalle.cantidad >= cantidadNecesaria) {
+                const vecesAplicable = Math.floor(detalle.cantidad / cantidadNecesaria);
+                const ahorro = detalle.articulo.precioVenta * (cantidadNecesaria - 1) * vecesAplicable;
+    
+                detalle.subTotal -= ahorro;
+    
+                // Buscar si la promoción ya existe en nuevasPromocionesAplicadas
+                const promocionExistenteIndex = nuevasPromocionesAplicadas.findIndex(p => p.promocionId === promo.id);
+                if (promocionExistenteIndex !== -1) {
+                  nuevasPromocionesAplicadas[promocionExistenteIndex].vecesAplicada += vecesAplicable;
+                  nuevasPromocionesAplicadas[promocionExistenteIndex].ahorroTotal += ahorro;
+                } else {
+                  nuevasPromocionesAplicadas.push({
+                    promocionId: promo.id,
+                    denominacion: promo.denominacion,
+                    vecesAplicada: vecesAplicable,
+                    ahorroTotal: ahorro
+                  });
+                }
+              }
+            }
+          });
+        });
+    
+        nuevoPedido.total += detalle.subTotal;
+      });
+    
+      setPedido(nuevoPedido);
+      setPromocionesAplicadas(nuevasPromocionesAplicadas);
+    };
+  */
   const aplicarPromociones = () => {
+    let total = 0;
     const nuevoPedido = { ...pedido };
+    for (let i = 0; i < nuevoPedido.detallePedidos.length; i++) {
+      total += nuevoPedido.detallePedidos[i].articulo.precioVenta*nuevoPedido.detallePedidos[i].cantidad
+    }
+    nuevoPedido.total=total
+    
     const nuevasPromocionesAplicadas: PromocionAplicada[] = [];
-  
-    nuevoPedido.total = 0;
+
+    // Reiniciamos el total del pedido ya que lo recalculará con los descuentos aplicados.
+    let contador = 0;
     nuevoPedido.detallePedidos.forEach(detalle => {
+      // Inicialmente se establece el subTotal sin promoción
       detalle.subTotal = detalle.articulo.precioVenta * detalle.cantidad;
-  
+
+      // Aplicar todas las promociones activas a los detalles del pedido
       promociones.forEach(promo => {
+
         promo.detallesPromocion.forEach(detallePromo => {
+          // Verifica que el artículo tiene una promoción aplicable
           if (detallePromo.articulo.id === detalle.articulo.id) {
+            
+
             const cantidadNecesaria = detallePromo.cantidad;
             if (detalle.cantidad >= cantidadNecesaria) {
-              const vecesAplicable = Math.floor(detalle.cantidad / cantidadNecesaria);
-              const ahorro = detalle.articulo.precioVenta * (cantidadNecesaria - 1) * vecesAplicable;
-  
-              detalle.subTotal -= ahorro;
-  
-              // Buscar si la promoción ya existe en nuevasPromocionesAplicadas
-              const promocionExistenteIndex = nuevasPromocionesAplicadas.findIndex(p => p.promocionId === promo.id);
-              if (promocionExistenteIndex !== -1) {
-                nuevasPromocionesAplicadas[promocionExistenteIndex].vecesAplicada += vecesAplicable;
-                nuevasPromocionesAplicadas[promocionExistenteIndex].ahorroTotal += ahorro;
-              } else {
+              contador += 1;
+              if (contador == promo.detallesPromocion.length) {
+
+                const vecesAplicable = Math.floor(detalle.cantidad / cantidadNecesaria);
+                let precioNormalacc = 0;
+                for (let i = 0; i < promo.detallesPromocion.length; i++) {
+                  precioNormalacc += promo.detallesPromocion[i].articulo.precioVenta * promo.detallesPromocion[i].cantidad
+
+
+
+                }
+                // Aplicar precio promocional multiplicado por las veces aplicables.
+
+
+                const ahorroPromocional = precioNormalacc - promo.precioPromocional;
+                //detalle.subTotal -= ahorroPromocional;
+                // Actualización o inclusión de la información de promoción aplicada
+
                 nuevasPromocionesAplicadas.push({
                   promocionId: promo.id,
                   denominacion: promo.denominacion,
                   vecesAplicada: vecesAplicable,
-                  ahorroTotal: ahorro
+                  ahorroTotal: ahorroPromocional
                 });
+
               }
             }
           }
         });
       });
-  
-      nuevoPedido.total += detalle.subTotal;
+      
     });
-  
+    let ahorroTotal = 0;
+      for (let i = 0; i < nuevasPromocionesAplicadas.length; i++) {
+        ahorroTotal += nuevasPromocionesAplicadas[i].ahorroTotal
+        console.log(nuevasPromocionesAplicadas[i].ahorroTotal);
+
+        console.log(ahorroTotal);
+
+      }
+      if (ahorroTotal < 0) {
+        if (nuevasPromocionesAplicadas.length > 0) {
+
+          nuevoPedido.total += -(ahorroTotal)
+
+        } 
+      } else {
+        if (nuevasPromocionesAplicadas.length > 0) {
+          nuevoPedido.total -= ahorroTotal
+        } 
+
+      }
     setPedido(nuevoPedido);
     setPromocionesAplicadas(nuevasPromocionesAplicadas);
   };
-
 
   const quitarDelCarrito = (index: number) => {
     const detalle = pedido.detallePedidos[index];
@@ -160,8 +241,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         detalle.subTotal = detalle.articulo.precioVenta * detalle.cantidad;
       }
       pedido.total -= detalle.articulo.precioVenta;
-      aplicarPromociones();
       setPedido({ ...pedido });
+
       setPreferenceId("");
     }
   };
