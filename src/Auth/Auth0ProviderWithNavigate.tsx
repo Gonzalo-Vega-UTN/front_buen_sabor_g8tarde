@@ -8,7 +8,7 @@ import {
 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import UsuarioService from "../services/UsuarioService";
-import { Rol } from "../entities/enums/Rol";
+import ClienteService from "../services/ClienteService";
 import Usuario from "../entities/DTO/Usuario/Usuario";
 
 interface Auth0ContextInterfaceExtended<UserType extends User>
@@ -75,32 +75,49 @@ const Auth0ContextWrapper = ({
   selectSucursal: (sucursalId: number) => void;
   activeSucursal: string | null;
 }) => {
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently, logout } = useAuth0();
+  const navigate = useNavigate();
+  const [clientFormCompleted, setClientFormCompleted] = useState(false);
 
   useEffect(() => {
     const handleUserAuthentication = async () => {
       if (isAuthenticated) {
         try {
           const token = await getAccessTokenSilently();
-          // Supongamos que tienes un método para verificar si es la primera vez del usuario
           const isNewUser = await UsuarioService.validarExistenciaUsuario(token);
-          let response : Usuario;
+          let response: Usuario;
           if (!isNewUser) {
-           response =  await UsuarioService.register(token);
+            response = await UsuarioService.register(token);
             console.log("Usuario registrado:", response);
           } else {
             response = await UsuarioService.login(token);
             console.log("Usuario logueado:", response);
           }
+
+          // Verificar si el usuario tiene un cliente vinculado
+          const cliente = await ClienteService.obtenerClienteByUsername(response.username);
+          if (!cliente) {
+            console.error('Cliente no encontrado:', response.username);
+            setClientFormCompleted(false);
+            navigate("/formulario-cliente");
+          } else {
+            setClientFormCompleted(true);
+          }
         } catch (error) {
           console.error("Error durante la autenticación del usuario:", error);
+          logout({ logoutParams: { returnTo: window.location.origin } });
         }
       }
     };
-  
+
     handleUserAuthentication();
-  }, [isAuthenticated, getAccessTokenSilently]);
-  
+  }, [isAuthenticated, getAccessTokenSilently, logout, navigate]);
+
+  useEffect(() => {
+    if (isAuthenticated && !clientFormCompleted) {
+      navigate("/formulario-cliente");
+    }
+  }, [isAuthenticated, clientFormCompleted, navigate]);
 
   return (
     <Auth0Context.Provider

@@ -1,18 +1,29 @@
 import { Cliente } from "../entities/DTO/Cliente/Cliente";
 
 class ClienteService {
-    private static  urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/clientes`;
+    private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/clientes`;
 
     private static async request(endpoint: string, options: RequestInit) {
-        const response = await fetch(`${this.urlServer}${endpoint}`, options);
-        const responseData = await response.json();
+        const response = await fetch(`${this.urlServer}${endpoint}`, {
+            ...options,
+            mode: 'cors'
+        });
+
+        let responseData;
+        try {
+            const text = await response.text();
+            responseData = text ? JSON.parse(text) : null;
+        } catch (error) {
+            throw new Error('Error al parsear la respuesta JSON');
+        }
+
         if (!response.ok) {
             throw new Error(responseData.message || 'Error al procesar la solicitud');
         }
         return responseData;
     }
 
-    static async agregarcliente(cliente: Cliente): Promise<Cliente> {
+    static async agregarCliente(cliente: Cliente): Promise<Cliente> {
         try {
             const responseData = await this.request('', {
                 method: 'POST',
@@ -20,7 +31,6 @@ class ClienteService {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(cliente),
-                mode: 'cors'
             });
             return responseData as Cliente; 
         } catch (error) {
@@ -29,7 +39,7 @@ class ClienteService {
         }
     }
 
-    static async actualizarCliente(idCliente : number, cliente: Cliente): Promise<Cliente> {
+    static async actualizarCliente(idCliente: number, cliente: Cliente): Promise<Cliente> {
         try {
             const responseData = await this.request(`/${idCliente}`, {
                 method: 'PUT',
@@ -37,35 +47,32 @@ class ClienteService {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(cliente),
-                mode: 'cors'
             });
             return responseData as Cliente; 
         } catch (error) {
-            console.error('Error al agregar el cliente:', error);
+            console.error('Error al actualizar el cliente:', error);
             throw error;
         }
     }
 
-    static async obtenerclienteById(id: number): Promise<Cliente> {
+    static async obtenerClienteById(id: number): Promise<Cliente> {
         try {
-            return await this.request(`/${id}`, {
+            const responseData = await this.request(`/${id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                mode: 'cors'
-            }) as Cliente;
+            });
+            return responseData as Cliente;
         } catch (error) {
             console.error(`Error al obtener el cliente con ID ${id}:`, error);
             throw error;
         }
     }
-    
-      static async obtenerClientes(nombre?: string, apellido?: string): Promise<Cliente[]> {
+
+    static async obtenerClientes(nombre?: string, apellido?: string): Promise<Cliente[]> {
         try {
             const queryParams = new URLSearchParams();
-            console.log(nombre,apellido);
-            
             if (nombre) queryParams.append('nombre', nombre);
             if (apellido) queryParams.append('apellido', apellido);
             const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
@@ -75,7 +82,6 @@ class ClienteService {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                mode: 'cors'
             });
             return responseData as Cliente[];
         } catch (error) {
@@ -84,22 +90,20 @@ class ClienteService {
         }
     }
 
-    static async obtenerClienteByUsername(username : string): Promise<Cliente> {
+    static async obtenerClienteByUsername(username: string): Promise<Cliente> {
         try {
             const responseData = await this.request(`/username/${username}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                mode: 'cors'
             });
             return responseData as Cliente;
         } catch (error) {
-            console.error('Error al obtener los Clientes:', error);
+            console.error(`Error al obtener el cliente por username ${username}:`, error);
             throw error;
         }
     }
-   
 }
 
 export default ClienteService;

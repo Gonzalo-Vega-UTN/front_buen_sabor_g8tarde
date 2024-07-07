@@ -37,7 +37,7 @@ const FormularioCliente = () => {
         ClienteCompleto.usuario.rol = selectedRole;
 
         try {
-            const response = await ClienteService.agregarcliente(ClienteCompleto);
+            const response = await ClienteService.agregarCliente(ClienteCompleto);
             if (response && response.usuario.rol) {
                 // Aquí se debe redirigir al usuario al completar el registro
                 navigate("/");
