@@ -24,7 +24,7 @@ const Sidebar = () => {
     const [expanded, setExpanded] = useState(false);
     const [selected, setSelected] = useState('');
     const location = useLocation();
-    const { isAuthenticated } = useAuth0();
+    const { isAuthenticated, user } = useAuth0();
 
     const handleMouseEnter = () => setExpanded(true);
     const handleMouseLeave = () => setExpanded(false);
@@ -53,6 +53,11 @@ const Sidebar = () => {
         { path: '/', icon: BsShop, label: 'Tienda' },
         { path: '/acerca-de', icon: LuChefHat, label: 'Acerca De' }
     ];
+
+    const userRoles = user ? user['https://apiprueba/roles'] : [];
+
+    const isAdmin = userRoles.includes('Admin');
+    const isCliente = userRoles.includes('Cliente');
 
     return (
         <div
@@ -95,7 +100,7 @@ const Sidebar = () => {
                         <li className="nav-item">
                             <LogoutButton />
                         </li>
-                        {allRoutes.map(({ path, icon: Icon, label }) => (
+                        {isAdmin && allRoutes.map(({ path, icon: Icon, label }) => (
                             <li className="nav-item" key={path}>
                                 <Link
                                     to={path}
