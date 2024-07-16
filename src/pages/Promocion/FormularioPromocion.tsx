@@ -8,7 +8,7 @@ import { TipoPromocion } from '../../entities/enums/TipoPromocion';
 import { ProductServices } from '../../services/ProductServices';
 import PromocionService from '../../services/PromocionService';
 import ArticuloInsumoService from '../../services/ArticuloInsumoService';
-import { useAuth } from '../../Auth/Auth';
+import { useAuth0Extended } from '../../Auth/Auth0ProviderWithNavigate';
 
 const PromocionForm: React.FC = () => {
   const { id } = useParams();
@@ -17,7 +17,7 @@ const PromocionForm: React.FC = () => {
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [tipoPromocion, setTipoPromocion] = useState<string>("");
   const [submitError, setSubmitError] = useState<string>("");
-  const { activeSucursal } = useAuth();
+  const { activeSucursal } = useAuth0Extended();
 
   useEffect(() => {
     const fetchData = async () => {

@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { Accordion, ListGroup } from 'react-bootstrap';
 import PedidoFull from '../../entities/DTO/Pedido/PedidoFull';
 import PedidoService from '../../services/PedidoService';
-import { useAuth } from '../../Auth/Auth';
+import { useAuth0Extended } from '../../Auth/Auth0ProviderWithNavigate';
 
 export const MisPedidosList = () => {
     const [pedidos, setPedidos] = useState<PedidoFull[]>();
-    const { activeUser } = useAuth();
+    const { activeUser } = useAuth0Extended();
 
     const fetchPedidos = async () => {
         try {

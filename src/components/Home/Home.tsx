@@ -27,7 +27,6 @@ import logo from "../../assets/images/Buen sabor logo 1.png";
 import { Promocion } from "../../entities/DTO/Promocion/Promocion";
 import { PromocionService } from "../../services/PromocionService";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
-import LoginButton from "../Log-Register/LoginButton";
 
 const Home: React.FC = () => {
   const [, setLoading] = useState<boolean>(true);
@@ -181,17 +180,16 @@ const Home: React.FC = () => {
 
   const handleAgregarPromocionAlCarrito = (promocion: Promocion) => {
     if (isAuthenticated) {
-     promocion.detallesPromocion.forEach(detalle => {
-       for (let i = 0; i < detalle.cantidad; i++) {
-          agregarAlCarrito(detalle.articulo)
+      promocion.detallesPromocion.forEach((detalle) => {
+        for (let i = 0; i < detalle.cantidad; i++) {
+          agregarAlCarrito(detalle.articulo);
         }
-        
       });
       setIsCartOpen(true);
     } else {
-       navigate("/login");
+      navigate("/login");
     }
-   };
+  };
 
   return (
     <div className="home-container">
@@ -286,12 +284,17 @@ const Home: React.FC = () => {
                   <Carousel.Item key={promocion.id}>
                     <img
                       className="carousel-image"
-                      src={promocion.imagenes[0] ? promocion.imagenes[0].url : "https://via.placeholder.com/400x200"}
+                      src={
+                        promocion.imagenes[0]
+                          ? promocion.imagenes[0].url
+                          : "https://via.placeholder.com/400x200"
+                      }
                       alt={promocion.denominacion}
                     />
                     <Carousel.Caption>
-                   
-                      <p className="price">Precio: ${promocion.precioPromocional}</p>
+                      <p className="price">
+                        Precio: ${promocion.precioPromocional}
+                      </p>
                       {/* {isAuthenticated ? (
                         <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarPromocionAlCarrito(promocion)}>
                           Añadir promoción al carrito
@@ -363,45 +366,86 @@ const Home: React.FC = () => {
 
               <h2 className="section-title">Nuestros Productos</h2>
               <div className="products-container">
-                {showPromociones ? (
-                  promociones.map((promocion) => (
-                    <div key={promocion.id} className="product-card">
-                       <img src={promocion.imagenes && promocion.imagenes[0] ? promocion.imagenes[0].url : "https://via.placeholder.com/80"} alt={promocion.denominacion} className="product-image" />
-                      <h3>{promocion.denominacion}</h3>
-                      <p>{promocion.descripcionDescuento}</p>
-                      <p className="price">Precio: ${promocion.precioPromocional}</p>
-                      {isAuthenticated ? (
-                        <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarPromocionAlCarrito(promocion)}>
-                          Añadir al carrito
-                        </Button>
-                      ) : (
-                        <Button variant="primary" onClick={() => navigate("/registro")}>
-                          Login
-                        </Button>
-                      )}
-                    </div>
-                  ))
-                ) : productos.length > 0 ? (
-                  productos.map((producto) => (
-                    <div key={producto.id} className="product-card">
-                      <img src={producto.imagenes[0] ? producto.imagenes[0].url : "https://via.placeholder.com/100"} alt={producto.denominacion} className="product-image" />
-                      <h3>{producto.denominacion}</h3>
-                      <p>{producto instanceof ArticuloManufacturado ? producto.descripcion : ""}</p>
-                      <p className="price">Precio: ${producto.precioVenta}</p>
-                      {isAuthenticated ? (
-                        <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarAlCarrito(producto)}>
-                          Añadir al carrito
-                        </Button>
-                      ) : (
-                        <Button variant="primary" onClick={() => navigate("/registro")}>
-                          Login
-                        </Button>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  selectedCategoryId && <p>Lo sentimos! No tenemos productos disponibles para esta Categoria!</p>
-                )}
+                {showPromociones
+                  ? promociones.map((promocion) => (
+                      <div key={promocion.id} className="product-card">
+                        <img
+                          src={
+                            promocion.imagenes && promocion.imagenes[0]
+                              ? promocion.imagenes[0].url
+                              : "https://via.placeholder.com/80"
+                          }
+                          alt={promocion.denominacion}
+                          className="product-image"
+                        />
+                        <h3>{promocion.denominacion}</h3>
+                        <p>{promocion.descripcionDescuento}</p>
+                        <p className="price">
+                          Precio: ${promocion.precioPromocional}
+                        </p>
+                        {isAuthenticated ? (
+                          <Button
+                            variant="primary"
+                            className="boton_add_cart"
+                            onClick={() =>
+                              handleAgregarPromocionAlCarrito(promocion)
+                            }
+                          >
+                            Añadir al carrito
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="primary"
+                            onClick={() => navigate("/registro")}
+                          >
+                            Login
+                          </Button>
+                        )}
+                      </div>
+                    ))
+                  : productos.length > 0
+                  ? productos.map((producto) => (
+                      <div key={producto.id} className="product-card">
+                        <img
+                          src={
+                            producto.imagenes[0]
+                              ? producto.imagenes[0].url
+                              : "https://via.placeholder.com/100"
+                          }
+                          alt={producto.denominacion}
+                          className="product-image"
+                        />
+                        <h3>{producto.denominacion}</h3>
+                        <p>
+                          {producto instanceof ArticuloManufacturado
+                            ? producto.descripcion
+                            : ""}
+                        </p>
+                        <p className="price">Precio: ${producto.precioVenta}</p>
+                        {isAuthenticated ? (
+                          <Button
+                            variant="primary"
+                            className="boton_add_cart"
+                            onClick={() => handleAgregarAlCarrito(producto)}
+                          >
+                            Añadir al carrito
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="primary"
+                            onClick={() => navigate("/registro")}
+                          >
+                            Login
+                          </Button>
+                        )}
+                      </div>
+                    ))
+                  : selectedCategoryId && (
+                      <p>
+                        Lo sentimos! No tenemos productos disponibles para esta
+                        Categoria!
+                      </p>
+                    )}
               </div>
             </Container>
           </>

@@ -6,7 +6,6 @@ import React, {
   useState,
 } from "react";
 import PedidoFull from "../../entities/DTO/Pedido/PedidoFull";
-import { useAuth } from "../../Auth/Auth";
 import ModalConfirm from "../modals/ModalConfirm";
 import { createPreferenceMP } from "../../services/MPService";
 import { DetallePedido } from "../../entities/DTO/Pedido/DetallePedido";
@@ -17,6 +16,7 @@ import Usuario from "../../entities/DTO/Usuario/Usuario";
 import { Promocion } from "../../entities/DTO/Promocion/Promocion";
 import PromocionService from "../../services/PromocionService";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 
 
 interface CartContextType {
@@ -53,7 +53,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [promocionesAplicadas, setPromocionesAplicadas] = useState<PromocionAplicada[]>([]);
   const [pedido, setPedido] = useState<PedidoFull>(new PedidoFull());
-  const { activeUser, activeSucursal } = useAuth();
+  const { activeSucursal } = useAuth0Extended();
   const [error, setError] = useState<string>('');
   const { user, isAuthenticated } = useAuth0();
   const [showModal, setShowModal] = useState(false);

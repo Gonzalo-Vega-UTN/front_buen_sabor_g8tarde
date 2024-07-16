@@ -68,15 +68,18 @@ const Sidebar = () => {
         ],
     };
 
-    const defaultRoutes: RouteItem[] = [
+    const defaultRoutes = [
         { path: '/', icon: BsShop, label: 'Tienda' },
         { path: '/acerca-de', icon: LuChefHat, label: 'Acerca De' }
     ];
-
     const userRoles = user ? user['https://apiprueba/roles'] : [];
 
     const isAdmin = userRoles.includes('Admin');
     const isCliente = userRoles.includes('Cliente');
+
+    const routesToDisplay = isAuthenticated ? roleRoutes[userRoles] || [] : [];
+
+
 
     return (
         <div
@@ -85,11 +88,11 @@ const Sidebar = () => {
             onMouseLeave={handleMouseLeave}
         >
             <div className="ms-4 my-3">
-                <img src={logo} alt="Logo" className="logo" />
+                <img src={logo} alt="Logo" className="logo" /> {/* Muestra el logo en lugar de "Buen Sabor" */}
             </div>
 
             <hr className="text-white" />
-            <ul className="nav flex-column flex-grow-1">
+            <ul className="nav flex-column flex-grow-1"> {/* Aplica flex-grow-1 para que ocupe todo el espacio vertical disponible */}
                 {defaultRoutes.map(({ path, icon: Icon, label }) => (
                     <li className="nav-item" key={path}>
                         <Link
@@ -117,7 +120,7 @@ const Sidebar = () => {
                 ))}
             </ul>
             <div className="mt-auto">
-                {isAuthenticated ? <BotonLogout /> : <BotonLogin />}
+                {isAuthenticated ? <BotonLogout /> : <LoginButton  />}
             </div>
         </div>
     );
