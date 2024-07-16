@@ -7,10 +7,14 @@ import { CategoriaService } from '../../services/CategoriaService';
 import ArticuloInsumoService from '../../services/ArticuloInsumoService';
 import { UnidadMedida } from '../../entities/DTO/UnidadMedida/UnidadMedida';
 import UnidadMedidaServices from '../../services/UnidadMedidaServices';
-import { useAuth } from '../../Auth/Auth';
+import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
 import FiltroProductos from '../../components/Filtrado/FiltroArticulo';
 import GenericButton from '../../components/generic/GenericButton';
 import { FaSave } from 'react-icons/fa';
+
+interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
+    activeSucursal: string ;
+  }
 
 interface AgregarInsumosProps {
     show: boolean;
@@ -33,7 +37,7 @@ export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulos
     const [unidadMedidaSeleccionada, setUnidadMedidaSeleccionada] = useState<number>();
     const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
 
-    const {activeSucursal} = useAuth();
+    const { activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>;
 
     const fetchDataArticulosInsumo = async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string) => {
         const articulos = await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(activeSucursal, idCategoria, idUnidadMedida, denominacion);

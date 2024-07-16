@@ -1,60 +1,56 @@
 import Usuario from "../entities/DTO/Usuario/Usuario";
+import { Rol } from "../entities/enums/Rol";
 
 class UsuarioService {
   private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/auth`;
 
   private static async request(endpoint: string, options: RequestInit) {
     const response = await fetch(`${this.urlServer}${endpoint}`, options);
-    const responseData = await response.json();
     if (!response.ok) {
-      throw new Error(responseData.message || 'Error al procesar la solicitud');
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Error al procesar la solicitud');
     }
-    return responseData;
+    return response.json();
   }
 
-  static async login(usuario: Usuario): Promise<Usuario> {
+  static async login(token: string): Promise<Usuario> {
     try {
       const responseData = await this.request('/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(usuario),
-        mode: 'cors',
       });
-      console.log(responseData)
-      return responseData;
+      return responseData as Usuario;
     } catch (error) {
       console.error('Error al hacer el Login', error);
       throw error;
     }
   }
 
-  static async register(usuario: Usuario): Promise<Usuario> {
+  static async register(token: string): Promise<Usuario> {
     try {
       const responseData = await this.request('/register', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(usuario),
-        mode: 'cors',
+        
       });
-      return responseData;
+      return responseData as Usuario;
     } catch (error) {
       console.error('Error al registrar:', error);
       throw error;
     }
   }
 
-  static async validarExistenciaUsuario(username: string): Promise<boolean> {
+  static async validarExistenciaUsuario(token: string): Promise<boolean> {
     try {
-      const responseData = await this.request(`/validar/${username}`, {
+      const responseData = await this.request(`/validar`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        mode: 'cors',
       });
       return responseData;
     } catch (error) {
@@ -63,33 +59,31 @@ class UsuarioService {
     }
   }
 
-  static async guardarUsuario(usuario: Usuario): Promise<Usuario> {
-    try {
-      const responseData = await this.register(usuario);
-      return responseData;
-    } catch (error) {
-      if (error.message === 'Usuario ya registrado') {
-        // Si el error indica que el usuario ya está registrado, intentar iniciar sesión
-        return await this.login(usuario.email);
-      } else {
-        console.error('Error al guardar usuario:', error);
-        throw error;
-      }
-    }
-  }
-
-  // Nuevo método para eliminar un usuario
-  static async deleteUsuario(id: string): Promise<void> {
+  static async deleteUsuario(id: number, token: string): Promise<void> {
     try {
       await this.request(`/${id}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        mode: 'cors',
       });
     } catch (error) {
       console.error('Error al eliminar usuario:', error);
+      throw error;
+    }
+  }
+
+  static async getAll(token: string): Promise<Usuario[]> {
+    try {
+      const responseData = await this.request('', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      });
+      return responseData;
+    } catch (error) {
+      console.error('Error al obtener todos los usuarios:', error);
       throw error;
     }
   }

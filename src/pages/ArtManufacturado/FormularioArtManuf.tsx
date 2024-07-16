@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../Auth/Auth";
+import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
@@ -18,6 +18,11 @@ import { ValidationEnum } from "../../utils/ValidationEnum";
 import { AgregarInsumosModal } from "./AgregarInsumosModal";
 import ImagenCarousel from "../../components/carousel/ImagenCarousel";
 import { Imagen } from "../../entities/DTO/Imagen";
+
+interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
+  activeSucursal: string ;
+}
+
 
 export const FormularioArtManuf = () => {
   const { id } = useParams();
@@ -47,7 +52,7 @@ export const FormularioArtManuf = () => {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
 
-  const { activeSucursal } = useAuth();
+  const { activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>;
 
   useEffect(() => {
     if (!id || id === "0") {

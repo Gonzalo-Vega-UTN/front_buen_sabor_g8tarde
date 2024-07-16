@@ -1,22 +1,14 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
-import {
-  Form,
-  Button,
-  Row,
-  Col,
-  Container,
-  InputGroup,
-  FormControl,
-} from "react-bootstrap";
-import { FaPlus, FaMinus } from "react-icons/fa";
-import { useParams, useNavigate } from "react-router";
-import { Articulo } from "../../entities/DTO/Articulo/Articulo";
-import { Promocion } from "../../entities/DTO/Promocion/Promocion";
-import { TipoPromocion } from "../../entities/enums/TipoPromocion";
-import { ProductServices } from "../../services/ProductServices";
-import PromocionService from "../../services/PromocionService";
-import ArticuloInsumoService from "../../services/ArticuloInsumoService";
-import { useAuth } from "../../Auth/Auth";
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import { Form, Button, Row, Col, Container, InputGroup, FormControl } from 'react-bootstrap';
+import { FaPlus, FaMinus } from 'react-icons/fa';
+import { useParams, useNavigate } from 'react-router';
+import { Articulo } from '../../entities/DTO/Articulo/Articulo';
+import { Promocion } from '../../entities/DTO/Promocion/Promocion';
+import { TipoPromocion } from '../../entities/enums/TipoPromocion';
+import { ProductServices } from '../../services/ProductServices';
+import PromocionService from '../../services/PromocionService';
+import ArticuloInsumoService from '../../services/ArticuloInsumoService';
+import { useAuth } from '../../Auth/Auth';
 
 const PromocionForm: React.FC = () => {
   const { id } = useParams();

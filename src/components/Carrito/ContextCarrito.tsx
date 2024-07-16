@@ -16,6 +16,8 @@ import { Cliente } from "../../entities/DTO/Cliente/Cliente";
 import Usuario from "../../entities/DTO/Usuario/Usuario";
 import { Promocion } from "../../entities/DTO/Promocion/Promocion";
 import PromocionService from "../../services/PromocionService";
+import { useAuth0 } from "@auth0/auth0-react";
+
 
 interface CartContextType {
   pedido: PedidoFull;
@@ -51,8 +53,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [promocionesAplicadas, setPromocionesAplicadas] = useState<PromocionAplicada[]>([]);
   const [pedido, setPedido] = useState<PedidoFull>(new PedidoFull());
-  const [error, setError] = useState<string>("");
   const { activeUser, activeSucursal } = useAuth();
+  const [error, setError] = useState<string>('');
+  const { user, isAuthenticated } = useAuth0();
   const [showModal, setShowModal] = useState(false);
   const [modalConfig, setModalConfig] = useState({
     title: "",
@@ -272,6 +275,11 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const handleCompra = async () => {
+    if (!isAuthenticated) {
+      setError('Debes iniciar sesión para realizar una compra.');
+      return;
+    }
+
     if (pedido.detallePedidos.length === 0) {
       setError("El carrito debe tener al menos un producto.");
       return;
@@ -288,8 +296,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         try {
           pedido.cliente = new Cliente();
           pedido.cliente.usuario = new Usuario();
-          pedido.cliente.usuario.username = activeUser;
-
+          pedido.cliente.usuario.username = user?.email || '';
+  
           const data = await PedidoService.agregarPedido({ ...pedido });
           if (data > 0) {
             await getPreferenceMP(data);

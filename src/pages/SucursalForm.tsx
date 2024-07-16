@@ -1,228 +1,152 @@
-import React, { useEffect, useState } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
-import { Sucursal } from "../entities/DTO/Sucursal/Sucursal";
-import { Empresa } from "../entities/DTO/Empresa/Empresa";
-import FormularioDomicilio from "./Domicilio/FormDomicilio";
-import SucursalService from "../services/SucursalService";
-import ImagenCarousel from "../components/carousel/ImagenCarousel";
-import { Imagen } from "../entities/DTO/Imagen";
-import { useAuth } from "../Auth/Auth";
-import { useNavigate } from "react-router-dom";
-import TimePicker from 'react-bootstrap-time-picker';
+// SucursalList.tsx
+import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Card, Button, Dropdown, DropdownButton, Modal } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import SucursalForm from './SucursalForm';
+import { Sucursal } from '../entities/DTO/Sucursal/Sucursal';
+import { Empresa } from '../entities/DTO/Empresa/Empresa';
+import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
+import './styles.css'; // Importar tu archivo de estilos
+import SucursalService from '../services/SucursalService';
 
-
-interface AddSucursalFormProps {
-  onAddSucursal: () => void;
-  sucursalEditando: Sucursal | null;
-  empresa: Empresa;
+// Definimos la interfaz extendida con nuestras propiedades adicionales
+interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
+  selectSucursal: (sucursalId: number) => void;
+  activeSucursal: string | null;
 }
 
-const SucursalForm: React.FC<AddSucursalFormProps> = ({
-  onAddSucursal,
-  sucursalEditando,
-  empresa,
-}) => {
-  const [sucursal, setSucursal] = useState<Sucursal>(() => {
-    if (sucursalEditando) {
-      return sucursalEditando;
-    }
-    let s = new Sucursal();
-    s.empresa = empresa;
-    return s;
-  });
-  const [domicilio, setDomicilio] = useState<any>(null); // Estado para el domicilio
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
-  const [files, setFiles] = useState<File[]>([]);
-  const [currentStep, setCurrentStep] = useState<number>(1); // Estado para controlar el paso del formulario
-  const [aperturaValida, setAperturaValida] = useState<boolean>(false); // Estado para validar horario de apertura
-  const [cierreValido, setCierreValido] = useState<boolean>(false); // Estado para validar horario de cierre
+interface SucursalListProps {
+  refresh: boolean;
+  empresa?: Empresa;
+}
 
-  const {activeSucursal} = useAuth();
-  const navigate = useNavigate();
+const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
+  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [sucursalEditando, setSucursalEditando] = useState<Sucursal | null>(null);
+  const [showModal, setShowModal] = useState(false);
+
+  // Utilizamos la interfaz extendida para asegurarnos de que TypeScript reconozca nuestras propiedades adicionales
+  const { selectSucursal, activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>; 
 
   useEffect(() => {
-    if (!activeSucursal || activeSucursal === "0") {
-      navigate("/empresas");
-    }
-  }, []);
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setSucursal((prevState) => ({ ...prevState, [name]: value }));
+    const getSucursales = async () => {
+      try {
+        let data;
+        if (empresa) {
+          data = await SucursalService.fetchSucursalesByEmpresaId(empresa.id);
+        } else {
+          data = await SucursalService.fetchSucursales();
+        }
+        setSucursales(data);
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("An unknown error occurred");
+        }
+      }
+    };
+
+    getSucursales();
+  }, [refresh, empresa]);
+
+  const handleEdit = (sucursal: Sucursal) => {
+    setSucursalEditando(sucursal);
+    setShowModal(true);
   };
 
-  const handleAperturaChange = (time: number) => {
-    setSucursal((prevState) => ({
-      ...prevState,
-      horarioApertura: convertirHoraATexto(time),
-    }));
-    setAperturaValida(true); // Marcar como válida la selección de horario de apertura
+  const handleAddSucursal = () => {
+    setSucursalEditando(null);
+    setShowModal(true);
   };
 
-  const handleCierreChange = (time: number) => {
-    setSucursal((prevState) => ({
-      ...prevState,
-      horarioCierre: convertirHoraATexto(time),
-    }));
-    setCierreValido(true); // Marcar como válido la selección de horario de cierre
-  };
-
-  const convertirHoraATexto = (time: number): string => {
-    const hours = Math.floor(time / 3600);
-    const minutes = Math.floor((time % 3600) / 60);
-    const formattedHours = hours < 10 ? `0${hours}` : `${hours}`;
-    const formattedMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
-    return `${formattedHours}:${formattedMinutes}`;
-  };
-
-  const handleSubmitStep1 = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (aperturaValida && cierreValido) {
-      setCurrentStep(2); // Avanzar al siguiente paso si los horarios son válidos
-      setError(null); // Limpiar el mensaje de error
-    } else {
-      setError("Debe seleccionar un horario de apertura y cierre válidos");
-    }
-  };
-
-  const handleSubmitStep2 = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleCloseModal = async () => {
+    setShowModal(false);
     try {
-
-      let response: Sucursal;
-      if (sucursalEditando) {
-        response = await SucursalService.updateSucursal(sucursalEditando.id, {
-          ...sucursal,
-          domicilio, 
-        });
+      let data;
+      if (empresa) {
+        data = await SucursalService.fetchSucursalesByEmpresaId(empresa.id);
       } else {
-        response = await SucursalService.createSucursal({
-          ...sucursal,
-          domicilio,
-        });
+        data = await SucursalService.fetchSucursales();
       }
-      if (response) {
-        setSuccess(true);
-        setSucursal(new Sucursal()); // Limpiar el formulario después del envío exitoso
-        setError(null);
-        setDomicilio(null); // Limpiar el domicilio después del envío exitoso
-        onAddSucursal();
+      setSucursales(data);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unknown error occurred");
       }
-
-      if (response.id) {
-        const images = await SucursalService.uploadFiles(response.id, files);
-        onAddSucursal();
-      }
-    } catch (err) {
-      setError("Error al crear o actualizar la sucursal");
-      setSuccess(false);
     }
   };
 
-  const handlePrevStep = () => {
-    setCurrentStep(1); // Retroceder al paso anterior
+  const handleCardClick = (sucursalId: number) => {
+    selectSucursal(sucursalId);
   };
 
-  const handleImagenesChange = (newImages: Imagen[]) => {
-    setSucursal((prev) => ({
-      ...prev,
-      imagenes: newImages,
-    }));
-  };
-
-  const handleFileChange = (newFiles: File[]) => {
-    setFiles(newFiles);
+  const handleStatusChange = async (sucursalId: number, alta: boolean) => {
+    try {
+      const sucursal = sucursales.find(suc => suc.id === sucursalId);
+      if (sucursal) {
+        await SucursalService.BajaSucursal(sucursal.id); // Asegúrate de esperar la operación asíncrona
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      }
+    }
   };
 
   return (
-    <div>
-      {currentStep === 1 && (
-        <div>
-          <h2>{sucursalEditando ? "Editar Sucursal" : "Agregar Sucursal"}</h2>
-          <Form onSubmit={handleSubmitStep1}>
-            <Form.Group controlId="nombre">
-              <Form.Label>Nombre</Form.Label>
-              <Form.Control
-                type="text"
-                name="nombre"
-                value={sucursal.nombre}
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
-            <Form.Group controlId="horarioApertura">
-              <Form.Label>Horario Apertura</Form.Label>
-              <TimePicker
-                start="00:00"
-                end="23:59"
-                step={15}
-                value={
-                  sucursal.horarioApertura
-                    ? parseInt(sucursal.horarioApertura.split(":")[0], 10) *
-                        3600 +
-                      parseInt(sucursal.horarioApertura.split(":")[1], 10) * 60
-                    : 0
-                }
-                onChange={handleAperturaChange}
-                required
-              />
-            </Form.Group>
-            <Form.Group controlId="horarioCierre">
-              <Form.Label>Horario Cierre</Form.Label>
-              <TimePicker
-                start="00:00"
-                end="23:59"
-                step={15}
-                value={
-                  sucursal.horarioCierre
-                    ? parseInt(sucursal.horarioCierre.split(":")[0], 10) *
-                        3600 +
-                      parseInt(sucursal.horarioCierre.split(":")[1], 10) * 60
-                    : 0
-                }
-                onChange={handleCierreChange}
-                required
-              />
-            </Form.Group>
-            <br></br>
-            <ImagenCarousel
-              imagenesExistentes={sucursal.imagenes}
-              onFilesChange={handleFileChange}
-              onImagenesChange={handleImagenesChange}
-            />
-            <Button variant="primary" type="submit">
-              Siguiente
-            </Button>
-          </Form>
-        </div>
-      )}
-      {currentStep === 2 && (
-        <div>
-          <Form onSubmit={handleSubmitStep2}>
-            <FormularioDomicilio
-              onBack={handlePrevStep}
-              onSubmit={(data) => setDomicilio(data)}
-            />
-            <Button variant="primary" type="submit">
-              Enviar
-            </Button>
-            <Button variant="secondary" onClick={handlePrevStep}>
-              Volver
-            </Button>
-          </Form>
-        </div>
-      )}
-
-      {success && (
-        <Alert variant="success">
-          {sucursalEditando
-            ? "Sucursal actualizada con éxito"
-            : "Sucursal creada con éxito"}
-        </Alert>
-      )}
-      {error && <Alert variant="danger">{error}</Alert>}
-    </div>
+    <Container>
+      <h2>Sucursales</h2>
+      {error && <p>{error}</p>}
+      <Button onClick={handleAddSucursal}>Agregar Sucursal</Button>
+      <Row>
+        {sucursales.map(sucursal => (
+          <Col key={sucursal.id} sm={12} md={6} lg={4} className="mb-4">
+            <Card
+              onClick={() => handleCardClick(sucursal.id)}
+              className={activeSucursal === String(sucursal.id) ? "selected-card" : ""}
+              style={{ backgroundColor: sucursal.alta ? 'white' : 'darkgrey' }}
+            >
+              <Card.Img variant="top" src={sucursal.imagenes[0] ? sucursal.imagenes[0].url : 'https://via.placeholder.com/150'} />
+              <Card.Body>
+                <Card.Title>{sucursal.nombre}</Card.Title>
+                <Card.Text>
+                  <strong>ID:</strong> {sucursal.id} <br />
+                  <strong>Horario Apertura:</strong> {sucursal.horarioApertura} <br />
+                  <strong>Horario Cierre:</strong> {sucursal.horarioCierre}
+                </Card.Text>
+                <Button onClick={(e) => { e.stopPropagation(); handleEdit(sucursal); }}>
+                  <FontAwesomeIcon icon={faEdit} />
+                </Button>
+                <DropdownButton
+                  id="dropdown-basic-button"
+                  title={sucursal.alta ? 'Alta' : 'Baja'}
+                  variant={sucursal.alta ? 'success' : 'danger'}
+                  className="ml-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Dropdown.Item onClick={() => handleStatusChange(sucursal.id, true)}>Alta</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleStatusChange(sucursal.id, false)}>Baja</Dropdown.Item>
+                </DropdownButton>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>{sucursalEditando ? 'Editar Sucursal' : 'Agregar Sucursal'}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {empresa && <SucursalForm onAddSucursal={handleCloseModal} sucursalEditando={sucursalEditando} empresa={empresa} />}
+        </Modal.Body>
+      </Modal>
+    </Container>
   );
 };
 
-export default SucursalForm;
+export default SucursalList;

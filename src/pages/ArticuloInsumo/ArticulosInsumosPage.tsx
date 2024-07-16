@@ -3,7 +3,7 @@ import ArticuloInsumoTable from "./ArticuloInsumoTable";
 import { ModalType } from "../../types/ModalType";
 import Button from "../../components/generic/GenericButton";
 import { useEffect, useState } from "react";
-import { useAuth } from "../../Auth/Auth";
+import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
 import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
@@ -11,13 +11,19 @@ import { CategoriaService } from "../../services/CategoriaService";
 import UnidadMedidaService from "../../services/UnidadMedidaServices";
 import ArticuloInsumoService from "../../services/ArticuloInsumoService";
 import ArticuloInsumoModal from "./ArticuloInsumoModal";
+import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
+
+interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
+  activeSucursal: string ;
+}
 
 export default function ArticuloInsumoPage() {
 
   //Estados
   const [showModalCrear, setShowModalCrear] = useState<boolean>(false);
   const [, setError] = useState<string>("");
-  const{activeSucursal}=useAuth();
+  const { activeSucursal } = useAuth0Extended();
+
 
   //Estados Listas Entidades
   const [categorias, setCategorias] = useState<Categoria[]>([]);

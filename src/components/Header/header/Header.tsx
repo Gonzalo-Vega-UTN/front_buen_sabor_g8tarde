@@ -4,14 +4,13 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import * as Icon from 'react-bootstrap-icons';
-import { useAuth } from '../../../Auth/Auth';
-import BotonLogout from '../../Log-Register/BotonLogout';
-import BotonLogin from '../../Log-Register/BotonLogin';
+
+import { useAuth0 } from '@auth0/auth0-react';
 
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, userRol } = useAuth();
+  const { isAuthenticated } = useAuth0();
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -31,7 +30,7 @@ const Header: React.FC = () => {
                 <NavDropdown.Divider />
               </>
             )}
-            {userRol === 'Admin' && (
+            {(
               <>
                 <NavDropdown.Item onClick={() => handleNavigation('/productos')}>
                   Productos
@@ -43,7 +42,7 @@ const Header: React.FC = () => {
               </>
             )}  
             <NavDropdown.Item>
-            {isAuthenticated ? <BotonLogout /> : <BotonLogin />}
+            {isAuthenticated }
           </NavDropdown.Item>
           </NavDropdown>
         </Nav>

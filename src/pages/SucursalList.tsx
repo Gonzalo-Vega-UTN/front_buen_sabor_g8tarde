@@ -5,10 +5,9 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import SucursalForm from './SucursalForm';
 import { Sucursal } from '../entities/DTO/Sucursal/Sucursal';
 import { Empresa } from '../entities/DTO/Empresa/Empresa';
-import { useAuth } from '../Auth/Auth';
-import './styles.css'; // Importar tu archivo de estilos
+import { useAuth0Extended } from '../Auth/Auth0ProviderWithNavigate'; // Importa el hook extendido
+import './styles.css';
 import SucursalService from '../services/SucursalService';
-import { useNavigate } from 'react-router-dom';
 
 interface SucursalListProps {
   refresh: boolean;
@@ -20,11 +19,9 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
   const [error, setError] = useState<string | null>(null);
   const [sucursalEditando, setSucursalEditando] = useState<Sucursal | null>(null);
   const [showModal, setShowModal] = useState(false);
- 
-  const { selectSucursal ,activeSucursal} = useAuth();
 
-  
- 
+  const { selectSucursal, activeSucursal } = useAuth0Extended(); // Usar el hook extendido
+
   useEffect(() => {
     const getSucursales = async () => {
       try {
@@ -46,8 +43,6 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
 
     getSucursales();
   }, [refresh, empresa]);
-
-
 
   const handleEdit = (sucursal: Sucursal) => {
     setSucursalEditando(sucursal);
@@ -82,11 +77,11 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
     selectSucursal(sucursalId);
   };
 
-  const handleStatusChange = async (sucursalId: number, alta: boolean) => { //TODO: arreglar baja de una sucursal para que de de baja todo
+  const handleStatusChange = async (sucursalId: number, alta: boolean) => {
     try {
       const sucursal = sucursales.find(suc => suc.id === sucursalId);
       if (sucursal) {
-        SucursalService.BajaSucursal(sucursal.id);
+        await SucursalService.BajaSucursal(sucursal.id);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -94,7 +89,6 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
       }
     }
   };
-
 
   return (
     <Container>
@@ -104,7 +98,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
       <Row>
         {sucursales.map(sucursal => (
           <Col key={sucursal.id} sm={12} md={6} lg={4} className="mb-4">
-            <Card 
+            <Card
               onClick={() => handleCardClick(sucursal.id)}
               className={activeSucursal === String(sucursal.id) ? "selected-card" : ""}
               style={{ backgroundColor: sucursal.alta ? 'white' : 'darkgrey' }}

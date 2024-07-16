@@ -5,7 +5,7 @@ import CheckoutMP from './MP/CheckoutMP';
 import { useNavigate } from 'react-router-dom';
 
 import './Carrito.css';
-import { useAuth } from '../../Auth/Auth';
+import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
 import { Sucursal } from '../../entities/DTO/Sucursal/Sucursal';
 import SucursalService from '../../services/SucursalService';
 import ModalDomicilios from '../../pages/Domicilio/ModalDomicilios';
@@ -13,12 +13,16 @@ import { Domicilio } from '../../entities/DTO/Domicilio/Domicilio';
 import { TipoEnvio } from '../../entities/enums/TipoEnvio';
 import { FormaPago } from '../../entities/enums/FormaPago';
 
+interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
+  activeSucursal: string ;
+}
+
 const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista }) => {
   const { pedido, promocionesAplicadas: promocionesAplicadas, quitarDelCarrito, agregarAlCarrito, vaciarCarrito, handleCompra, handleCantidadChange, error, preferenceId } = useCart();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [tipoEnvio, setTipoEnvio] = useState<TipoEnvio | "">("");
   const [tipoPago, setTipoPago] = useState<FormaPago | "">("");
-  const { activeSucursal } = useAuth();
+  const { activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>;
   const [sucursal, setSucursal] = useState<Sucursal>();
   const [showModalDomicilios, setShowModalDomicilios] = useState(false);
   const [domicilioEntrega, setDomicilioEntrega] = useState<Domicilio>();
