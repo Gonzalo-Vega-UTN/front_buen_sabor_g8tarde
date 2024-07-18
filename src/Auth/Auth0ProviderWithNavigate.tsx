@@ -14,7 +14,7 @@ import Usuario from "../entities/DTO/Usuario/Usuario";
 interface Auth0ContextInterfaceExtended<UserType extends User>
   extends Auth0ContextInterface<UserType> {
   selectSucursal: (sucursalId: number) => void;
-  activeSucursal: string | null;
+  activeSucursal: string;
 }
 
 const Auth0Context = createContext<
@@ -27,7 +27,7 @@ type Props = {
 
 export const Auth0ProviderWithNavigate = ({ children }: Props) => {
   const navigate = useNavigate();
-  const [activeSucursal, setActiveSucursal] = useState<string | null>(null);
+  const [activeSucursal, setActiveSucursal] = useState<string>("");
   console.log(activeSucursal);
   const domain = import.meta.env.VITE_AUTH0_DOMAIN as string;
   const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID as string;
@@ -73,7 +73,7 @@ const Auth0ContextWrapper = ({
 }: {
   children: JSX.Element;
   selectSucursal: (sucursalId: number) => void;
-  activeSucursal: string | null;
+  activeSucursal: string;
 }) => {
   const { isAuthenticated, getAccessTokenSilently, logout } = useAuth0();
   const navigate = useNavigate();

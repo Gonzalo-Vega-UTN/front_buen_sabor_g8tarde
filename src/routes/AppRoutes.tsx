@@ -9,6 +9,7 @@ import DashboardPage from "../pages/ArtManufacturado/DashBoard";
 import { MisPedidosList } from "../pages/Cliente/mipedido";
 import FormularioTrabajo from "../pages/Empleado/FormularioTrabajo";
 import { UnidadesMedidaList } from "../pages/UnidadMedida/UnidadMedidaList";
+import FormularioCliente from "../pages/Cliente/FormularioCliente";
 
 const AppRoutes = () => (
   <Routes>
@@ -22,7 +23,7 @@ const AppRoutes = () => (
     />
     <Route path="/acerca-de" element={<AcercaDe />} />
     <Route path="/formulario-empleado" element={<FormularioTrabajo />} />
-    
+    <Route path="/formulario-cliente" element={<FormularioCliente />} />
     <Route path="/misPedidos" element={<MisPedidosList />} />
     <Route
       path="/productos"

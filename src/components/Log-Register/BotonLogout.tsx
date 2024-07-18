@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { useAuth } from '../../Auth/Auth';
 import ModalConfirm from '../modals/ModalConfirm';
 import { useNavigate } from 'react-router-dom';
+import { useAuth0Extended } from '../../Auth/Auth0ProviderWithNavigate';
 
 const BotonLogout: React.FC = () => {
-  const { logout } = useAuth();
+  const { logout } = useAuth0Extended();
   const [showModal, setShowModal] = useState(false);
   const navigate=useNavigate();
 

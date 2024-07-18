@@ -27,6 +27,8 @@ import logo from "../../assets/images/Buen sabor logo 1.png";
 import { Promocion } from "../../entities/DTO/Promocion/Promocion";
 import { PromocionService } from "../../services/PromocionService";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
+import LoginButton from "../Log-Register/LoginButton";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const Home: React.FC = () => {
   const [, setLoading] = useState<boolean>(true);
@@ -52,7 +54,7 @@ const Home: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [promociones, setPromociones] = useState<Promocion[]>([]);
   const [showPromociones, setShowPromociones] = useState<boolean>(false);
-
+  const { loginWithRedirect } = useAuth0();
   useEffect(() => {
     fetchEmpresas();
     fetchPromociones();
@@ -187,7 +189,12 @@ const Home: React.FC = () => {
       });
       setIsCartOpen(true);
     } else {
-      navigate("/login");
+      loginWithRedirect({
+        appState: {
+          returnTo: window.location.pathname,
+        },
+        
+      });
     }
   };
 
@@ -394,12 +401,7 @@ const Home: React.FC = () => {
                             Añadir al carrito
                           </Button>
                         ) : (
-                          <Button
-                            variant="primary"
-                            onClick={() => navigate("/registro")}
-                          >
-                            Login
-                          </Button>
+                          <LoginButton></LoginButton>
                         )}
                       </div>
                     ))
@@ -431,12 +433,7 @@ const Home: React.FC = () => {
                             Añadir al carrito
                           </Button>
                         ) : (
-                          <Button
-                            variant="primary"
-                            onClick={() => navigate("/registro")}
-                          >
-                            Login
-                          </Button>
+                          <LoginButton></LoginButton>
                         )}
                       </div>
                     ))

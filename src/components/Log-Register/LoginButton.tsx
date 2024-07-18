@@ -17,7 +17,6 @@ const LoginButton = () => {
           },
           
         });
-        console.log("AAAAAAAAAAAAA");
       }}
     >
       <BsBoxArrowInRight /> Login
