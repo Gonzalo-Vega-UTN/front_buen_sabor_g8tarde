@@ -120,7 +120,7 @@ const Sidebar = () => {
                 ))}
             </ul>
             <div className="mt-auto">
-                {isAuthenticated ? <BotonLogout /> : <LoginButton  />}
+                {isAuthenticated ? <BotonLogout /> : <div><LoginButton  /> <RegistroButton/></div>}
             </div>
         </div>
     );
