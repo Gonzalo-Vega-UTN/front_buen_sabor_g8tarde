@@ -24,7 +24,7 @@ const FormularioTrabajo = () => {
     const [error, setError] = useState<string>("");
     const [success, setSuccess] = useState<string>("");
     const navigate = useNavigate();
-    const { loginWithRedirect } = useAuth0(); // Utilizar loginWithRedirect en lugar de login
+    const {  } = useAuth0(); 
 
     const handleChangeUsuario = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;

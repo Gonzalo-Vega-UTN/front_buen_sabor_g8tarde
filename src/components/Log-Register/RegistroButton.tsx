@@ -14,7 +14,7 @@ const RegistroButton = () => {
       onClick={() =>
         loginWithRedirect({
           appState: {
-            returnTo: "/formulario-cliente",
+            returnTo: "/",
           },
           authorizationParams: {
             screen_hint: "signup",

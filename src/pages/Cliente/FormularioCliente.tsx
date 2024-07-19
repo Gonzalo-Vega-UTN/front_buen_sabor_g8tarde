@@ -25,7 +25,7 @@ const FormularioCliente = () => {
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
   const navigate = useNavigate();
-  const { loginWithRedirect, user } = useAuth0(); // Utilizar loginWithRedirect en lugar de login
+  const {  user } = useAuth0(); 
 
   const handleSubmitDomicilio = async (domicilio: Domicilio) => {
     if (user && user.email) {
@@ -35,7 +35,7 @@ const FormularioCliente = () => {
       usuario.username = user.email.split("@")[0];
       const ClienteCompleto = {
         ...ClienteData,
-        alta: false,
+        alta: true,
         usuario: usuario,
         domicilios: [domicilio],
       };

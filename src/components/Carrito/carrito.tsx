@@ -14,7 +14,7 @@ import { TipoEnvio } from '../../entities/enums/TipoEnvio';
 import { FormaPago } from '../../entities/enums/FormaPago';
 
 interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
-  activeSucursal: string ;
+  activeSucursal: string;
 }
 
 const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista }) => {
@@ -89,6 +89,7 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
 
   useEffect(() => {
     if (tipoEnvio === TipoEnvio.TakeAway && sucursal && sucursal.domicilio) {
+      console.log("domicilio ", sucursal.domicilio)
       setDomicilioEntrega(sucursal.domicilio);
     }
   }, [tipoEnvio, sucursal]);
@@ -130,11 +131,11 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
             ))
           )}
           <p className="carrito-total text-black">Total del Pedido: ${pedido.total}</p>
-          {promocionesAplicadas.length > 0 && 
-          <>
-            <h4 className='text-black'>Promociones Aplicadas: </h4>
-          {promocionesAplicadas.map(promocion => <p key={promocion.promocionId} className='text-dark'>[{promocion.denominacion}] x{promocion.vecesAplicada}</p>)}
-          </>}
+          {promocionesAplicadas.length > 0 &&
+            <>
+              <h4 className='text-black'>Promociones Aplicadas: </h4>
+              {promocionesAplicadas.map(promocion => <p key={promocion.promocionId} className='text-dark'>[{promocion.denominacion}] x{promocion.vecesAplicada}</p>)}
+            </>}
           <div className="botones">
             <Button variant="warning" onClick={vaciarCarrito}>Vaciar Carrito</Button>
             <Button variant="primary" onClick={() => setCurrentStep(1)}>Confirmar Compra</Button>
@@ -190,7 +191,9 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
             </Row>
             <div>
               {tipoEnvio === TipoEnvio.TakeAway && (
-                <h5>Domicilio de Retiro</h5>
+
+                <><h5>Domicilio de Retiro</h5>
+                  <h5>{domicilioEntrega?.calle}</h5></>
               )}
               {tipoEnvio === TipoEnvio.Delivery && (
                 <>
@@ -217,16 +220,16 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
           ) : (
             <div className="botones">
               {!pedidoGuardado ? (
-                <Button 
-                  variant="primary" 
-                  onClick={guardarPedido} 
+                <Button
+                  variant="primary"
+                  onClick={guardarPedido}
                   disabled={tipoEnvio === "" || tipoPago === "" || !domicilioEntrega}
                 >
                   Guardar Pedido
                 </Button>
               ) : (
-                <Button 
-                  variant="success" 
+                <Button
+                  variant="success"
                   onClick={finalizarCompra}
                 >
                   {tipoEnvio === TipoEnvio.TakeAway && tipoPago === FormaPago.Efectivo

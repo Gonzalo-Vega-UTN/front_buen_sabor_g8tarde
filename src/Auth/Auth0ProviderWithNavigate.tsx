@@ -105,7 +105,7 @@ const Auth0ContextWrapper = ({
           }
         } catch (error) {
           console.error("Error durante la autenticación del usuario:", error);
-          logout({ logoutParams: { returnTo: window.location.origin } });
+        logout({ logoutParams: { returnTo: window.location.origin } });
         }
       }
     };
@@ -113,12 +113,13 @@ const Auth0ContextWrapper = ({
     handleUserAuthentication();
   }, [isAuthenticated, getAccessTokenSilently, logout, navigate]);
 
+/* Revisar utilidad de esto
   useEffect(() => {
     if (isAuthenticated && !clientFormCompleted) {
       navigate("/formulario-cliente");
     }
-  }, [isAuthenticated, clientFormCompleted, navigate]);
-
+  }, [isAuthenticated, clientFormCompleted, navigate("/")]);
+*/
   return (
     <Auth0Context.Provider
       value={{ ...useAuth0(), selectSucursal, activeSucursal }}

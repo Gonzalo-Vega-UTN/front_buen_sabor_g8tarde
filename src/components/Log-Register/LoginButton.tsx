@@ -13,7 +13,7 @@ const LoginButton = () => {
       onClick={() => {
         loginWithRedirect({
           appState: {
-            returnTo: window.location.pathname,
+            returnTo: "/",
           },
           
         });
