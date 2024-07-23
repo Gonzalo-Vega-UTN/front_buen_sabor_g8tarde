@@ -117,5 +117,5 @@ export class EmpresaService {
     }
   }
 
-};
+}
 

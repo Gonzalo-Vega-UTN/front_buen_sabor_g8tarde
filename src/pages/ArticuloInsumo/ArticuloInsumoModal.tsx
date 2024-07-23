@@ -16,7 +16,7 @@ interface ArticuloInsumoModalProps {
     onHide: () => void;
     handleSubmit: (art: ArticuloInsumo, files: File[]) => Promise<void>;
     handleDelete: (idArt: number) => Promise<void>;
-};
+}
 
 const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit, handleDelete, unidadesMedida, categorias }: ArticuloInsumoModalProps) => {
 

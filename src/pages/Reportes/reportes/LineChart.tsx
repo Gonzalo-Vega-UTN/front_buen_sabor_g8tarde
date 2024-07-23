@@ -6,7 +6,7 @@ interface Props {
 }
 
 export
-    const LineChart = ({ data, title }: Props) => {
+    const LineChart = ({ data,  }: Props) => {
 
         const options = {
             title: "Movimientos Monetarios",

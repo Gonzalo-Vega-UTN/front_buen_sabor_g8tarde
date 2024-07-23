@@ -23,7 +23,7 @@ const ImagenCarousel: React.FC<Props> = ({
     }
   };
 
-  const [index, setIndex] = useState<number>(0);
+  const [, setIndex] = useState<number>(0);
   const [imagenes, setImagenes] = useState<Imagen[]>(imagenesExistentes);
   const [imagenAEditar, setImagenAEditar] = useState<number | null>(null);
 

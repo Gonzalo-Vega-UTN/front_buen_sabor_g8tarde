@@ -9,14 +9,20 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ element: Component, roles }) => {
-  const { isAuthenticated, userRol } = useAuth0();
+  const { isAuthenticated, user } = useAuth0();
   const location = useLocation();
 
+  // Verificar si el usuario está autenticado
   if (!isAuthenticated) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  if (roles && !roles.includes(userRol)) {
+  // Extraer roles del usuario
+  // Reemplaza 'https://example.com/roles' con la clave correcta según tu configuración
+  const userRoles = user?.['https://apiprueba/roles'] as Rol[] || [];
+
+  // Verificar si el usuario tiene los roles necesarios
+  if (roles && !roles.some(role => userRoles.includes(role))) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 

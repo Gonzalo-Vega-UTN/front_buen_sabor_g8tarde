@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+// Carrito.tsx
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useCart } from './ContextCarrito';
 import { Alert, Button, Col, Form, Row } from 'react-bootstrap';
 import CheckoutMP from './MP/CheckoutMP';
 import { useNavigate } from 'react-router-dom';
-
 import './Carrito.css';
 import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
 import { Sucursal } from '../../entities/DTO/Sucursal/Sucursal';
@@ -17,8 +17,14 @@ interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0Cont
   activeSucursal: string;
 }
 
-const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista }) => {
-  const { pedido, promocionesAplicadas: promocionesAplicadas, quitarDelCarrito, agregarAlCarrito, vaciarCarrito, handleCompra, handleCantidadChange, error, preferenceId } = useCart();
+interface CarritoProps {
+  actualizarLista: () => void;
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+const Carrito: React.FC<CarritoProps> = ({ actualizarLista, isOpen, }) => {
+  const { pedido, promocionesAplicadas, quitarDelCarrito, agregarAlCarrito, vaciarCarrito, handleCompra, handleCantidadChange, error, preferenceId } = useCart();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [tipoEnvio, setTipoEnvio] = useState<TipoEnvio | "">("");
   const [tipoPago, setTipoPago] = useState<FormaPago | "">("");
@@ -95,7 +101,7 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
   }, [tipoEnvio, sucursal]);
 
   return (
-    <div className="carrito-container">
+    <div className={`carrito-container ${isOpen ? "open" : ""}`}>
       {currentStep === 0 && (
         <div>
           <h2 className="carrito-title">Carrito de Compras</h2>
@@ -191,9 +197,10 @@ const Carrito: React.FC<{ actualizarLista: () => void }> = ({ actualizarLista })
             </Row>
             <div>
               {tipoEnvio === TipoEnvio.TakeAway && (
-
-                <><h5>Domicilio de Retiro</h5>
-                  <h5>{domicilioEntrega?.calle}</h5></>
+                <>
+                  <h5>Domicilio de Retiro</h5>
+                  <h5>{domicilioEntrega?.calle}</h5>
+                </>
               )}
               {tipoEnvio === TipoEnvio.Delivery && (
                 <>

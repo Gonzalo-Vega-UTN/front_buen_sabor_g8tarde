@@ -19,7 +19,6 @@ import { ProductServices } from "../../services/ProductServices";
 import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
 import { useCart } from "../Carrito/ContextCarrito";
 import Carrito from "../Carrito/carrito";
-import { useNavigate } from "react-router-dom";
 import ArticuloInsumoService from "../../services/ArticuloInsumoService";
 import { Articulo } from "../../entities/DTO/Articulo/Articulo";
 import { Cart, CartFill } from "react-bootstrap-icons";
@@ -45,12 +44,12 @@ const Home: React.FC = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<
     number | undefined
   >(undefined);
-  const { isAuthenticated, activeSucursal, selectSucursal } =
+  const { isAuthenticated, selectSucursal } =
     useAuth0Extended();
   const { agregarAlCarrito } = useCart();
   const [subCategoriaSelected, setSubCategoriaSelected] =
     useState<boolean>(false);
-  const navigate = useNavigate();
+  
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [promociones, setPromociones] = useState<Promocion[]>([]);
   const [showPromociones, setShowPromociones] = useState<boolean>(false);
@@ -318,22 +317,26 @@ const Home: React.FC = () => {
             </Container>
 
             <Container>
-              <h1 className="section-title">Nuestras Categorias</h1>
-              <Row className="mb-4 categoria-container">
-                {subCategoriaSelected && (
-                  <Col>
-                    <Button
-                      variant="outline-secondary"
-                      className="category-button"
-                      onClick={() =>
-                        fetchCategoriasPadresBySucursal(selectedSucursal?.id)
-                      }
-                    >
-                      Volver
-                    </Button>
-                  </Col>
-                )}
-                <Col>
+      <h1 className="section-title">Nuestras Categorias</h1>
+      <Row className="mb-4 categoria-container">
+        {subCategoriaSelected && (
+          <Col>
+            <Button
+              variant="outline-secondary"
+              className="category-button"
+              onClick={() => {
+                if (selectedSucursal?.id !== undefined) {
+                  fetchCategoriasPadresBySucursal(selectedSucursal.id);
+                } else {
+                  console.error("Sucursal ID is undefined");
+                }
+              }}
+            >
+              Volver
+            </Button>
+          </Col>
+        )}
+        <Col>
                   <div
                     className={`category ${
                       selectedCategoryId === null ? "selected" : ""

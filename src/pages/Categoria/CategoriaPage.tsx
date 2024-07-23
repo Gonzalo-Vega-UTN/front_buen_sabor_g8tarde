@@ -4,13 +4,10 @@ import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { CategoriaService } from "../../services/CategoriaService";
 import { BsPlusCircleFill, BsTrash, BsChevronDown, BsChevronUp } from "react-icons/bs";
 import GenericButton from "../../components/generic/GenericButton";
-import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
 import CategoriaModal from "./CategoriaModal";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 
-interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
-  activeSucursal: string;
-}
+
 
 export const CategoriaPage = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);

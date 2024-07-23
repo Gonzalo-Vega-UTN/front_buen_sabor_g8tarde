@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
-import BarChart from "./reportes/BarChart";
+
 import ReporteService from "../../services/ReporteService";
 import { ReporteComponente } from "./reportes/ReporteComponente";
 import Col from "react-bootstrap/esm/Col";
@@ -38,7 +38,7 @@ export const Reportes = () => {
         }
     };
 
-    const [movimientosMonetarios, setMovimientosMonetarios] = useState<any[]>([]);
+    const [] = useState<any[]>([]);
 
     const fetchMovimientos = async (desde: string, hasta: string) => {
         try {
@@ -85,15 +85,6 @@ export const Reportes = () => {
         }
     };
 
-    const generateExcelRanking = async (desde: string, hasta: string) => {
-        try {
-            await ReporteService.getMovimientosExel(desde, hasta);
-        } catch (error) {
-            if (error instanceof Error) {
-                console.log(error.message);
-            }
-        }
-    };
 
     return (
         <>

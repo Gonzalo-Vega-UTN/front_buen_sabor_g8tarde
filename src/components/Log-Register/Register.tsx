@@ -19,12 +19,18 @@ const Register: React.FC<RegisterProps> = ({ closeModal }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (auth0Id.length < 4) {
-            setMensaje('La contraseña debe tener al menos 4 caracteres');
+            setMensaje('La clave debe tener al menos 4 caracteres');
             return;
         }
         try {
-            const usuario: Usuario = { username, auth0Id, rol };
-            await UsuarioService.register(usuario);
+            const usuario: Usuario = {
+                username,
+                auth0Id,
+                rol,
+                email: ''
+            };
+            // Aquí puedes ajustar el método de registro si es necesario
+            const data = await UsuarioService.register(usuario);
             setRegistromensaje('Usuario registrado con éxito');
             setTimeout(() => {
                 closeModal();
@@ -35,6 +41,16 @@ const Register: React.FC<RegisterProps> = ({ closeModal }) => {
             }
             console.error(err);
         }
+    };
+
+    const handleGoogleLoginSuccess = (credentialResponse: any) => {
+        // Aquí deberías manejar la respuesta de Google
+        console.log(credentialResponse);
+        closeModal();
+    };
+
+    const handleGoogleLoginError = () => {
+        console.log('Login Failed');
     };
 
     return (
@@ -69,15 +85,12 @@ const Register: React.FC<RegisterProps> = ({ closeModal }) => {
             <Button variant="primary" type="submit">
                 Registro
             </Button>
-            <GoogleLogin
-                onSuccess={(credentialResponse) => {
-                    GoogleLogin(credentialResponse);
-                    closeModal();
-                }}
-                onError={() => {
-                    console.log('Login Failed');
-                }}
-            />
+            <div className="my-3">
+                <GoogleLogin
+                    onSuccess={handleGoogleLoginSuccess}
+                    onError={handleGoogleLoginError}
+                />
+            </div>
             {Registromensaje && <Alert variant="success">{Registromensaje}</Alert>}
             {mensaje && <Alert variant="danger">{mensaje}</Alert>}
         </Form>

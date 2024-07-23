@@ -9,7 +9,7 @@ interface ButtonProps {
   className?: string;
 }
 
-const GenericButton: React.FC<ButtonProps> = ({ color, icon: Icon, onClick, size = 20, text = "", className = "", }) => {
+const GenericButton: React.FC<ButtonProps> = ({ color, icon: Icon, onClick,  text = "", className = "", }) => {
   return (
     <button className={className}
       style={{ backgroundColor: color, padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer' }}

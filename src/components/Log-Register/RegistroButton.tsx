@@ -1,7 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "react-bootstrap";
 import { BsBoxArrowInUp } from "react-icons/bs";
-import { SlLogin } from "react-icons/sl";
+
 
 const RegistroButton = () => {
   const { loginWithRedirect } = useAuth0();

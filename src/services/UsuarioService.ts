@@ -1,5 +1,5 @@
 import Usuario from "../entities/DTO/Usuario/Usuario";
-import { Rol } from "../entities/enums/Rol";
+
 
 class UsuarioService {
   private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/auth`;

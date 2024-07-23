@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import  { createContext, useContext, useState, useEffect } from "react";
 import {
   Auth0Provider,
   AppState,
@@ -77,7 +77,7 @@ const Auth0ContextWrapper = ({
 }) => {
   const { isAuthenticated, getAccessTokenSilently, logout } = useAuth0();
   const navigate = useNavigate();
-  const [clientFormCompleted, setClientFormCompleted] = useState(false);
+  const [, setClientFormCompleted] = useState(false);
 
   useEffect(() => {
     const handleUserAuthentication = async () => {
