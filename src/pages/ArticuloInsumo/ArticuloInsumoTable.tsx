@@ -22,15 +22,12 @@ interface TableProps {
     handleChangeText: (denominacion : string) => void;
 }
 
-const ArticuloInsumoTable = ({ categorias, unidadesMedida, articulosInsumo, handleSubmit, handleDelete, onFileChange, handleChangeCategoria, handleChangeText, handleChangeUnidadMedida }: TableProps) => {
+const ArticuloInsumoTable = ({ categorias, unidadesMedida, articulosInsumo, handleSubmit, handleDelete, handleChangeCategoria, handleChangeText, handleChangeUnidadMedida }: TableProps) => {
     //Entidades de la Tabla
     const [articuloInsumo, setArticuloInsumo] = useState<ArticuloInsumo>();
 
     //Estados de Selección
-    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<number>();
-    const [unidadMedidaSeleccionada, setUnidadMedidaSeleccionada] = useState<number>();
-    const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
-
+ 
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState<ModalType>(ModalType.NONE);
     const [titulo, setTitulo] = useState("");

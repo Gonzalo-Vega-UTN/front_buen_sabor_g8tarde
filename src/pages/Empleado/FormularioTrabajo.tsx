@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import Usuario from '../../entities/DTO/Usuario/Usuario';
 import { Empleado } from '../../entities/DTO/Empleado/Empleado';
 import { Alert, Button, Form, Spinner } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { GoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom';
 import FormularioDomicilio from '../Domicilio/FormDomicilio';
 import ImagenCarousel from '../../components/carousel/ImagenCarousel';
 import { Domicilio } from '../../entities/DTO/Domicilio/Domicilio';
@@ -16,13 +15,13 @@ const FormularioTrabajo = () => {
     const [step, setStep] = useState(1);
     const [usuarioData, setUsuarioData] = useState<Usuario>(new Usuario());
     const [empleadoData, setEmpleadoData] = useState<Empleado>(new Empleado());
-    const [domicilioData, setDomicilioData] = useState<Domicilio>(new Domicilio());
+    const [ setDomicilioData] = useState<Domicilio>(new Domicilio());
     const [selectedRole, setSelectedRole] = React.useState<Rol>(Rol.Empleado); // Initial selected role
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const [files, setFiles] = useState<File[]>([]);
+    const [setFiles] = useState<File[]>([]);
     const [error, setError] = useState<string>("");
-    const [success, setSuccess] = useState<string>("");
+    const [success, ] = useState<string>("");
     const navigate = useNavigate();
     const {  } = useAuth0(); 
 

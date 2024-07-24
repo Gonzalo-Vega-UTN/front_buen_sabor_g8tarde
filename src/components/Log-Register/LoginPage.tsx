@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Form, Alert, Spinner } from 'react-bootstrap';
 import { useAuth } from '../../Auth/Auth';
-import Usuario from '../../entities/DTO/Usuario/Usuario';
+
 import UsuarioService from '../../services/UsuarioService';
 import { GoogleLogin } from '@react-oauth/google';
 import { Rol } from '../../entities/enums/Rol';
@@ -24,19 +24,12 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
       return;
     }
     try {
-      const usuario: Usuario = {
-        username,
-        auth0Id,
-        email: ''
-      };
-      const data = await UsuarioService.login(usuario);
-      console.log("data del back", data)
+      setLoading(true);
+      const data = await UsuarioService.login(username);
+      console.log("data del back", data);
       if (data && data.rol) {
-
-
-        setLoading(true)
         setTimeout(() => {
-          setLoading(false)
+          setLoading(false);
           login(data.email, data.username, data.rol || Rol.Cliente);
           closeModal();
         }, 1500);

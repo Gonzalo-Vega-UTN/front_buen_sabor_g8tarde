@@ -32,11 +32,11 @@ export const FormularioArtManuf = () => {
 
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
-  const [files, setFiles] = useState<File[]>([]);
+  const [, setFiles] = useState<File[]>([]);
   const [, setSelectedCategoria] = useState<Categoria | null | undefined>(
     articuloManufacturado?.categoria
   );
-  const [selectedUnidadMedida, setSelectedUnidadMedida] = useState<
+  const [, setSelectedUnidadMedida] = useState<
     UnidadMedida | null | undefined
   >(articuloManufacturado?.unidadMedida);
 
@@ -195,7 +195,6 @@ export const FormularioArtManuf = () => {
 
       if (response) {
         if (response.id) {
-          const images = await ProductServices.uploadFiles(response.id, files);
           setExito("ENTIDAD CREADA CON ÉXITO");
           setTimeout(() => {
             navigate("/productos");

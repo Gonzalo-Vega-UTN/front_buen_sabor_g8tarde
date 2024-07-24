@@ -1,4 +1,5 @@
 import { Empleado } from "../entities/DTO/Empleado/Empleado";
+import { Imagen } from "../entities/DTO/Imagen";
 import { RedirectDto } from "../entities/RedirectDto";
 
 export class EmpleadoService {
@@ -102,6 +103,6 @@ export class EmpleadoService {
       }
     }
   
-  };
+  }
   
   

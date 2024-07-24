@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
-import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
+import {  BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import { Promocion } from "../../entities/DTO/Promocion/Promocion";

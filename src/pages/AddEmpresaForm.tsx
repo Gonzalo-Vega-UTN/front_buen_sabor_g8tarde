@@ -17,7 +17,7 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
   const [empresa, setEmpresa] = useState<Empresa>(new Empresa());
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
-  const [files, setFiles] = useState<File[]>([]);
+  const [, setFiles] = useState<File[]>([]);
 
   useEffect(() => {
     if (empresaEditando) {
@@ -61,7 +61,6 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
 
       // Si el artículo se creó o actualizó correctamente, proceder a subir los archivos
       if (response.id) {
-        const images = await EmpresaService.uploadFiles(response.id, files);
         onAddEmpresa();
       }
     } catch (err) {

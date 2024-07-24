@@ -135,6 +135,6 @@ export class SucursalService {
       throw error;
     }
   }
-};
+}
 
 export default SucursalService;

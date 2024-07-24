@@ -22,7 +22,7 @@ export const MisPedidosList = () => {
         fetchPedidos();
     }, []);
 
-    const formatHora = (hora) => {
+    const formatHora = (hora: string | any[]) => {
         // Asumimos que la hora viene en formato HH:MM:SS
         if (hora && hora.length >= 5) {
             return hora.slice(0, 5); // Corta el string para obtener solo HH:MM
@@ -30,7 +30,7 @@ export const MisPedidosList = () => {
         return "Hora No disponible";
     };
 
-    const obtenerEstadoPedido = (pedido) => {
+    const obtenerEstadoPedido = (pedido: PedidoFull) => {
         if (pedido.tipoEnvio === "TakeAway" && pedido.estado === "Pendiente") {
             return "Listo para Retirar";
         }

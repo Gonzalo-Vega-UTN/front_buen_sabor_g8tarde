@@ -8,7 +8,7 @@ interface RegisterProps {
     closeModal: () => void;
 }
 
-const RegisterPage: React.FC<RegisterProps> = ({ closeModal }) => {
+const RegisterPage: React.FC<RegisterProps> = ({  }) => {
     const [username, setUsername] = useState<string>('');
     const [auth0Id, setAuth0Id] = useState<string>('');
     const [rol, setRol] = useState<Rol>(Rol.Cliente);
@@ -27,7 +27,10 @@ const RegisterPage: React.FC<RegisterProps> = ({ closeModal }) => {
         }
 
         try {
-            const usuario: Usuario = { username, auth0Id, rol };
+            const usuario: Usuario = {
+                username, auth0Id, rol,
+                email: ''
+            };
             
             await UsuarioService.register(usuario);
             setRegistromensaje('Usuario registrado con éxito');

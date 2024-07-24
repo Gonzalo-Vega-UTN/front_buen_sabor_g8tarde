@@ -3,7 +3,6 @@ import ArticuloInsumoTable from "./ArticuloInsumoTable";
 import { ModalType } from "../../types/ModalType";
 import Button from "../../components/generic/GenericButton";
 import { useEffect, useState } from "react";
-import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
 import { ArticuloInsumo } from "../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
@@ -13,9 +12,7 @@ import ArticuloInsumoService from "../../services/ArticuloInsumoService";
 import ArticuloInsumoModal from "./ArticuloInsumoModal";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 
-interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
-  activeSucursal: string ;
-}
+
 
 export default function ArticuloInsumoPage() {
 
@@ -72,7 +69,7 @@ export default function ArticuloInsumoPage() {
   }, [categoria, unidadMedida, searchedDenominacion]);
 
 
-  const handleSaveUpdate = async (art: ArticuloInsumo, files: File[]) => {
+  const handleSaveUpdate = async (art: ArticuloInsumo) => {
     try {
       let response: ArticuloInsumo;
       //quitar blobs
@@ -90,7 +87,6 @@ export default function ArticuloInsumoPage() {
       } 
       // Si el artículo se creó o actualizó correctamente, proceder a subir los archivos
       if (response.id) {
-       const images = await ArticuloInsumoService.uploadFiles(response.id, files);
        fetchDataArticulosInsumo(); 
       }
     } catch (error) {

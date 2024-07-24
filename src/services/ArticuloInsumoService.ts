@@ -1,5 +1,6 @@
-import { Imagen } from "../entities/DTO/Articulo/Imagen";
+
 import { ArticuloInsumo } from "../entities/DTO/Articulo/Insumo/ArticuloInsumo";
+import { Imagen } from "../entities/DTO/Imagen";
 
 
 class ArticuloInsumoService {
@@ -140,6 +141,6 @@ class ArticuloInsumoService {
     }
   }
 
-};
+}
 
 export default ArticuloInsumoService;

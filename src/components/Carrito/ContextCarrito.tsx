@@ -69,7 +69,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
   const [preferenceId, setPreferenceId] = useState<string>("");
   const [promociones, setPromociones] = useState<Promocion[]>([]);
 
-  const [msjPedido, setMsjPedido] = useState<string>("");
+  const [, setMsjPedido] = useState<string>("");
 
   const fetchPromociones = async () => {
     setPromociones(

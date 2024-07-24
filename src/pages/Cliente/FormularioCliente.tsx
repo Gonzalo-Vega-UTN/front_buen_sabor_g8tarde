@@ -10,20 +10,20 @@ import { Imagen } from "../../entities/DTO/Imagen";
 import { useAuth0 } from "@auth0/auth0-react"; // Importar useAuth0
 import { Rol } from "../../entities/enums/Rol";
 import ClienteService from "../../services/ClienteService";
-import UsuarioService from "../../services/UsuarioService";
+
 
 const FormularioCliente = () => {
   const [step, setStep] = useState(1);
   const [ClienteData, setClienteData] = useState<Cliente>(new Cliente());
-  const [domicilioData, setDomicilioData] = useState<Domicilio>(
+  const [, setDomicilioData] = useState<Domicilio>(
     new Domicilio()
   );
-  const [selectedRole, setSelectedRole] = React.useState<Rol>(Rol.Cliente); // Initial selected role
-  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [selectedRole, ] = React.useState<Rol>(Rol.Cliente); // Initial selected role
+  const [] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [files, setFiles] = useState<File[]>([]);
+  const [, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string>("");
+  const [success, ] = useState<string>("");
   const navigate = useNavigate();
   const {  user } = useAuth0(); 
 

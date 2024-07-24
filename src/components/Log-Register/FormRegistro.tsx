@@ -24,8 +24,8 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
   const [step, setStep] = useState(1);
   const [usuarioData, setUsuarioData] = useState<Usuario>(new Usuario());
   const [clienteData, setClienteData] = useState<Cliente>(new Cliente());
-  const [domicilioData, setDomicilioData] = useState({});
-  const [files, setFiles] = useState<File[]>([]);
+  const [, setDomicilioData] = useState({});
+  const [, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -106,7 +106,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
     };
 
     try {
-      const cliente = await ClienteService.agregarcliente(clienteCompleto);
+      const cliente = await ClienteService.agregarCliente(clienteCompleto);
       console.log(cliente.domicilios);
       if (cliente) {
         setSuccess("Registro Exitoso");
@@ -153,7 +153,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
               <Form.Control
                 type="text"
                 name="email"
-                value={usuarioData.email}
+                value={usuarioData.email ?? ''}
                 onChange={handleChangeUsuario}
                 placeholder="Ingrese su email"
                 required
@@ -164,7 +164,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
               <Form.Control
                 type="text"
                 name="username"
-                value={usuarioData.username}
+                value={usuarioData.username ?? ''}
                 onChange={handleChangeUsuario}
                 placeholder="Ingrese su nombre de usuario"
                 required
@@ -175,7 +175,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
               <Form.Control
                 type={passwordVisible ? "text" : "password"}
                 name="auth0Id"
-                value={usuarioData.auth0Id}
+                value={usuarioData.auth0Id ?? ''}
                 onChange={handleChangeUsuario}
                 placeholder="Ingrese su contraseña"
                 required
@@ -193,7 +193,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
             <GoogleLogin
               onSuccess={async (credentialResponse) => {
                 try {
-                  const user = await googleRegister(credentialResponse); //registro google googleRegister
+                  const user = await googleRegister(credentialResponse);
                   setUsuarioData(user);
                   setLoading(true);
                   setTimeout(() => {
@@ -242,7 +242,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
               <Form.Control
                 type="text"
                 name="nombre"
-                value={clienteData.nombre}
+                value={clienteData.nombre ?? ''}
                 onChange={handleChangeCliente}
                 placeholder="Ingrese su nombre"
                 required
@@ -253,7 +253,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
               <Form.Control
                 type="text"
                 name="apellido"
-                value={clienteData.apellido}
+                value={clienteData.apellido ?? ''}
                 onChange={handleChangeCliente}
                 placeholder="Ingrese su apellido"
                 required
@@ -264,7 +264,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
               <Form.Control
                 type="text"
                 name="telefono"
-                value={clienteData.telefono}
+                value={clienteData.telefono ?? ''}
                 onChange={handleChangeCliente}
                 placeholder="Ingrese su teléfono"
                 required
@@ -275,7 +275,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
               <Form.Control
                 type="date"
                 name="fechaNacimiento"
-                value={clienteData.fechaNacimiento}
+                value={clienteData.fechaNacimiento ?? ''}
                 onChange={handleChangeCliente}
                 required
               />

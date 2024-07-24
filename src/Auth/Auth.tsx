@@ -88,30 +88,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const decoded: any = jwtDecode(response.credential);
         const email = decoded.email;
-        console.log(email.split("@")[0])
-        const validacion = await UsuarioService.validarExistenciaUsuario(email.split("@")[0]);
-        console.log("existe en el back??????", validacion.valueOf)
+        const username = email.split("@")[0];
+        console.log(username);
+  
+        const validacion = await UsuarioService.validarExistenciaUsuario(username);
+        console.log("existe en el back??????", validacion);
+  
         if (validacion) {
-          const usuario = new Usuario();
-          usuario.auth0Id = "google"; //Contraseña
-          usuario.username = email.split("@")[0]; //Nombre de usuario
-          //Si ya existe se logea unicamente NO SE CREA
-          const loggedUser = await UsuarioService.login(usuario);
-          console.log("uuario logeado, ", loggedUser)
-
-          login(loggedUser.email,loggedUser.username, loggedUser.rol || Rol.Cliente);
-
+          // Login with username or email directly
+          const loggedUser = await UsuarioService.login(username);
+          console.log("usuario logeado, ", loggedUser);
+  
+          login(loggedUser.email, loggedUser.username, loggedUser.rol || Rol.Cliente);
         } else {
-          throw Error("Usuario no existe")
-
+          throw new Error("Usuario no existe");
         }
       } catch (error) {
-        //console.error('Error decoding JWT:', error);
-        throw Error("Usuario no existe")
+        console.error('Error:', error);
+        throw new Error("Usuario no existe");
       }
     }
   };
-
  const googleRegister = async (response: CredentialResponse): Promise<Usuario> => {
   if (!response.credential) {
     throw new Error("No se proporcionó credencial");
