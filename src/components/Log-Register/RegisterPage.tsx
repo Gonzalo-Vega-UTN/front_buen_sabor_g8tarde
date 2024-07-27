@@ -1,5 +1,7 @@
+// src/components/RegisterPage.tsx
 import React, { useState } from 'react';
 import { Button, Form, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'; // Importar useNavigate
 import { Rol } from '../../entities/enums/Rol';
 import Usuario from '../../entities/DTO/Usuario/Usuario';
 import UsuarioService from '../../services/UsuarioService';
@@ -8,37 +10,43 @@ interface RegisterProps {
     closeModal: () => void;
 }
 
-const RegisterPage: React.FC<RegisterProps> = ({  }) => {
+const RegisterPage: React.FC<RegisterProps> = ({ }) => {
     const [username, setUsername] = useState<string>('');
     const [auth0Id, setAuth0Id] = useState<string>('');
     const [rol, setRol] = useState<Rol>(Rol.Cliente);
     const [mensaje, setMensaje] = useState<string>('');
-    
     const [Registromensaje, setRegistromensaje] = useState<string>('');
+
+    const navigate = useNavigate(); // Usar useNavigate para la navegación
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log("Submit button clicked"); // Verificar que se detecta el clic en el botón de submit
 
-        // Validar la longitud de la contraseña
+        // Validar la longitud de la clave
         if (auth0Id.length < 4) {
-            setMensaje('La contraseña debe tener al menos 4 caracteres');
+            setMensaje('La clave debe tener al menos 4 caracteres');
             return;
         }
 
         try {
             const usuario: Usuario = {
-                username, auth0Id, rol,
-                email: ''
+                username,
+                auth0Id,
+                rol,
+                email: '' // Asegúrate de que email esté correctamente definido o asignado
             };
+
+            // Asumir que se necesita un token para la autorización, reemplazar por el token real
+            const token = 'your-auth-token'; // Obtener el token de donde corresponda
             
-            await UsuarioService.register(usuario);
+            await UsuarioService.register(usuario, token); // Pasar el objeto Usuario y el token
             setRegistromensaje('Usuario registrado con éxito');
-            setTimeout(() =>{
-                navigate("/"); 
-            },1500)
+            setTimeout(() => {
+                navigate("/"); // Redirigir después del registro
+            }, 1500);
         } catch (err) {
-            if(err instanceof Error){
+            if (err instanceof Error) {
                 setMensaje(err.message);
             }
             console.error(err);

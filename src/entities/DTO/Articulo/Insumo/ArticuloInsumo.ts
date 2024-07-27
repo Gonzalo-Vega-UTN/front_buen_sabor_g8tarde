@@ -1,5 +1,6 @@
+import { Imagen } from "../../Imagen";
 import { Articulo } from "../Articulo";
-import { Imagen } from "../Imagen";
+
 
 export class ArticuloInsumo extends Articulo {
     precioCompra: number = 0;

@@ -1,3 +1,4 @@
+// src/components/Register.tsx
 import React, { useState } from 'react';
 import { Button, Form, Alert } from 'react-bootstrap';
 import { Rol } from '../../entities/enums/Rol';
@@ -16,6 +17,12 @@ const Register: React.FC<RegisterProps> = ({ closeModal }) => {
     const [mensaje, setMensaje] = useState<string>('');
     const [Registromensaje, setRegistromensaje] = useState<string>('');
 
+    const getToken = () => {
+        // Aquí deberías obtener el token de una fuente segura
+        // Ejemplo: desde el contexto de autenticación, almacenamiento local, etc.
+        return 'your-auth-token'; // Reemplaza con la lógica real para obtener el token
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (auth0Id.length < 4) {
@@ -29,8 +36,8 @@ const Register: React.FC<RegisterProps> = ({ closeModal }) => {
                 rol,
                 email: ''
             };
-            // Aquí puedes ajustar el método de registro si es necesario
-            const data = await UsuarioService.register(usuario);
+            const token = getToken(); // Obtener el token
+            await UsuarioService.register(usuario, token); // Pasar el objeto Usuario y el token
             setRegistromensaje('Usuario registrado con éxito');
             setTimeout(() => {
                 closeModal();

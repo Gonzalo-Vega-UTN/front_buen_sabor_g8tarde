@@ -7,40 +7,37 @@ import { useState } from "react";
 import { Imagen } from "../../entities/DTO/Imagen";
 import ImagenCarousel from "../../components/carousel/ImagenCarousel";
 
-interface ModalProps{
-    show : boolean
-    onHide : () => void;
-    idpadre: string;
-    activeSucursal : string
+interface ModalProps {
+    show: boolean;
+    onHide: () => void;
+    idpadre: number; // Cambia idpadre a number
+    activeSucursal: string; // Mantén activeSucursal como string
 }
 
-const CategoriaModal = ( {show, onHide, idpadre, activeSucursal} : ModalProps) =>{
-
-        
+const CategoriaModal = ({ show, onHide, idpadre, activeSucursal }: ModalProps) => {
     const [error, setError] = useState<string>("");
     const [categoria, setCategoria] = useState<Categoria>(new Categoria());
     const [files, setFiles] = useState<File[]>([]);
-    
+
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const data = await CategoriaService.agregarCategoria(Number(idpadre) ,Number(activeSucursal),{ ...categoria, alta: true });
+            // Usa idpadre como número, no es necesario convertirlo
+            const data = await CategoriaService.agregarCategoria(idpadre, activeSucursal, { ...categoria, alta: true });
             if (data) {
-                onHide()
+                onHide();
                 setCategoria(new Categoria());
             }
-            if(data.id){
-                await CategoriaService.uploadFiles(data.id, files)
+            if (data.id) {
+                await CategoriaService.uploadFiles(data.id, files);
             }
-
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);
             }
         }
-    }
+    };
 
-    
     const handleImagenesChange = (newImages: Imagen[]) => {
         setCategoria(prev => ({
             ...prev,
@@ -51,6 +48,7 @@ const CategoriaModal = ( {show, onHide, idpadre, activeSucursal} : ModalProps) =
     const handleFileChange = (newFiles: File[]) => {
         setFiles(newFiles);
     };
+
     return (
         <Modal
             size="lg"
@@ -69,18 +67,22 @@ const CategoriaModal = ( {show, onHide, idpadre, activeSucursal} : ModalProps) =
                 <Form>
                     <Form.Group className="mb-3" controlId="denominacion">
                         <Form.Label>Denominacion</Form.Label>
-                        <Form.Control type="tex" placeholder="Ingresar Denominacion" onChange={(e) => setCategoria(prev => ({
-                            ...prev,
-                            denominacion: e.target.value
-                        }))}
-                            value={categoria.denominacion} />
+                        <Form.Control
+                            type="text" // Corrige "tex" a "text"
+                            placeholder="Ingresar Denominacion"
+                            onChange={(e) => setCategoria(prev => ({
+                                ...prev,
+                                denominacion: e.target.value
+                            }))}
+                            value={categoria.denominacion}
+                        />
                     </Form.Group>
-                   
+
                     <ImagenCarousel
-                                    imagenesExistentes={categoria.imagenes}
-                                    onFilesChange={handleFileChange}
-                                    onImagenesChange={handleImagenesChange}
-                                />
+                        imagenesExistentes={categoria.imagenes}
+                        onFilesChange={handleFileChange}
+                        onImagenesChange={handleImagenesChange}
+                    />
                 </Form>
                 {error && <p className='text-danger'>{error}</p>}
             </Modal.Body>
@@ -90,6 +92,6 @@ const CategoriaModal = ( {show, onHide, idpadre, activeSucursal} : ModalProps) =
             </Modal.Footer>
         </Modal>
     );
-}
+};
 
 export default CategoriaModal;

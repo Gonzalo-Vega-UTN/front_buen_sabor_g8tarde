@@ -62,7 +62,9 @@ const Lista: React.FC<ListaProps> = ({ selectedCategoryId }) => {
               <div className="card">
                 <div className="card-body">
                   <h5 className="card-title">Carrito</h5>
-                  <Carrito actualizarLista={actualizarLista}/>
+                  <Carrito actualizarLista={actualizarLista} isOpen={false} setIsOpen={function (): void {
+                    throw new Error('Function not implemented.');
+                  } }/>
                 </div>
               </div>
             </div>

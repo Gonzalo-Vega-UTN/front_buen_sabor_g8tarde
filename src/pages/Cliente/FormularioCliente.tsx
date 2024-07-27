@@ -11,25 +11,21 @@ import { useAuth0 } from "@auth0/auth0-react"; // Importar useAuth0
 import { Rol } from "../../entities/enums/Rol";
 import ClienteService from "../../services/ClienteService";
 
-
 const FormularioCliente = () => {
   const [step, setStep] = useState(1);
   const [ClienteData, setClienteData] = useState<Cliente>(new Cliente());
-  const [, setDomicilioData] = useState<Domicilio>(
-    new Domicilio()
-  );
-  const [selectedRole, ] = React.useState<Rol>(Rol.Cliente); // Initial selected role
-  const [] = useState(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [, setDomicilioData] = useState<Domicilio>(new Domicilio());
+  const [selectedRole] = React.useState<Rol>(Rol.Cliente); // Initial selected role
   const [, setFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [success, ] = useState<string>("");
+  const [success, setSuccess] = useState<string>(""); // Added setter for success
   const navigate = useNavigate();
-  const {  user } = useAuth0(); 
+  const { user } = useAuth0();
 
   const handleSubmitDomicilio = async (domicilio: Domicilio) => {
     if (user && user.email) {
-        console.log(user)
+      console.log(user);
       setDomicilioData(domicilio);
       const usuario = new Usuario();
       usuario.username = user.email.split("@")[0];
@@ -45,8 +41,8 @@ const FormularioCliente = () => {
       try {
         const response = await ClienteService.agregarCliente(ClienteCompleto);
         if (response && response.usuario.rol) {
-          // Aquí se debe redirigir al usuario al completar el registro
-          navigate("/");
+          setSuccess("Cliente registrado con éxito."); // Set success message
+          setTimeout(() => navigate("/"), 1500); // Navigate after success message
         } else {
           setError("Hubo un problema al registrar el Cliente.");
         }
@@ -105,7 +101,7 @@ const FormularioCliente = () => {
             <Form.Control
               type="text"
               name="nombre"
-              value={ClienteData.nombre}
+              value={ClienteData.nombre || ""}
               onChange={handleChangeCliente}
               placeholder="Ingrese su nombre"
               required
@@ -116,7 +112,7 @@ const FormularioCliente = () => {
             <Form.Control
               type="text"
               name="apellido"
-              value={ClienteData.apellido}
+              value={ClienteData.apellido || ""}
               onChange={handleChangeCliente}
               placeholder="Ingrese su apellido"
               required
@@ -127,7 +123,7 @@ const FormularioCliente = () => {
             <Form.Control
               type="text"
               name="telefono"
-              value={ClienteData.telefono}
+              value={ClienteData.telefono || ""}
               onChange={handleChangeCliente}
               placeholder="Ingrese su teléfono"
               required
@@ -138,7 +134,7 @@ const FormularioCliente = () => {
             <Form.Control
               type="date"
               name="fechaNacimiento"
-              value={ClienteData.fechaNacimiento}
+              value={ClienteData.fechaNacimiento || ""}
               onChange={handleChangeCliente}
               required
             />

@@ -1,3 +1,4 @@
+// src/context/Auth0Context.tsx
 import  { createContext, useContext, useState, useEffect } from "react";
 import {
   Auth0Provider,
@@ -28,7 +29,6 @@ type Props = {
 export const Auth0ProviderWithNavigate = ({ children }: Props) => {
   const navigate = useNavigate();
   const [activeSucursal, setActiveSucursal] = useState<string>("");
-  console.log(activeSucursal);
   const domain = import.meta.env.VITE_AUTH0_DOMAIN as string;
   const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID as string;
   const redirectUri = import.meta.env.VITE_AUTH0_CALLBACK_URL as string;
@@ -75,7 +75,7 @@ const Auth0ContextWrapper = ({
   selectSucursal: (sucursalId: number) => void;
   activeSucursal: string;
 }) => {
-  const { isAuthenticated, getAccessTokenSilently, logout } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently, logout, user } = useAuth0();
   const navigate = useNavigate();
   const [, setClientFormCompleted] = useState(false);
 
@@ -84,10 +84,18 @@ const Auth0ContextWrapper = ({
       if (isAuthenticated) {
         try {
           const token = await getAccessTokenSilently();
-          const isNewUser = await UsuarioService.validarExistenciaUsuario(token);
           let response: Usuario;
+
+          const isNewUser = await UsuarioService.validarExistenciaUsuario(token);
           if (!isNewUser) {
-            response = await UsuarioService.register(token);
+            // Construir el objeto Usuario
+            const newUsuario: Usuario = {
+              auth0Id: user?.sub || '',
+              username: user?.name || '',
+              email: user?.email || '',
+              rol: undefined, // Establecer el rol según la lógica de tu aplicación
+            };
+            response = await UsuarioService.register(newUsuario, token);
             console.log("Usuario registrado:", response);
           } else {
             response = await UsuarioService.login(token);
@@ -105,21 +113,14 @@ const Auth0ContextWrapper = ({
           }
         } catch (error) {
           console.error("Error durante la autenticación del usuario:", error);
-        logout({ logoutParams: { returnTo: window.location.origin } });
+          logout({ logoutParams: { returnTo: window.location.origin } });
         }
       }
     };
 
     handleUserAuthentication();
-  }, [isAuthenticated, getAccessTokenSilently, logout, navigate]);
+  }, [isAuthenticated, getAccessTokenSilently, logout, navigate, user]);
 
-/* Revisar utilidad de esto
-  useEffect(() => {
-    if (isAuthenticated && !clientFormCompleted) {
-      navigate("/formulario-cliente");
-    }
-  }, [isAuthenticated, clientFormCompleted, navigate("/")]);
-*/
   return (
     <Auth0Context.Provider
       value={{ ...useAuth0(), selectSucursal, activeSucursal }}

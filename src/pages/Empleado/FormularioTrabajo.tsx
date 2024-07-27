@@ -15,15 +15,15 @@ const FormularioTrabajo = () => {
     const [step, setStep] = useState(1);
     const [usuarioData, setUsuarioData] = useState<Usuario>(new Usuario());
     const [empleadoData, setEmpleadoData] = useState<Empleado>(new Empleado());
-    const [ setDomicilioData] = useState<Domicilio>(new Domicilio());
-    const [selectedRole, setSelectedRole] = React.useState<Rol>(Rol.Empleado); // Initial selected role
+    const [, setDomicilioData] = useState<Domicilio>(new Domicilio());
+    const [selectedRole, setSelectedRole] = useState<Rol>(Rol.Empleado); // Initial selected role
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const [setFiles] = useState<File[]>([]);
+    const [, setFiles] = useState<File[]>([]);
     const [error, setError] = useState<string>("");
     const [success, ] = useState<string>("");
     const navigate = useNavigate();
-    const {  } = useAuth0(); 
+    const { } = useAuth0(); 
 
     const handleChangeUsuario = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -115,7 +115,7 @@ const FormularioTrabajo = () => {
                         <Form.Control
                             type="text"
                             name="email"
-                            value={usuarioData.email}
+                            value={usuarioData.email || ''}
                             onChange={handleChangeUsuario}
                             placeholder="Ingrese su email"
                             required
@@ -126,7 +126,7 @@ const FormularioTrabajo = () => {
                         <Form.Control
                             type="text"
                             name="username"
-                            value={usuarioData.username}
+                            value={usuarioData.username || ''}
                             onChange={handleChangeUsuario}
                             placeholder="Ingrese su nombre de usuario"
                             required
@@ -137,7 +137,7 @@ const FormularioTrabajo = () => {
                         <Form.Control
                             type={passwordVisible ? "text" : "password"}
                             name="auth0Id"
-                            value={usuarioData.auth0Id}
+                            value={usuarioData.auth0Id || ''}
                             onChange={handleChangeUsuario}
                             placeholder="Ingrese su contraseña"
                             required
@@ -179,7 +179,7 @@ const FormularioTrabajo = () => {
                         <Form.Control
                             type="text"
                             name="nombre"
-                            value={empleadoData.nombre}
+                            value={empleadoData.nombre || ''}
                             onChange={handleChangeEmpleado}
                             placeholder="Ingrese su nombre"
                             required
@@ -190,7 +190,7 @@ const FormularioTrabajo = () => {
                         <Form.Control
                             type="text"
                             name="apellido"
-                            value={empleadoData.apellido}
+                            value={empleadoData.apellido || ''}
                             onChange={handleChangeEmpleado}
                             placeholder="Ingrese su apellido"
                             required
@@ -201,7 +201,7 @@ const FormularioTrabajo = () => {
                         <Form.Control
                             type="text"
                             name="telefono"
-                            value={empleadoData.telefono}
+                            value={empleadoData.telefono || ''}
                             onChange={handleChangeEmpleado}
                             placeholder="Ingrese su teléfono"
                             required
@@ -212,7 +212,7 @@ const FormularioTrabajo = () => {
                         <Form.Control
                             type="date"
                             name="fechaNacimiento"
-                            value={empleadoData.fechaNacimiento}
+                            value={empleadoData.fechaNacimiento || ''}
                             onChange={handleChangeEmpleado}
                             required
                         />
@@ -221,8 +221,8 @@ const FormularioTrabajo = () => {
                         <Form.Label>Seleccionar Rol:</Form.Label>
                         <Form.Select value={selectedRole} onChange={handleChangeRol}>
                             {Object.keys(Rol).map((key) => (
-                                <option key={key} value={Rol[key]}>
-                                    {Rol[key]}
+                                <option key={key} value={Rol[key as keyof typeof Rol]}>
+                                    {Rol[key as keyof typeof Rol]}
                                 </option>
                             ))}
                         </Form.Select>

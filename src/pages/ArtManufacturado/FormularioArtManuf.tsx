@@ -131,11 +131,16 @@ export const FormularioArtManuf = () => {
   };
 
   const handleImagenesChange = (newImages: Imagen[]) => {
-    if (articuloManufacturado != null && articuloManufacturado !== undefined) {
-      setArticuloManufacturado((prev) => ({
-        ...prev,
-        imagenes: newImages,
-      }));
+    if (articuloManufacturado != null) {
+      setArticuloManufacturado((prev) => {
+        if (prev) {
+          return {
+            ...prev,
+            imagenes: newImages,
+          };
+        }
+        return null; // Ensure to return null if prev is null
+      });
     }
   };
 

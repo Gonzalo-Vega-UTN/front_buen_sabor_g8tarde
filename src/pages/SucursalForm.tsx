@@ -1,4 +1,4 @@
-// SucursalList.tsx
+
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Dropdown, DropdownButton, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

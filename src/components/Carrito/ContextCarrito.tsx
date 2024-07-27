@@ -171,14 +171,6 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         0
       );
 
-      const precioProductosTotal = pedido.detallePedidos.reduce(
-        (acc, detallePedido) => {
-          return (
-            acc + detallePedido.cantidad * detallePedido.articulo.precioVenta
-          );
-        },
-        0
-      );
       console.log("TOTAL PEDIDO", totalPedido);
       console.log("precioProductosPromoNormal", precioProductosPromoNormal);
       console.log("precioPromocional", promo.precioPromocional);

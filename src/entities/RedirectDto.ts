@@ -1,3 +1,3 @@
 export class RedirectDto{
-    urlRedirect : string;
+    urlRedirect : string | undefined;
 }

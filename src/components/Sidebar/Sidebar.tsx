@@ -12,17 +12,62 @@ import { IconType } from 'react-icons';
 import logo from '../../assets/images/Buen sabor logo 1.png';
 import LoginButton from '../Log-Register/LoginButton';
 import RegistroButton from '../Log-Register/RegistroButton';
-import LogoutButton from '../Log-Register/LogoutButton';
-import { Rol } from '../../entities/enums/Rol';
 import BotonLogout from '../Log-Register/BotonLogout';
+import { Rol } from '../../entities/enums/Rol';
 
+// Define the RouteItem interface
 interface RouteItem {
     path: string;
     icon: IconType;
     label: string;
 }
 
-const Sidebar = () => {
+// Define the RoleRoutes type
+type RoleRoutes = {
+    [key in Rol]?: RouteItem[];
+};
+
+// Define default routes
+const defaultRoutes: RouteItem[] = [
+    { path: '/', icon: BsShop, label: 'Tienda' },
+    { path: '/acerca-de', icon: LuChefHat, label: 'Acerca De' }
+];
+
+// Define role-based routes
+const roleRoutes: RoleRoutes = {
+    [Rol.Admin]: [
+        { path: '/empresas', icon: BsBuilding, label: 'Empresas' },
+        { path: '/sucursales', icon: BsShop, label: 'Sucursal' },
+        { path: '/productos', icon: BsBox, label: 'Productos' },
+        { path: '/unidadmedida', icon: TbRulerMeasure, label: 'Medidas' },
+        { path: '/ingredientes', icon: BsBasket, label: 'Ingredientes' },
+        { path: '/promociones', icon: BsPercent, label: 'Promociones' },
+        { path: '/pedidos', icon: BsCart, label: 'Pedidos' },
+        { path: '/clientes', icon: BsFillPeopleFill, label: 'Clientes' },
+        { path: '/categorias', icon: MdOutlineCategory, label: 'Categorias' },
+        { path: '/reportes', icon: BsGraphUp, label: 'Reportes' },
+        { path: '/PedidosCajero', icon: LiaCashRegisterSolid, label: 'Cajero' },
+        { path: '/PedidosDelivery', icon: MdDeliveryDining, label: 'Delivery' },
+        { path: '/PedidosCocinero', icon: LuChefHat, label: 'Cocinero' },
+    ],
+    [Rol.Cocinero]: [
+        { path: '/unidadmedida', icon: TbRulerMeasure, label: 'Medidas' },
+        { path: '/ingredientes', icon: BsBasket, label: 'Ingredientes' },
+        { path: '/promociones', icon: BsPercent, label: 'Promociones' },
+        { path: '/PedidosCocinero', icon: LuChefHat, label: 'Cocinero' },
+    ],
+    [Rol.Cajero]: [
+        { path: '/PedidosCajero', icon: LiaCashRegisterSolid, label: 'Cajero' },
+    ],
+    [Rol.Delivery]: [
+        { path: '/PedidosDelivery', icon: MdDeliveryDining, label: 'Delivery' },
+    ],
+    [Rol.Cliente]: [
+        { path: '/misPedidos', icon: MdDeliveryDining, label: 'Mis Pedidos' },
+    ],
+};
+
+const Sidebar: React.FC = () => {
     const [expanded, setExpanded] = useState(false);
     const [selected, setSelected] = useState('');
     const location = useLocation();
@@ -35,51 +80,8 @@ const Sidebar = () => {
         setSelected(path);
     };
 
-    const roleRoutes = {
-        [Rol.Admin]: [
-            { path: '/empresas', icon: BsBuilding, label: 'Empresas' },
-            { path: '/sucursales', icon: BsShop, label: 'Sucursal' },
-            { path: '/productos', icon: BsBox, label: 'Productos' },
-            { path: '/unidadmedida', icon: TbRulerMeasure, label: 'Medidas' },
-            { path: '/ingredientes', icon: BsBasket, label: 'Ingredientes' },
-            { path: '/promociones', icon: BsPercent, label: 'Promociones' },
-            { path: '/pedidos', icon: BsCart, label: 'Pedidos' },
-            { path: '/clientes', icon: BsFillPeopleFill, label: 'Clientes' },
-            { path: '/categorias', icon: MdOutlineCategory, label: 'Categorias' },
-            { path: '/reportes', icon: BsGraphUp, label: 'Reportes' },
-            { path: '/PedidosCajero', icon: LiaCashRegisterSolid, label: 'Cajero' },
-            { path: '/PedidosDelivery', icon: MdDeliveryDining, label: 'Delivery' },
-            { path: '/PedidosCocinero', icon: LuChefHat, label: 'Cocinero' },
-        ],
-        [Rol.Cocinero]: [
-            { path: '/unidadmedida', icon: TbRulerMeasure, label: 'Medidas' },
-            { path: '/ingredientes', icon: BsBasket, label: 'Ingredientes' },
-            { path: '/promociones', icon: BsPercent, label: 'Promociones' },
-            { path: '/PedidosCocinero', icon: LuChefHat, label: 'Cocinero' },
-        ],
-        [Rol.Cajero]: [
-            { path: '/PedidosCajero', icon: LiaCashRegisterSolid, label: 'Cajero' },
-        ],
-        [Rol.Delivery]: [
-            { path: '/PedidosDelivery', icon: MdDeliveryDining, label: 'Delivery' },
-        ],
-        [Rol.Cliente]: [
-            { path: '/misPedidos', icon: MdDeliveryDining, label: 'Mis Pedidos' },
-        ],
-    };
-
-    const defaultRoutes = [
-        { path: '/', icon: BsShop, label: 'Tienda' },
-        { path: '/acerca-de', icon: LuChefHat, label: 'Acerca De' }
-    ];
-    const userRoles = user ? user['https://apiprueba/roles'] : [];
-
-    const isAdmin = userRoles.includes('Admin');
-    const isCliente = userRoles.includes('Cliente');
-
-    const routesToDisplay = isAuthenticated ? roleRoutes[userRoles] || [] : [];
-
-
+    const userRoles: Rol[] = user ? (user['https://apiprueba/roles'] as Rol[]) : [];
+    const routesToDisplay = isAuthenticated && userRoles.length > 0 ? roleRoutes[userRoles[0]] || [] : [];
 
     return (
         <div
@@ -88,11 +90,11 @@ const Sidebar = () => {
             onMouseLeave={handleMouseLeave}
         >
             <div className="ms-4 my-3">
-                <img src={logo} alt="Logo" className="logo" /> {/* Muestra el logo en lugar de "Buen Sabor" */}
+                <img src={logo} alt="Logo" className="logo" />
             </div>
 
             <hr className="text-white" />
-            <ul className="nav flex-column flex-grow-1"> {/* Aplica flex-grow-1 para que ocupe todo el espacio vertical disponible */}
+            <ul className="nav flex-column flex-grow-1">
                 {defaultRoutes.map(({ path, icon: Icon, label }) => (
                     <li className="nav-item" key={path}>
                         <Link
@@ -120,7 +122,7 @@ const Sidebar = () => {
                 ))}
             </ul>
             <div className="mt-auto">
-                {isAuthenticated ? <BotonLogout /> : <div><LoginButton  /> <RegistroButton/></div>}
+                {isAuthenticated ? <BotonLogout /> : <div><LoginButton /> <RegistroButton /></div>}
             </div>
         </div>
     );

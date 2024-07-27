@@ -1,6 +1,5 @@
 import Usuario from "../entities/DTO/Usuario/Usuario";
 
-
 class UsuarioService {
   private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/auth`;
 
@@ -28,14 +27,15 @@ class UsuarioService {
     }
   }
 
-  static async register(token: string): Promise<Usuario> {
+  static async register(usuario: Usuario, token: string): Promise<Usuario> {
     try {
       const responseData = await this.request('/register', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
-        
+        body: JSON.stringify(usuario),
       });
       return responseData as Usuario;
     } catch (error) {

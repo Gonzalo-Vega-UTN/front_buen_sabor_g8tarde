@@ -1,7 +1,14 @@
-
 import { Modal, Button } from 'react-bootstrap';
 
-const ModalConfirm = ({ show, title, text, onConfirm, onCancel }) => {
+interface ModalConfirmProps {
+  show: boolean;
+  title: string;
+  text: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+const ModalConfirm: React.FC<ModalConfirmProps> = ({ show, title, text, onConfirm, onCancel }) => {
   return (
     <Modal show={show} onHide={onCancel}>
       <Modal.Header closeButton>

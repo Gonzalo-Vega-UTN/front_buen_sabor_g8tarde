@@ -18,39 +18,50 @@ interface ArticuloInsumoModalProps {
     handleDelete: (idArt: number) => Promise<void>;
 }
 
-const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit, handleDelete, unidadesMedida, categorias }: ArticuloInsumoModalProps) => {
-
+const ArticuloInsumoModal = ({
+    onHide,
+    modalType,
+    articulo,
+    titulo,
+    handleSubmit,
+    handleDelete,
+    unidadesMedida,
+    categorias
+}: ArticuloInsumoModalProps) => {
     const [articuloInsumo, setArticuloInsumo] = useState<ArticuloInsumo>(articulo ? articulo : new ArticuloInsumo());
     const [error, setError] = useState<string>("");
     const [files, setFiles] = useState<File[]>([]);
     const [loading, setLoading] = useState(false);
 
-    const handleChange = (name: string, value: number | string) => {
-        if (name === 'categoria') {
-            const categoriaSeleccionada = categorias.find(c => c.id === parseInt(value.toString()));
-            setArticuloInsumo(prev => ({
-                ...prev,
-                categoria: categoriaSeleccionada || null,
-            }));
-        } else if (name === 'unidadMedida') {
-            const unidadSeleccionada = unidadesMedida.find(um => um.id === parseInt(value.toString()));
-            setArticuloInsumo(prev => ({
-                ...prev,
-                unidadMedida: unidadSeleccionada || null,
-            }));
-        } else {
-            setArticuloInsumo(prev => ({
-                ...prev,
-                [name]: value,
-            }));
-        }
+    const handleChange = (name: string, value: string | number | boolean) => {
+        setArticuloInsumo(prev => {
+            const updatedArticulo = { ...prev };
+
+            if (name === 'categoria') {
+                const categoriaSeleccionada = categorias.find(c => c.id === parseInt(value.toString()));
+                updatedArticulo.categoria = categoriaSeleccionada || null;
+            } else if (name === 'unidadMedida') {
+                const unidadSeleccionada = unidadesMedida.find(um => um.id === parseInt(value.toString()));
+                updatedArticulo.unidadMedida = unidadSeleccionada || null;
+            } else {
+                (updatedArticulo as any)[name] = value; // Cast to 'any' to bypass TypeScript error
+            }
+
+            return updatedArticulo;
+        });
     };
 
-    const handleBlur = (name: string) => {
-        setArticuloInsumo(prev => ({
-            ...prev,
-            [name]: parseFloat(prev[name].toFixed(2))
-        }));
+    const handleBlur = (name: keyof ArticuloInsumo) => {
+        setArticuloInsumo(prev => {
+            const value = prev[name];
+            if (typeof value === 'number') {
+                return {
+                    ...prev,
+                    [name]: parseFloat(value.toFixed(2))
+                };
+            }
+            return prev;
+        });
     };
 
     const handleImagenesChange = (newImages: Imagen[]) => {
@@ -173,7 +184,7 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                                     <Form.Select
                                         name="unidadMedida"
                                         value={articuloInsumo?.unidadMedida?.id}
-                                        onChange={({ target: { name, value } }) => handleChange(name, value)}
+                                        onChange={({ target: { name, value } }) => handleChange(name, parseInt(value))}
                                     >
                                         <option value="0">Selecciona una unidad de medida</option>
                                         {unidadesMedida.map((unidad) => (
@@ -189,7 +200,7 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                                     <Form.Select
                                         name="categoria"
                                         value={articuloInsumo?.categoria?.id}
-                                        onChange={({ target: { name, value } }) => handleChange(name, value)}
+                                        onChange={({ target: { name, value } }) => handleChange(name, parseInt(value))}
                                     >
                                         <option value="0">Selecciona una categoría</option>
                                         {categorias.map((categoria) => (
@@ -233,7 +244,7 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                                         type="number"
                                         value={articuloInsumo?.stockActual}
                                         onChange={({ target: { name, value } }) => handleChange(name, Number(value))}
-                                        onBlur={({ target: { name } }) => handleBlur(name)}
+                                        onBlur={({ target: { name } }) => handleBlur(name as keyof ArticuloInsumo)}
                                         min={0}
                                     />
                                 </Form.Group>
@@ -245,7 +256,7 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                                         type="number"
                                         value={articuloInsumo?.stockMaximo}
                                         onChange={({ target: { name, value } }) => handleChange(name, Number(value))}
-                                        onBlur={({ target: { name } }) => handleBlur(name)}
+                                        onBlur={({ target: { name } }) => handleBlur(name as keyof ArticuloInsumo)}
                                         min={0}
                                     />
                                 </Form.Group>
@@ -257,7 +268,7 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
                                     <Form.Control
                                         name="descripcion"
                                         as="textarea"
-                                        value={articuloInsumo?.descripcion}
+                                        value={articuloInsumo?.denominacion}
                                         onChange={({ target: { name, value } }) => handleChange(name, value)}
                                     />
                                 </Form.Group>
@@ -283,8 +294,12 @@ const ArticuloInsumoModal = ({ onHide, modalType, articulo, titulo, handleSubmit
 
                             <Row>
                                 <Col>
-                                    <ImagenCarousel imagenes={articuloInsumo?.imagenes || []} onChange={handleImagenesChange} onFileChange={handleFileChange} />
-                                </Col>
+                                <ImagenCarousel 
+                                imagenesExistentes={articuloInsumo?.imagenes || []} 
+                                onFilesChange={handleFileChange} 
+                                onImagenesChange={handleImagenesChange} 
+                                />
+                               </Col>
                             </Row>
 
                             <Modal.Footer>

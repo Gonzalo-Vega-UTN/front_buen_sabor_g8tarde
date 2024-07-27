@@ -1,5 +1,5 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
-import { Form, Button, Row, Col, Container, InputGroup, FormControl } from 'react-bootstrap';
+import React, { useState, useEffect,  } from 'react';
+import { Form, Button, Row, Col, Container, InputGroup } from 'react-bootstrap';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import { useParams, useNavigate } from 'react-router';
 import { Articulo } from '../../entities/DTO/Articulo/Articulo';
@@ -33,13 +33,9 @@ const PromocionForm: React.FC = () => {
       }
 
       try {
-        const manufacturados = await ProductServices.getAllFiltered(
-          activeSucursal
-        );
+        const manufacturados = await ProductServices.getAllFiltered(activeSucursal);
         const insumos = (
-          await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(
-            activeSucursal
-          )
+          await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(activeSucursal)
         ).filter((articulos) => !articulos.esParaElaborar);
         const idsArticulosExistentes = promocion.detallesPromocion.map(
           (detalle) => detalle.articulo.id
@@ -54,7 +50,7 @@ const PromocionForm: React.FC = () => {
     };
 
     fetchData();
-  }, [id]);
+  }, [id, activeSucursal]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -266,99 +262,93 @@ const PromocionForm: React.FC = () => {
           />
         </Form.Group>
 
-        <Row className="mb-3">
-          <Form.Group className="mb-3" controlId="precioPromocional" as={Col}>
-            <Form.Label>Precio Promocional</Form.Label>
+        <Form.Group className="mb-3" controlId="precioPromocional">
+          <Form.Label>Precio Promocional</Form.Label>
+          <InputGroup>
+            <InputGroup.Text>$</InputGroup.Text>
             <Form.Control
               type="number"
               name="precioPromocional"
               value={promocion.precioPromocional}
               onChange={handleChange}
-              min={0}
             />
-          </Form.Group>
+          </InputGroup>
+        </Form.Group>
 
-          <Form.Group controlId="selectTipoPromocion" as={Col}>
-            <Form.Label>Seleccione un Tipo de Promoción</Form.Label>
-            <Form.Control
-              as="select"
-              value={tipoPromocion}
-              onChange={handleChangeSelect}
-            >
-              <option value="" disabled>
-                Seleccionar Opción
+        <Form.Group controlId="selectTipoPromocion" as={Col}>
+          <Form.Label>Seleccione un Tipo de Promoción</Form.Label>
+          <select
+            value={tipoPromocion}
+            onChange={handleChangeSelect}
+            className="form-select"
+          >
+            <option value="" disabled>
+              Seleccionar Opción
+            </option>
+            {Object.values(TipoPromocion).map((tipo) => (
+              <option key={tipo} value={tipo}>
+                {tipo}
               </option>
-              {Object.values(TipoPromocion).map((tipo) => (
-                <option key={tipo} value={tipo}>
-                  {tipo}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-        </Row>
+            ))}
+          </select>
+        </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-3" controlId="detallesPromocion">
           <Form.Label>Detalles de la Promoción</Form.Label>
           {promocion.detallesPromocion.map((detalle, index) => (
-            <InputGroup key={index} className="mb-2">
-              <Form.Select
-                aria-label="Seleccionar Artículo"
-                value={detalle.articulo.id || ""}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                  handleDetailChange(
-                    index,
-                    "articulo",
-                    articulos.find((a) => a.id === parseInt(e.target.value)) ||
-                      ({} as Articulo)
-                  )
-                }
-              >
-                <option value="">Seleccionar Artículo</option>
-                {getAvailableArticulos(index).map((articulo) => (
-                  <option key={articulo.id} value={articulo.id}>
-                    {articulo.denominacion}
+            <Row key={index} className="mb-3">
+              <Col>
+                <Form.Control
+                  as="select"
+                  value={detalle.articulo.id}
+                  onChange={(e) =>
+                    handleDetailChange(index, "articulo", {
+                      ...detalle.articulo,
+                      id: parseInt(e.target.value),
+                    })
+                  }
+                >
+                  <option value={0} disabled>
+                    Seleccionar Articulo
                   </option>
-                ))}
-              </Form.Select>
-              <FormControl
-                type="number"
-                disabled={!detalle.articulo.id}
-                readOnly={!detalle.articulo.id}
-                value={detalle.cantidad || 1}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleDetailChange(
-                    index,
-                    "cantidad",
-                    parseInt(e.target.value)
-                  )
-                }
-                min={1}
-              />
-              <Button
-                variant="outline-danger"
-                onClick={() => removeDetail(index)}
-              >
-                <FaMinus />
-              </Button>
-            </InputGroup>
+                  {getAvailableArticulos(index).map((articulo) => (
+                    <option key={articulo.id} value={articulo.id}>
+                      {articulo.denominacion}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Col>
+              <Col>
+                <Form.Control
+                  type="number"
+                  value={detalle.cantidad}
+                  onChange={(e) =>
+                    handleDetailChange(index, "cantidad", parseInt(e.target.value))
+                  }
+                />
+              </Col>
+              <Col>
+                <Button
+                  variant="danger"
+                  onClick={() => removeDetail(index)}
+                  disabled={promocion.detallesPromocion.length <= 1}
+                >
+                  <FaMinus />
+                </Button>
+              </Col>
+            </Row>
           ))}
-          <Button variant="outline-primary" onClick={addDetail}>
+          <Button variant="primary" onClick={addDetail}>
             <FaPlus /> Añadir Detalle
           </Button>
         </Form.Group>
 
-        <Button type="submit" variant="primary">
-          Guardar Promoción
-        </Button>
-        <Button
-          className="mx-3"
-          variant="outline-secondary"
-          onClick={() => navigate("/promociones")}
-        >
-          Volver
+        {submitError && <p className="text-danger">{submitError}</p>}
+
+        <Button variant="primary" type="submit">
+          Guardar
         </Button>
       </Form>
-      {submitError && <h4 className="text-danger">{submitError}</h4>}
     </Container>
   );
 };

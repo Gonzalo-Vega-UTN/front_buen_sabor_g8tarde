@@ -7,8 +7,6 @@ import GenericButton from "../../components/generic/GenericButton";
 import CategoriaModal from "./CategoriaModal";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 
-
-
 export const CategoriaPage = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [clickedCategoria, setClickedCategoria] = useState<number>(0);
@@ -142,7 +140,7 @@ export const CategoriaPage = () => {
           setModalShow(false);
           fetchCategorias();
         }}
-        idpadre={String(clickedCategoria)}
+        idpadre={clickedCategoria} // Pass as a number
         activeSucursal={activeSucursal ?? ""}
       />
     </Container>
