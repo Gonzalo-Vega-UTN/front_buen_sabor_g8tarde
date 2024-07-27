@@ -6,13 +6,16 @@ import { useNavigate } from 'react-router-dom';
 const AcercaDe: React.FC = () => {
 
     const navigate = useNavigate();
-    const handleSubmit = async (e : FormEvent<HTMLFormElement>) =>{
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-       const response =  await EmpleadoService.formTrabajo("email@gmail.com")
-       if(response){
-        navigate(response.urlRedirect);
-       }
-    }
+        const response = await EmpleadoService.formTrabajo("email@gmail.com");
+        if (response && response.urlRedirect) {
+            navigate(response.urlRedirect);
+        } else {
+            // Handle the case where urlRedirect is undefined
+            console.error("No redirect URL provided.");
+        }
+    };
 
 
 

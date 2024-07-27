@@ -77,7 +77,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
     selectSucursal(sucursalId);
   };
 
-  const handleStatusChange = async (sucursalId: number, alta: boolean) => {
+  const handleStatusChange = async (sucursalId: number, _p0?: boolean) => {
     try {
       const sucursal = sucursales.find(suc => suc.id === sucursalId);
       if (sucursal) {
