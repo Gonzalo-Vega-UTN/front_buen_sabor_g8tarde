@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import UsuarioService from "../services/UsuarioService";
 import ClienteService from "../services/ClienteService";
 import Usuario from "../entities/DTO/Usuario/Usuario";
+import { Rol } from "../entities/enums/Rol";
 
 interface Auth0ContextInterfaceExtended<UserType extends User>
   extends Auth0ContextInterface<UserType> {
@@ -104,7 +105,7 @@ const Auth0ContextWrapper = ({
 
           // Verificar si el usuario tiene un cliente vinculado
           const cliente = await ClienteService.obtenerClienteByUsername(response.username);
-          if (!cliente) {
+          if (!cliente && response.rol== Rol.Cliente ) {
             console.error('Cliente no encontrado:', response.username);
             setClientFormCompleted(false);
             navigate("/formulario-cliente");

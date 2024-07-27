@@ -19,6 +19,7 @@ const PromocionForm: React.FC = () => {
   const [submitError, setSubmitError] = useState<string>("");
   const { activeSucursal } = useAuth0Extended();
 
+  
   useEffect(() => {
     const fetchData = async () => {
       const parsedId = Number(id);
