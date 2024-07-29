@@ -154,6 +154,7 @@ const Home: React.FC = () => {
   const seleccionarSucursal = (sucursal: Sucursal) => {
     setSelectedSucursal(sucursal);
     selectSucursal(sucursal.id);
+    
     fetchCategoriasPadresBySucursal(sucursal.id);
     setCurrentStep(3);
   };

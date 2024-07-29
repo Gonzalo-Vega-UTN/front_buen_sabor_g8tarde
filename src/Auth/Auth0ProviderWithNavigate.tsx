@@ -40,6 +40,7 @@ export const Auth0ProviderWithNavigate = ({ children }: Props) => {
   };
 
   const selectSucursal = (sucursalId: number) => {
+    console.log("entre master sucursal id ",sucursalId)
     setActiveSucursal(String(sucursalId));
   };
 

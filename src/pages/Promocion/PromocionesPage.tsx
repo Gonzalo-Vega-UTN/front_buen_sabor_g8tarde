@@ -9,7 +9,7 @@ import CustomButton from "../../components/generic/GenericButton";
 import GenericButton from "../../components/generic/GenericButton";
 import { FaSave } from "react-icons/fa";
 import PromModal from "./ModalPromocion";
-import { useAuth } from "../../Auth/Auth";
+import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 
 export default function PromotionTable() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export default function PromotionTable() {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
 
-  const {activeSucursal} = useAuth();
+  const {activeSucursal} = useAuth0Extended();
 
   const handleClick = (id: number) => {
     navigate("/create-promotion/" + id);
