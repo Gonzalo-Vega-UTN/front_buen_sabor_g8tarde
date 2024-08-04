@@ -125,11 +125,12 @@ const Home: React.FC = () => {
     }
   };
 
-  const fetchProductos = async (idCategoria: number) => {
+  const fetchProductos = async (idCategoria: number = 0) => {
     if (selectedSucursal) {
       try {
-        const manufacturados = await ProductServices.getAllproductsfromSucursal(
-          String(selectedSucursal.id)
+        const manufacturados = await ProductServices.getProductsByCategoryfromSucursal(
+          String(selectedSucursal.id),
+          idCategoria
         );
         const insumos =
           await ArticuloInsumoService.obtenerArticulosInsumosByCategoriaAndSubCategoria(

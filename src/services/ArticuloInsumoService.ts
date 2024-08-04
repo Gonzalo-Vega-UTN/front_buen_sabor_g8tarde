@@ -31,7 +31,7 @@ class ArticuloInsumoService {
     }
   }
 
-  static async obtenerArticulosInsumosByCategoriaAndSubCategoria(idSucursal : string, idCategoria : number): Promise<ArticuloInsumo[]> {
+  static async obtenerArticulosInsumosByCategoriaAndSubCategoria(idSucursal : string, idCategoria : number = 0): Promise<ArticuloInsumo[]> {
     try {
       const responseData = await this.request(`/${idSucursal}/categoria/${idCategoria}`, {
         method: 'GET',
