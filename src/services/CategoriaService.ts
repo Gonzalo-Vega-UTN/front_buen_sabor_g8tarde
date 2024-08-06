@@ -1,7 +1,6 @@
 import { Categoria } from "../entities/DTO/Categoria/Categoria";
 import { Imagen } from "../entities/DTO/Imagen";
 
-
 export class CategoriaService {
   private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/categorias`;
 
@@ -14,8 +13,12 @@ export class CategoriaService {
     return responseData;
   }
 
+<<<<<<< Updated upstream
   static async obtenerCategorias(id:string): Promise<Categoria[]> {
     
+=======
+  static async obtenerCategorias(activeSucursalId: string): Promise<Categoria[]> {
+>>>>>>> Stashed changes
     try {
       const responseData = await this.request(`/all/${id}`, {
         method: 'GET',
@@ -62,17 +65,23 @@ export class CategoriaService {
     }
   }
 
+<<<<<<< Updated upstream
   static async agregarCategoria(idPadre: number, idSucursal:number,categoria: Categoria): Promise<Categoria> {
     try {
       console.log("Sucursal",idSucursal);
       
       
       const responseData = await this.request(`/${idSucursal}/${idPadre}`, {
+=======
+  static async agregarCategoria(idPadre: number, activeSucursalId: string, categoriaRequest: { categoria: Categoria, sucursalesIds: number[] }): Promise<Categoria> {
+    try {
+      const responseData = await this.request(`/${activeSucursalId}/${idPadre}`, {
+>>>>>>> Stashed changes
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(categoria),
+        body: JSON.stringify(categoriaRequest),
         mode: 'cors'
       });
       return responseData;
@@ -82,31 +91,14 @@ export class CategoriaService {
     }
   }
 
-  static async agregarSubCategoriaCategoria(idCateogriaPadre: number, categoria: Categoria): Promise<Categoria> {
+  static async actualizarCategoria(idCategoria: number, categoriaRequest: { categoria: Categoria, sucursalesIds: number[] }): Promise<Categoria> {
     try {
-      const responseData = await this.request(`/subcategoria/${idCateogriaPadre}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(categoria),
-        mode: 'cors'
-      });
-      return responseData;
-    } catch (error) {
-      console.error('Error al agregar la Categoria:', error);
-      throw error;
-    }
-  }
-
-  static async actualizarCategoria(idCateogria: number, categoria: Categoria): Promise<Categoria> {
-    try {
-      const responseData = await this.request(`/subcategoria/${idCateogria}`, {
+      const responseData = await this.request(`/${idCategoria}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(categoria),
+        body: JSON.stringify(categoriaRequest),
         mode: 'cors'
       });
       return responseData;
@@ -116,7 +108,7 @@ export class CategoriaService {
     }
   }
 
-  static async eliminarCategoriaById(idSucursal : string , id: number): Promise<Categoria> {
+  static async eliminarCategoriaById(idSucursal: string, id: number): Promise<Categoria> {
     try {
       return await this.request(`/${idSucursal}/${id}`, {
         method: 'DELETE',
@@ -151,5 +143,9 @@ export class CategoriaService {
       throw error;
     }
   }
+<<<<<<< Updated upstream
 
 };
+=======
+}
+>>>>>>> Stashed changes
