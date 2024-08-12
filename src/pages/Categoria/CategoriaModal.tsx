@@ -9,100 +9,19 @@ import { Imagen } from "../../entities/DTO/Imagen";
 import ImagenCarousel from "../../components/carousel/ImagenCarousel";
 import { Sucursal } from "../../entities/DTO/Sucursal/Sucursal";
 
-<<<<<<< Updated upstream
-interface ModalProps{
-    show : boolean
-    onHide : () => void;
-    idpadre: string;
-    activeSucursal : string
-}
-
-const CategoriaModal = ( {show, onHide, idpadre, activeSucursal} : ModalProps) =>{
-
-        
-    const [error, setError] = useState<string>("");
-    const [categoria, setCategoria] = useState<Categoria>(new Categoria());
-    const [files, setFiles] = useState<File[]>([]);
-    
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const data = await CategoriaService.agregarCategoria(Number(idpadre) ,Number(activeSucursal),{ ...categoria, alta: true });
-            if (data) {
-                onHide()
-                setCategoria(new Categoria());
-            }
-            if(data.id){
-                await CategoriaService.uploadFiles(data.id, files)
-            }
-
-        } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message);
-            }
-        }
-    }
-
-    
-    const handleImagenesChange = (newImages: Imagen[]) => {
-        setCategoria(prev => ({
-            ...prev,
-            imagenes: newImages
-        }));
-    };
-
-    const handleFileChange = (newFiles: File[]) => {
-        setFiles(newFiles);
-    };
-    return (
-        <Modal
-            size="lg"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-            show={show}
-            onHide={onHide}
-            backdrop="static"
-        >
-            <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">
-                    Crear Categoria
-                </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group className="mb-3" controlId="denominacion">
-                        <Form.Label>Denominacion</Form.Label>
-                        <Form.Control type="tex" placeholder="Ingresar Denominacion" onChange={(e) => setCategoria(prev => ({
-                            ...prev,
-                            denominacion: e.target.value
-                        }))}
-                            value={categoria.denominacion} />
-                    </Form.Group>
-                   
-                    <ImagenCarousel
-                                    imagenesExistentes={categoria.imagenes}
-                                    onFilesChange={handleFileChange}
-                                    onImagenesChange={handleImagenesChange}
-                                />
-                </Form>
-                {error && <p className='text-danger'>{error}</p>}
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant='secondary' onClick={onHide}>Close</Button>
-                <Button onClick={handleSave}>Crear</Button>
-            </Modal.Footer>
-        </Modal>
-    );
-}
-=======
 interface ModalProps {
   show: boolean;
   onHide: () => void;
-  idpadre: number;
+  idpadre: string;
   activeSucursal: string;
 }
 
-const CategoriaModal = ({ show, onHide, idpadre, activeSucursal }: ModalProps) => {
+const CategoriaModal = ({
+  show,
+  onHide,
+  idpadre,
+  activeSucursal,
+}: ModalProps) => {
   const [error, setError] = useState<string>("");
   const [categoria, setCategoria] = useState<Categoria>(new Categoria());
   const [files, setFiles] = useState<File[]>([]);
@@ -112,11 +31,12 @@ const CategoriaModal = ({ show, onHide, idpadre, activeSucursal }: ModalProps) =
   useEffect(() => {
     const fetchSucursales = async () => {
       try {
-        const sucursalesData = await SucursalService.fetchSucursalesByEmpresaId(activeSucursal);
+        const sucursalesData = await SucursalService.fetchSucursalesByEmpresaId(
+          Number(activeSucursal)
+        );
         setSucursales(sucursalesData);
       } catch (error) {
         console.error("Error al obtener las sucursales:", error);
-       
       }
     };
 
@@ -128,9 +48,13 @@ const CategoriaModal = ({ show, onHide, idpadre, activeSucursal }: ModalProps) =
     try {
       const categoriaRequest = {
         categoria: { ...categoria, alta: true },
-        sucursalesIds: selectedSucursales
+        sucursalesIds: selectedSucursales,
       };
-      const data = await CategoriaService.agregarCategoria(idpadre, activeSucursal, categoriaRequest);
+      const data = await CategoriaService.agregarCategoria(
+        Number(idpadre),
+        Number(activeSucursal),
+        categoriaRequest
+      );
       if (data) {
         onHide();
         setCategoria(new Categoria());
@@ -146,9 +70,9 @@ const CategoriaModal = ({ show, onHide, idpadre, activeSucursal }: ModalProps) =
   };
 
   const handleImagenesChange = (newImages: Imagen[]) => {
-    setCategoria(prev => ({
+    setCategoria((prev) => ({
       ...prev,
-      imagenes: newImages
+      imagenes: newImages,
     }));
   };
 
@@ -157,9 +81,9 @@ const CategoriaModal = ({ show, onHide, idpadre, activeSucursal }: ModalProps) =
   };
 
   const handleSucursalChange = (id: number) => {
-    setSelectedSucursales(prev =>
+    setSelectedSucursales((prev) =>
       prev.includes(id)
-        ? prev.filter(sucursalId => sucursalId !== id)
+        ? prev.filter((sucursalId) => sucursalId !== id)
         : [...prev, id]
     );
   };
@@ -185,10 +109,12 @@ const CategoriaModal = ({ show, onHide, idpadre, activeSucursal }: ModalProps) =
             <Form.Control
               type="text"
               placeholder="Ingresar Denominacion"
-              onChange={(e) => setCategoria(prev => ({
-                ...prev,
-                denominacion: e.target.value
-              }))}
+              onChange={(e) =>
+                setCategoria((prev) => ({
+                  ...prev,
+                  denominacion: e.target.value,
+                }))
+              }
               value={categoria.denominacion}
             />
           </Form.Group>
@@ -196,7 +122,7 @@ const CategoriaModal = ({ show, onHide, idpadre, activeSucursal }: ModalProps) =
           <Form.Group className="mb-3" controlId="sucursales">
             <Form.Label>Sucursales</Form.Label>
             {sucursales.map((sucursal) => (
-              <Form.Check 
+              <Form.Check
                 key={sucursal.id}
                 type="checkbox"
                 label={sucursal.nombre}
@@ -222,6 +148,5 @@ const CategoriaModal = ({ show, onHide, idpadre, activeSucursal }: ModalProps) =
     </Modal>
   );
 };
->>>>>>> Stashed changes
 
 export default CategoriaModal;

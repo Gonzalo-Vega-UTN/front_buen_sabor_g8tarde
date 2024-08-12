@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import ArticuloInsumoPage from "../pages/ArticuloInsumo/ArticulosInsumosPage";
-import EmpresasPage from '../pages/EmpresasPage';
-import SucursalesPage from "../pages/SucursalPage";
+import EmpresasPage from "../pages/EmpresasPage";
+import SucursalesPage from "../pages/Sucursal/SucursalPage";
 import Home from "../components/Home/Home";
 import { CartProvider } from "../components/Carrito/ContextCarrito";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
@@ -27,21 +27,24 @@ import { Reportes } from "../pages/Reportes/Reportes";
 import AcercaDe from "../pages/AcercaDe";
 import FormularioTrabajo from "../pages/Empleado/FormularioTrabajo";
 
-
-
-
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={
+      <Route
+        path="/"
+        element={
+          <CartProvider>
+            <Home />
+          </CartProvider>
+        }
+      />
+      <Route path="/acerca-de" element={<AcercaDe />} />
+      <Route path="/formulario-empleado" element={<FormularioTrabajo />} />
 
-        <CartProvider>
-          <Home />
-        </CartProvider>} />
-        <Route path="/acerca-de" element={<AcercaDe />} />
-        <Route path="/formulario-empleado" element={<FormularioTrabajo />} />
-      
-      <Route path="/registro" element={<RegistroUsuarioCliente closeModal={() => console.log("")} />} />
+      <Route
+        path="/registro"
+        element={<RegistroUsuarioCliente closeModal={() => console.log("")} />}
+      />
       <Route path="/perfil" element={<ClienteFormulario />} />
       <Route
         path="/productos"
@@ -52,12 +55,12 @@ export default function AppRoutes() {
           />
         }
       />
-       <Route
+      <Route
         path="/unidadmedida"
         element={
           <PrivateRoute
             element={UnidadesMedidaList}
-            roles={[Rol.Admin,Rol.Cocinero]} // Solo admin puede acceder
+            roles={[Rol.Admin, Rol.Cocinero]} // Solo admin puede acceder
           />
         }
       />
@@ -67,7 +70,7 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={FormularioArtManuf}
-            roles={[Rol.Admin,Rol.Cocinero]} // Solo admin puede acceder
+            roles={[Rol.Admin, Rol.Cocinero]} // Solo admin puede acceder
           />
         }
       />
@@ -76,7 +79,7 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={ArticuloInsumoPage}
-            roles={[Rol.Admin,Rol.Cocinero]} // Solo admin puede acceder
+            roles={[Rol.Admin, Rol.Cocinero]} // Solo admin puede acceder
           />
         }
       />
@@ -148,7 +151,7 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={PromocionesPage} //Recordar cambiar
-            roles={[Rol.Admin,Rol.Cocinero]} // Solo admin puede acceder
+            roles={[Rol.Admin, Rol.Cocinero]} // Solo admin puede acceder
           />
         }
       />
@@ -157,7 +160,7 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={PromocionForm}
-            roles={[Rol.Admin,Rol.Cocinero]} // Solo admin puede acceder
+            roles={[Rol.Admin, Rol.Cocinero]} // Solo admin puede acceder
           />
         }
       />
@@ -166,7 +169,7 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={PedidosCajero} //Recordar cambiar
-            roles={[Rol.Admin,Rol.Cajero]} // Solo admin puede acceder
+            roles={[Rol.Admin, Rol.Cajero]} // Solo admin puede acceder
           />
         }
       />
@@ -175,7 +178,7 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={PedidosCocinero} //Recordar cambiar
-            roles={[Rol.Admin,Rol.Cocinero]} // Solo admin puede acceder
+            roles={[Rol.Admin, Rol.Cocinero]} // Solo admin puede acceder
           />
         }
       />
@@ -184,7 +187,7 @@ export default function AppRoutes() {
         element={
           <PrivateRoute
             element={PedidosDelivery} //Recordar cambiar
-            roles={[Rol.Admin,Rol.Delivery]} // Solo admin puede acceder
+            roles={[Rol.Admin, Rol.Delivery]} // Solo admin puede acceder
           />
         }
       />

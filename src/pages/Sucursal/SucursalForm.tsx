@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
-import { Sucursal } from "../entities/DTO/Sucursal/Sucursal";
-import { Empresa } from "../entities/DTO/Empresa/Empresa";
-import FormularioDomicilio from "./Domicilio/FormDomicilio";
-import SucursalService from "../services/SucursalService";
-import ImagenCarousel from "../components/carousel/ImagenCarousel";
-import { Imagen } from "../entities/DTO/Imagen";
-import { useAuth } from "../Auth/Auth";
+import { Sucursal } from "../../entities/DTO/Sucursal/Sucursal";
+import { Empresa } from "../../entities/DTO/Empresa/Empresa";
+import FormularioDomicilio from "../Domicilio/FormDomicilio";
+import SucursalService from "../../services/SucursalService";
+import ImagenCarousel from "../../components/carousel/ImagenCarousel";
+import { Imagen } from "../../entities/DTO/Imagen";
+import { useAuth } from "../../Auth/Auth";
 import { useNavigate } from "react-router-dom";
-import TimePicker from 'react-bootstrap-time-picker';
-
+import TimePicker from "react-bootstrap-time-picker";
 
 interface AddSucursalFormProps {
   onAddSucursal: () => void;
@@ -22,11 +21,15 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
   sucursalEditando,
   empresa,
 }) => {
+  const horaAperturaDefecto = "09:00"; // Valor por defecto
+  const horaCierreDefecto = "18:00" // Valor por defecto
   const [sucursal, setSucursal] = useState<Sucursal>(() => {
     if (sucursalEditando) {
       return sucursalEditando;
     }
     let s = new Sucursal();
+    s.horarioApertura = horaAperturaDefecto;  
+    s.horarioCierre = horaCierreDefecto;    
     s.empresa = empresa;
     return s;
   });
@@ -35,10 +38,10 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
   const [success, setSuccess] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
   const [currentStep, setCurrentStep] = useState<number>(1); // Estado para controlar el paso del formulario
-  const [aperturaValida, setAperturaValida] = useState<boolean>(false); // Estado para validar horario de apertura
-  const [cierreValido, setCierreValido] = useState<boolean>(false); // Estado para validar horario de cierre
+  // const [aperturaValida, setAperturaValida] = useState<boolean>(false); // Estado para validar horario de apertura
+  // const [cierreValido, setCierreValido] = useState<boolean>(false); // Estado para validar horario de cierre
 
-  const {activeSucursal} = useAuth();
+  const { activeSucursal } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,6 +49,24 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
       navigate("/empresas");
     }
   }, []);
+
+
+  useEffect(() => { //UseEfffect para reconocer los valores y cargarlos 
+    if (!sucursal.horarioApertura) {
+      setSucursal((prevState) => ({
+        ...prevState,
+        horarioApertura: horaAperturaDefecto, // Asignar valor por defecto
+      }));
+    }
+    if (!sucursal.horarioCierre) {
+      setSucursal((prevState) => ({
+        ...prevState,
+        horarioCierre: horaCierreDefecto, // Asignar valor por defecto
+      }));
+    }
+  }, []);
+
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setSucursal((prevState) => ({ ...prevState, [name]: value }));
@@ -56,7 +77,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
       ...prevState,
       horarioApertura: convertirHoraATexto(time),
     }));
-    setAperturaValida(true); // Marcar como válida la selección de horario de apertura
+    // setAperturaValida(true); // Marcar como válida la selección de horario de apertura
   };
 
   const handleCierreChange = (time: number) => {
@@ -64,7 +85,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
       ...prevState,
       horarioCierre: convertirHoraATexto(time),
     }));
-    setCierreValido(true); // Marcar como válido la selección de horario de cierre
+    // setCierreValido(true); // Marcar como válido la selección de horario de cierre
   };
 
   const convertirHoraATexto = (time: number): string => {
@@ -77,7 +98,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
 
   const handleSubmitStep1 = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (aperturaValida && cierreValido) {
+    if (isValidHorario(sucursal.horarioApertura, sucursal.horarioCierre)) {
       setCurrentStep(2); // Avanzar al siguiente paso si los horarios son válidos
       setError(null); // Limpiar el mensaje de error
     } else {
@@ -85,15 +106,26 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
     }
   };
 
+  const isValidHorario = (horarioApertura: string, horarioCierre: string): boolean => {
+    // Convertir horario a minutos desde la medianoche
+    const [aperturaHoras, aperturaMinutos] = horarioApertura.split(":").map(Number);
+    const [cierreHoras, cierreMinutos] = horarioCierre.split(":").map(Number);
+  
+    const aperturaTotalMinutos = aperturaHoras * 60 + aperturaMinutos;
+    const cierreTotalMinutos = cierreHoras * 60 + cierreMinutos;
+  
+    // Verificar si la hora de apertura es anterior o igual a la de cierre
+    return aperturaTotalMinutos <= cierreTotalMinutos;
+  };
+  
   const handleSubmitStep2 = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-
       let response: Sucursal;
       if (sucursalEditando) {
         response = await SucursalService.updateSucursal(sucursalEditando.id, {
           ...sucursal,
-          domicilio, 
+          domicilio,
         });
       } else {
         response = await SucursalService.createSucursal({

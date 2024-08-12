@@ -25,7 +25,6 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
       //Aca se rompe por el tema de que se cargan 2 paises verlo
       const provincias = await DomicilioService.getProvinciasByPais(2);
       setProvincias(provincias);
-      console.log(provincias)
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);

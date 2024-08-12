@@ -13,14 +13,9 @@ export class CategoriaService {
     return responseData;
   }
 
-<<<<<<< Updated upstream
-  static async obtenerCategorias(id:string): Promise<Categoria[]> {
-    
-=======
   static async obtenerCategorias(activeSucursalId: string): Promise<Categoria[]> {
->>>>>>> Stashed changes
     try {
-      const responseData = await this.request(`/all/${id}`, {
+      const responseData = await this.request(`/all/${activeSucursalId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -65,18 +60,9 @@ export class CategoriaService {
     }
   }
 
-<<<<<<< Updated upstream
-  static async agregarCategoria(idPadre: number, idSucursal:number,categoria: Categoria): Promise<Categoria> {
-    try {
-      console.log("Sucursal",idSucursal);
-      
-      
-      const responseData = await this.request(`/${idSucursal}/${idPadre}`, {
-=======
   static async agregarCategoria(idPadre: number, activeSucursalId: string, categoriaRequest: { categoria: Categoria, sucursalesIds: number[] }): Promise<Categoria> {
     try {
       const responseData = await this.request(`/${activeSucursalId}/${idPadre}`, {
->>>>>>> Stashed changes
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -143,9 +129,4 @@ export class CategoriaService {
       throw error;
     }
   }
-<<<<<<< Updated upstream
-
-};
-=======
 }
->>>>>>> Stashed changes
