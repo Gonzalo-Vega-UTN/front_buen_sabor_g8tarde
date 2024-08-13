@@ -5,11 +5,13 @@ import DomicilioService from "../../services/DomicilioService";
 interface FormularioDomicilioProps {
   onBack: () => void;
   onSubmit: (domicilio: any) => void;
+  showButtons?: boolean; // Propiedad para controlar la visibilidad de los botones
 }
 
 const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
   onBack,
   onSubmit,
+  showButtons = true, // Por defecto, los botones están visibles
 }) => {
   const [provincias, setProvincias] = useState<any[]>([]);
   const [localidades, setLocalidades] = useState<any[]>([]);
@@ -22,16 +24,10 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
 
   const fetchProvincias = async () => {
     try {
-      //Aca se rompe por el tema de que se cargan 2 paises verlo
       const provincias = await DomicilioService.getProvinciasByPais(1);
       setProvincias(provincias);
-      console.log(provincias)
     } catch (error) {
-      if (error instanceof Error) {
-        console.log(error.message);
-      } else {
-        console.log("Error inesperado");
-      }
+      console.error(error instanceof Error ? error.message : "Error inesperado");
     }
   };
 
@@ -41,17 +37,10 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
 
   const fetchLocalidades = async (idProvincia: number) => {
     try {
-      const localidades = await DomicilioService.getLocalidadesByProvincia(
-        idProvincia
-      );
-
+      const localidades = await DomicilioService.getLocalidadesByProvincia(idProvincia);
       setLocalidades(localidades);
     } catch (error) {
-      if (error instanceof Error) {
-        console.log(error.message);
-      } else {
-        console.log("Error inesperado");
-      }
+      console.error(error instanceof Error ? error.message : "Error inesperado");
     }
   };
 
@@ -144,17 +133,21 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
           ))}
         </Form.Control>
       </Form.Group>
-      <Button variant="secondary" onClick={onBack}>
-        Volver
-      </Button>
-      {loading ? (
-        <Button variant="primary" type="submit">
-          Guadando... <Spinner size="sm" />
-        </Button>
-      ) : (
-        <Button variant="primary" type="submit">
-          Guardar
-        </Button>
+      {showButtons && (
+        <div className="d-flex justify-content-between mt-3">
+          <Button variant="secondary" onClick={onBack}>
+            Volver
+          </Button>
+          {loading ? (
+            <Button variant="primary" type="submit" disabled>
+              Guardando... <Spinner size="sm" />
+            </Button>
+          ) : (
+            <Button variant="primary" type="submit">
+              Guardar
+            </Button>
+          )}
+        </div>
       )}
     </Form>
   );

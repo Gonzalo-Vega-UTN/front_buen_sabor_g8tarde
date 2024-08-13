@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import { Sucursal } from "../entities/DTO/Sucursal/Sucursal";
 import { Empresa } from "../entities/DTO/Empresa/Empresa";
@@ -6,9 +6,6 @@ import FormularioDomicilio from "./Domicilio/FormDomicilio";
 import SucursalService from "../services/SucursalService";
 import ImagenCarousel from "../components/carousel/ImagenCarousel";
 import { Imagen } from "../entities/DTO/Imagen";
-import { useAuth } from "../Auth/Auth";
-import { useNavigate } from "react-router-dom";
-import TimePicker from 'react-time-picker';
 
 interface AddSucursalFormProps {
   onAddSucursal: () => void;
@@ -29,53 +26,22 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
     s.empresa = empresa;
     return s;
   });
-  const [domicilio, setDomicilio] = useState<any>(null); // Estado para el domicilio
+  const [domicilio, setDomicilio] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const [, setFiles] = useState<File[]>([]);
-  const [currentStep, setCurrentStep] = useState<number>(1); // Estado para controlar el paso del formulario
-  const [aperturaValida, setAperturaValida] = useState<boolean>(false); // Estado para validar horario de apertura
-  const [cierreValido, setCierreValido] = useState<boolean>(false); // Estado para validar horario de cierre
-
-  const { activeSucursal } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!activeSucursal || activeSucursal === "0") {
-      navigate("/empresas");
-    }
-  }, [activeSucursal, navigate]);
+  const [currentStep, setCurrentStep] = useState<number>(1);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setSucursal((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const handleAperturaChange = (time: string | null) => {
-    if (time) {
-      setSucursal((prevState) => ({
-        ...prevState,
-        horarioApertura: time,
-      }));
-      setAperturaValida(true); // Marcar como válida la selección de horario de apertura
-    }
-  };
-
-  const handleCierreChange = (time: string | null) => {
-    if (time) {
-      setSucursal((prevState) => ({
-        ...prevState,
-        horarioCierre: time,
-      }));
-      setCierreValido(true); // Marcar como válido la selección de horario de cierre
-    }
-  };
-
   const handleSubmitStep1 = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (aperturaValida && cierreValido) {
-      setCurrentStep(2); // Avanzar al siguiente paso si los horarios son válidos
-      setError(null); // Limpiar el mensaje de error
+    if (sucursal.horarioApertura && sucursal.horarioCierre) {
+      setCurrentStep(2);
+      setError(null);
     } else {
       setError("Debe seleccionar un horario de apertura y cierre válidos");
     }
@@ -98,13 +64,9 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
       }
       if (response) {
         setSuccess(true);
-        setSucursal(new Sucursal()); // Limpiar el formulario después del envío exitoso
+        setSucursal(new Sucursal());
         setError(null);
-        setDomicilio(null); // Limpiar el domicilio después del envío exitoso
-        onAddSucursal();
-      }
-
-      if (response.id) {
+        setDomicilio(null);
         onAddSucursal();
       }
     } catch (err) {
@@ -114,7 +76,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
   };
 
   const handlePrevStep = () => {
-    setCurrentStep(1); // Retroceder al paso anterior
+    setCurrentStep(1);
   };
 
   const handleImagenesChange = (newImages: Imagen[]) => {
@@ -146,25 +108,21 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
             </Form.Group>
             <Form.Group controlId="horarioApertura">
               <Form.Label>Horario Apertura</Form.Label>
-              <TimePicker
-                clockIcon={null}
-                hourPlaceholder="HH"
-                minutePlaceholder="MM"
-                format="HH:mm"
-                value={sucursal.horarioApertura || '00:00'}
-                onChange={handleAperturaChange}
+              <Form.Control
+                type="time"
+                name="horarioApertura"
+                value={sucursal.horarioApertura || ''}
+                onChange={handleChange}
                 required
               />
             </Form.Group>
             <Form.Group controlId="horarioCierre">
               <Form.Label>Horario Cierre</Form.Label>
-              <TimePicker
-                clockIcon={null}
-                hourPlaceholder="HH"
-                minutePlaceholder="MM"
-                format="HH:mm"
-                value={sucursal.horarioCierre || '00:00'}
-                onChange={handleCierreChange}
+              <Form.Control
+                type="time"
+                name="horarioCierre"
+                value={sucursal.horarioCierre || ''}
+                onChange={handleChange}
                 required
               />
             </Form.Group>
@@ -186,13 +144,16 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
             <FormularioDomicilio
               onBack={handlePrevStep}
               onSubmit={(data) => setDomicilio(data)}
+              showButtons={false} // Desactiva los botones en el FormularioDomicilio
             />
-            <Button variant="primary" type="submit">
-              Enviar
-            </Button>
-            <Button variant="secondary" onClick={handlePrevStep}>
-              Volver
-            </Button>
+            <div className="d-flex justify-content-between mt-3">
+              <Button variant="secondary" onClick={handlePrevStep}>
+                Volver
+              </Button>
+              <Button variant="primary" type="submit">
+                Enviar
+              </Button>
+            </div>
           </Form>
         </div>
       )}
