@@ -1,26 +1,51 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Spinner } from "react-bootstrap";
 import DomicilioService from "../../services/DomicilioService";
+import { Provincia } from "../../entities/DTO/Domicilio/Provincia";
+import { Localidad } from "../../entities/DTO/Domicilio/Localidad";
+import { Domicilio } from "../../entities/DTO/Domicilio/Domicilio";
 
 interface FormularioDomicilioProps {
   onBack: () => void;
-  onSubmit: (domicilio: any) => void;
+  onSubmit: (domicilio: Domicilio) => void;
   showButtons?: boolean; // Propiedad para controlar la visibilidad de los botones
+  initialDomicilio: Domicilio;
 }
 
 const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
   onBack,
   onSubmit,
   showButtons = true, // Por defecto, los botones están visibles
+  initialDomicilio
 }) => {
-  const [provincias, setProvincias] = useState<any[]>([]);
-  const [localidades, setLocalidades] = useState<any[]>([]);
-  const [provincia, setProvincia] = useState("");
-  const [localidad, setLocalidad] = useState("");
-  const [calle, setCalle] = useState("");
-  const [numero, setNumero] = useState("");
-  const [cp, setCp] = useState("");
+  const [provincias, setProvincias] = useState<Provincia[]>([]);
+  const [localidades, setLocalidades] = useState<Localidad[]>([]);
+  const [provinciaId, setProvinciaId] = useState<string>("");
+  const [localidadId, setLocalidadId] = useState<string>("");
+  const [calle, setCalle] = useState<string>("");
+  const [numero, setNumero] = useState<number>(0);
+  const [cp, setCp] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetchProvincias();
+  }, []);
+
+  useEffect(() => {
+    if (provinciaId) {
+      fetchLocalidades(Number(provinciaId));
+    }
+  }, [provinciaId]);
+
+  useEffect(() => {
+    if (initialDomicilio) {
+      setCalle(initialDomicilio.calle);
+      setNumero(initialDomicilio.numero);
+      setCp(initialDomicilio.cp);
+      setLocalidadId(initialDomicilio.localidad.id.toString());
+      setProvinciaId(initialDomicilio.localidad.provincia.id.toString());
+    }
+  }, [initialDomicilio]);
 
   const fetchProvincias = async () => {
     try {
@@ -31,10 +56,6 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
     }
   };
 
-  useEffect(() => {
-    fetchProvincias();
-  }, []);
-
   const fetchLocalidades = async (idProvincia: number) => {
     try {
       const localidades = await DomicilioService.getLocalidadesByProvincia(idProvincia);
@@ -44,30 +65,29 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
     }
   };
 
-  useEffect(() => {
-    if (provincia) {
-      fetchLocalidades(Number(provincia));
-    }
-  }, [provincia]);
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    const domicilio = {
-      calle,
-      numero,
-      cp,
-      localidad: {
-        id: localidad,
-        provincia: {
-          id: provincia,
-          pais: {
-            id: 2,
-          },
-        },
-      },
-    };
-    onSubmit(domicilio);
+    
+    // Crear instancia de Domicilio
+    
+    initialDomicilio.calle = calle;
+    initialDomicilio.numero = numero;
+    initialDomicilio.cp = cp;
+
+    // Crear instancia de Localidad y Provincia
+    const provincia = new Provincia();
+    provincia.id = Number(provinciaId);
+    provincia.nombre = provincias.find(p => p.id === Number(provinciaId))?.nombre || '';
+
+    const localidad = new Localidad();
+    localidad.id = Number(localidadId);
+    localidad.nombre = localidades.find(l => l.id === Number(localidadId))?.nombre || '';
+    localidad.provincia = provincia;
+
+    initialDomicilio.localidad = localidad;
+
+    onSubmit(initialDomicilio);
     setLoading(false);
   };
 
@@ -88,7 +108,7 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
         <Form.Control
           type="number"
           value={numero}
-          onChange={(e) => setNumero(e.target.value)}
+          onChange={(e) => setNumero(Number(e.target.value))}
           required
         />
       </Form.Group>
@@ -97,7 +117,7 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
         <Form.Control
           type="number"
           value={cp}
-          onChange={(e) => setCp(e.target.value)}
+          onChange={(e) => setCp(Number(e.target.value))}
           required
         />
       </Form.Group>
@@ -105,8 +125,8 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
         <Form.Label>Provincia</Form.Label>
         <Form.Control
           as="select"
-          value={provincia}
-          onChange={(e) => setProvincia(e.target.value)}
+          value={provinciaId}
+          onChange={(e) => setProvinciaId(e.target.value)}
           required
         >
           <option value="">Selecciona una provincia</option>
@@ -121,8 +141,8 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
         <Form.Label>Localidad</Form.Label>
         <Form.Control
           as="select"
-          value={localidad}
-          onChange={(e) => setLocalidad(e.target.value)}
+          value={localidadId}
+          onChange={(e) => setLocalidadId(e.target.value)}
           required
         >
           <option value="">Selecciona una localidad</option>

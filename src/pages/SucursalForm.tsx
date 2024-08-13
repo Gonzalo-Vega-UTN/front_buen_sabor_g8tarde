@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import { Sucursal } from "../entities/DTO/Sucursal/Sucursal";
 import { Empresa } from "../entities/DTO/Empresa/Empresa";
@@ -32,6 +32,12 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
   const [, setFiles] = useState<File[]>([]);
   const [currentStep, setCurrentStep] = useState<number>(1);
 
+  useEffect(() => {
+    if (domicilio !== null) {
+      handleSubmitStep2(new Event('submit'));
+    }
+  }, [domicilio]);
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setSucursal((prevState) => ({ ...prevState, [name]: value }));
@@ -52,11 +58,15 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
     try {
       let response: Sucursal;
       if (sucursalEditando) {
+        console.log("domicilio edit",domicilio);
+        
         response = await SucursalService.updateSucursal(sucursalEditando.id, {
           ...sucursal,
           domicilio,
         });
       } else {
+        
+        console.log("domicilio norm",domicilio);
         response = await SucursalService.createSucursal({
           ...sucursal,
           domicilio,
@@ -88,6 +98,12 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
 
   const handleFileChange = (newFiles: File[]) => {
     setFiles(newFiles);
+  };
+
+  const handleDomicilioSubmit = (data: any) => {
+    console.log("data log", data);
+    setDomicilio(data);
+    // No necesitamos llamar a handleSubmitStep2 aquí, ya que useEffect lo hará automáticamente
   };
 
   return (
@@ -140,21 +156,12 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
       )}
       {currentStep === 2 && (
         <div>
-          <Form onSubmit={handleSubmitStep2}>
-            <FormularioDomicilio
-              onBack={handlePrevStep}
-              onSubmit={(data) => setDomicilio(data)}
-              showButtons={false} // Desactiva los botones en el FormularioDomicilio
-            />
-            <div className="d-flex justify-content-between mt-3">
-              <Button variant="secondary" onClick={handlePrevStep}>
-                Volver
-              </Button>
-              <Button variant="primary" type="submit">
-                Enviar
-              </Button>
-            </div>
-          </Form>
+          <FormularioDomicilio
+            onBack={handlePrevStep}
+            onSubmit={handleDomicilioSubmit}
+            initialDomicilio={sucursal.domicilio}
+            showButtons={true} // Desactiva los botones en el FormularioDomicilio
+          />
         </div>
       )}
 
