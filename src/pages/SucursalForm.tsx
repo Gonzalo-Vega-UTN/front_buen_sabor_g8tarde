@@ -34,7 +34,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
 
   useEffect(() => {
     if (domicilio !== null) {
-      handleSubmitStep2(new Event('submit'));
+      handleSubmitStep2(); // Llama a la función sin pasar un evento
     }
   }, [domicilio]);
 
@@ -53,20 +53,18 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
     }
   };
 
-  const handleSubmitStep2 = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmitStep2 = async (event?: React.FormEvent<HTMLFormElement>) => {
+    if (event) {
+      event.preventDefault();
+    }
     try {
       let response: Sucursal;
       if (sucursalEditando) {
-        console.log("domicilio edit",domicilio);
-        
         response = await SucursalService.updateSucursal(sucursalEditando.id, {
           ...sucursal,
           domicilio,
         });
       } else {
-        
-        console.log("domicilio norm",domicilio);
         response = await SucursalService.createSucursal({
           ...sucursal,
           domicilio,
@@ -101,9 +99,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
   };
 
   const handleDomicilioSubmit = (data: any) => {
-    console.log("data log", data);
     setDomicilio(data);
-    // No necesitamos llamar a handleSubmitStep2 aquí, ya que useEffect lo hará automáticamente
   };
 
   return (
@@ -127,7 +123,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
               <Form.Control
                 type="time"
                 name="horarioApertura"
-                value={sucursal.horarioApertura || ''}
+                value={sucursal.horarioApertura || ""}
                 onChange={handleChange}
                 required
               />
@@ -137,7 +133,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
               <Form.Control
                 type="time"
                 name="horarioCierre"
-                value={sucursal.horarioCierre || ''}
+                value={sucursal.horarioCierre || ""}
                 onChange={handleChange}
                 required
               />
@@ -160,7 +156,7 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
             onBack={handlePrevStep}
             onSubmit={handleDomicilioSubmit}
             initialDomicilio={sucursal.domicilio}
-            showButtons={true} // Desactiva los botones en el FormularioDomicilio
+            showButtons={true}
           />
         </div>
       )}
