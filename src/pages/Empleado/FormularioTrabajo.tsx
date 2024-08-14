@@ -262,8 +262,7 @@ const FormularioTrabajo = () => {
             {step === 3 && (
                 <FormularioDomicilio
                     onBack={handleBack}
-                    onSubmit={handleSubmitDomicilio}
-                />
+                    onSubmit={handleSubmitDomicilio} initialDomicilio={new Domicilio}                />
             )}
         </>
     );
