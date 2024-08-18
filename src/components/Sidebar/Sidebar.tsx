@@ -13,6 +13,7 @@ import logo from '../../assets/images/Buen sabor logo 1.png';
 import LoginButton from '../Log-Register/LoginButton';
 import RegistroButton from '../Log-Register/RegistroButton';
 import BotonLogout from '../Log-Register/BotonLogout';
+import { BsPersonLinesFill } from 'react-icons/bs';
 import { Rol } from '../../entities/enums/Rol';
 
 // Define the RouteItem interface
@@ -49,6 +50,7 @@ const roleRoutes: RoleRoutes = {
         { path: '/PedidosCajero', icon: LiaCashRegisterSolid, label: 'Cajero' },
         { path: '/PedidosDelivery', icon: MdDeliveryDining, label: 'Delivery' },
         { path: '/PedidosCocinero', icon: LuChefHat, label: 'Cocinero' },
+        { path: '/usuarios', icon: BsPersonLinesFill, label: 'Usuarios' },
     ],
     [Rol.Cocinero]: [
         { path: '/unidadmedida', icon: TbRulerMeasure, label: 'Medidas' },

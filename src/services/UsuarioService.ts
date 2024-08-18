@@ -1,4 +1,5 @@
 import Usuario from "../entities/DTO/Usuario/Usuario";
+import { Rol } from "../entities/enums/Rol";
 
 class UsuarioService {
   private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/auth`;
@@ -84,6 +85,38 @@ class UsuarioService {
       return responseData;
     } catch (error) {
       console.error('Error al obtener todos los usuarios:', error);
+      throw error;
+    }
+  }
+
+  static async getAllUsuarios(token: string): Promise<Usuario[]> {
+    try {
+      const responseData = await this.request('/usuarios', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      });
+      return responseData as Usuario[];
+    } catch (error) {
+      console.error('Error al obtener todos los usuarios:', error);
+      throw error;
+    }
+  }
+
+  static async updateUsuarioRol(id: number, newRol: Rol, token: string): Promise<Usuario> {
+    try {
+      const responseData = await this.request(`/usuarios/${id}/rol`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ rol: newRol }),
+      });
+      return responseData as Usuario;
+    } catch (error) {
+      console.error('Error al actualizar el rol del usuario:', error);
       throw error;
     }
   }
