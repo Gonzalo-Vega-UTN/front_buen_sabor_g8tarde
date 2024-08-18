@@ -112,7 +112,7 @@ class UsuarioService {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ rol: newRol }),
+        body: String(newRol),
       });
       return responseData as Usuario;
     } catch (error) {

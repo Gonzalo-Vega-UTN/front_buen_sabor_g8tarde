@@ -15,14 +15,20 @@ const FormularioCliente = () => {
   const [step, setStep] = useState(1);
   const [ClienteData, setClienteData] = useState<Cliente>(new Cliente());
   const [, setDomicilioData] = useState<Domicilio>(new Domicilio());
-  const [selectedRole] = React.useState<Rol>(Rol.Cliente); // Initial selected role
+  const [selectedRole] = React.useState<Rol>(Rol.Cliente); //Role Inicial
   const [, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string>(""); // Added setter for success
+  const [success, setSuccess] = useState<string>("");
   const navigate = useNavigate();
-  const { user } = useAuth0();
-
+  const { user, loginWithRedirect } = useAuth0();
+  if (!user) {
+    loginWithRedirect({
+      appState: {
+        returnTo: "/",
+      },
+    });
+  }
   const handleSubmitDomicilio = async (domicilio: Domicilio) => {
     if (user && user.email) {
       console.log(user);
@@ -93,91 +99,96 @@ const FormularioCliente = () => {
 
   return (
     <>
-      <h1>Formulario de Cliente</h1>
-      {step === 1 && (
-        <Form onSubmit={handleSubmitCliente}>
-          <Form.Group controlId="formNombre">
-            <Form.Label>Nombre</Form.Label>
-            <Form.Control
-              type="text"
-              name="nombre"
-              value={ClienteData.nombre || ""}
-              onChange={handleChangeCliente}
-              placeholder="Ingrese su nombre"
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formApellido">
-            <Form.Label>Apellido</Form.Label>
-            <Form.Control
-              type="text"
-              name="apellido"
-              value={ClienteData.apellido || ""}
-              onChange={handleChangeCliente}
-              placeholder="Ingrese su apellido"
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formTelefono">
-            <Form.Label>Teléfono</Form.Label>
-            <Form.Control
-              type="text"
-              name="telefono"
-              value={ClienteData.telefono || ""}
-              onChange={handleChangeCliente}
-              placeholder="Ingrese su teléfono"
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formFechaNacimiento">
-            <Form.Label>Fecha de Nacimiento</Form.Label>
-            <Form.Control
-              type="date"
-              name="fechaNacimiento"
-              value={ClienteData.fechaNacimiento || ""}
-              onChange={handleChangeCliente}
-              required
-            />
-          </Form.Group>
+      <div className="col-md-9">
+        <h1>Formulario de Cliente</h1>
+        {step === 1 && (
+          <Form onSubmit={handleSubmitCliente}>
+            <Form.Group controlId="formNombre">
+              <Form.Label>Nombre</Form.Label>
+              <Form.Control
+                type="text"
+                name="nombre"
+                value={ClienteData.nombre || ""}
+                onChange={handleChangeCliente}
+                placeholder="Ingrese su nombre"
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formApellido">
+              <Form.Label>Apellido</Form.Label>
+              <Form.Control
+                type="text"
+                name="apellido"
+                value={ClienteData.apellido || ""}
+                onChange={handleChangeCliente}
+                placeholder="Ingrese su apellido"
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formTelefono">
+              <Form.Label>Teléfono</Form.Label>
+              <Form.Control
+                type="text"
+                name="telefono"
+                value={ClienteData.telefono || ""}
+                onChange={handleChangeCliente}
+                placeholder="Ingrese su teléfono"
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formFechaNacimiento">
+              <Form.Label>Fecha de Nacimiento</Form.Label>
+              <Form.Control
+                type="date"
+                name="fechaNacimiento"
+                value={ClienteData.fechaNacimiento || ""}
+                onChange={handleChangeCliente}
+                required
+              />
+            </Form.Group>
 
-          <ImagenCarousel
-            imagenesExistentes={ClienteData.imagenes}
-            onFilesChange={handleFileChange}
-            onImagenesChange={handleImagenesChange}
-          />
-          <div className="d-flex justify-content-between mt-3">
-            <Button variant="secondary" onClick={() => setStep(1)}>
-              Volver
-            </Button>
-            {loading ? (
-              <Button variant="primary" type="submit">
-                Siguiente <Spinner size="sm" />
+            <div className="mt-3 mb-5">
+              <ImagenCarousel
+                imagenesExistentes={ClienteData.imagenes}
+                onFilesChange={handleFileChange}
+                onImagenesChange={handleImagenesChange}
+              />
+            </div>
+            <div className="d-flex justify-content-between mt-3">
+              <Button variant="secondary" onClick={() => setStep(1)}>
+                Volver
               </Button>
-            ) : (
-              <Button variant="primary" type="submit">
-                Siguiente
-              </Button>
+              {loading ? (
+                <Button variant="primary" type="submit">
+                  Siguiente <Spinner size="sm" />
+                </Button>
+              ) : (
+                <Button variant="primary" type="submit">
+                  Siguiente
+                </Button>
+              )}
+            </div>
+            {error && (
+              <Alert variant="danger" className="mt-3">
+                {error}
+              </Alert>
             )}
-          </div>
-          {error && (
-            <Alert variant="danger" className="mt-3">
-              {error}
-            </Alert>
-          )}
-          {success && (
-            <Alert variant="success" className="mt-3">
-              {success}
-            </Alert>
-          )}
-        </Form>
-      )}
+            {success && (
+              <Alert variant="success" className="mt-3">
+                {success}
+              </Alert>
+            )}
+          </Form>
+        )}
 
-      {step === 2 && (
-        <FormularioDomicilio
-          onBack={handleBack}
-          onSubmit={handleSubmitDomicilio}
-        />
-      )}
+        {step === 2 && (
+          <FormularioDomicilio
+            onBack={handleBack}
+            onSubmit={handleSubmitDomicilio}
+            initialDomicilio={new Domicilio()}
+          />
+        )}
+      </div>
     </>
   );
 };

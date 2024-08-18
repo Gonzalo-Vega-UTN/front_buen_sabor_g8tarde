@@ -70,7 +70,7 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
     setLoading(true);
     
     // Crear instancia de Domicilio
-    
+    console.log(initialDomicilio)
     initialDomicilio.calle = calle;
     initialDomicilio.numero = numero;
     initialDomicilio.cp = cp;
@@ -88,7 +88,6 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
     initialDomicilio.localidad = localidad;
 
     onSubmit(initialDomicilio);
-    setLoading(false);
   };
 
   return (
