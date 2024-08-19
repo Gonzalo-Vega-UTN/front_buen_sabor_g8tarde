@@ -25,7 +25,7 @@ import PromocionesPage from "../pages/Promocion/PromocionesPage";
 import { Reportes } from "../pages/Reportes/Reportes";
 import SucursalesPage from "../pages/SucursalPage";
 import FormularioCliente from "../pages/Cliente/FormularioCliente";
-import SucursalList from "../pages/SucursalList";
+
 import UserList from "../pages/UserList";
 
 export default function AppRoutes() {

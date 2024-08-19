@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import UsuarioService from "../services/UsuarioService";
 import { Rol } from "../entities/enums/Rol";
 import Usuario from "../entities/DTO/Usuario/Usuario";
@@ -21,6 +20,7 @@ const UserList: React.FC = () => {
       setUsers(fetchedUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
+      // Podrías mostrar un mensaje de error en la interfaz si lo necesitas
     }
   };
 
@@ -31,6 +31,7 @@ const UserList: React.FC = () => {
       fetchUsers(); // Refetch users to update the list
     } catch (error) {
       console.error("Error updating user role:", error);
+      // Podrías mostrar un mensaje de error en la interfaz si lo necesitas
     }
   };
 

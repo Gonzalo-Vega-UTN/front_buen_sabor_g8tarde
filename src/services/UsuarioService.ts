@@ -106,19 +106,59 @@ class UsuarioService {
 
   static async updateUsuarioRol(id: number, newRol: Rol, token: string): Promise<Usuario> {
     try {
-      const responseData = await this.request(`/usuarios/${id}/rol`, {
+      // Actualiza el rol en la base de datos local
+      const updatedUser = await this.request(`/usuarios/${id}/rol`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: String(newRol),
+        body: JSON.stringify(newRol), // Envía el rol directamente como JSON
+      }) as Usuario;
+
+      // Obtén el token de acceso para la Management API
+      const managementToken = await this.getAuth0ManagementToken();
+
+      // Actualiza el rol en Auth0
+      const auth0UserId = updatedUser.auth0Id;
+      await fetch(`https://${import.meta.env.VITE_AUTH0_DOMAIN}/api/v2/users/${auth0UserId}/roles`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${managementToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          roles: [newRol] // Asegúrate de que el rol esté mapeado correctamente con los roles de Auth0
+        }),
       });
-      return responseData as Usuario;
+
+      return updatedUser;
     } catch (error) {
       console.error('Error al actualizar el rol del usuario:', error);
       throw error;
     }
+  }
+
+  private static async getAuth0ManagementToken(): Promise<string> {
+    const response = await fetch(`https://${import.meta.env.VITE_AUTH0_DOMAIN}/oauth/token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        client_id: import.meta.env.VITE_AUTH0_MANAGEMENT_CLIENT_ID,
+        client_secret: import.meta.env.VITE_AUTH0_MANAGEMENT_CLIENT_SECRET,
+        audience: `https://${import.meta.env.VITE_AUTH0_DOMAIN}/api/v2/`,
+        grant_type: 'client_credentials',
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al obtener el token de Auth0 Management API');
+    }
+
+    const data = await response.json();
+    return data.access_token;
   }
 }
 
