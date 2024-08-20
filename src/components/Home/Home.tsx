@@ -137,7 +137,7 @@ const Home: React.FC = () => {
             String(selectedSucursal.id),
             idCategoria
           );
-        setProductos([...manufacturados, ...insumos]);
+        setProductos([...manufacturados, ...insumos.filter(producto => !producto.esParaElaborar)]);
       } catch (error) {
         console.error("Error fetching productos:", error);
       }
@@ -164,7 +164,7 @@ const Home: React.FC = () => {
     if (categoria === null) {
       setSelectedCategoryId(undefined);
       setShowPromociones(false);
-      fetchProductos(1);
+      fetchProductos(0);
     } else if (categoria.denominacion === "Promociones") {
       setSelectedCategoryId(undefined);
       setShowPromociones(true);
