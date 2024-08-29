@@ -58,7 +58,7 @@ export class SucursalService {
         },
         mode: 'cors'
       });
-      return responseData;
+      return responseData as Sucursal[];
     } catch (error) {
       console.error(`Error al obtener sucursales por empresa ID ${empresaId}:`, error);
       throw error;
@@ -135,6 +135,6 @@ export class SucursalService {
       throw error;
     }
   }
-}
+};
 
 export default SucursalService;

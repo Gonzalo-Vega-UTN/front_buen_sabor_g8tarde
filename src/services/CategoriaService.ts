@@ -1,7 +1,6 @@
 import { Categoria } from "../entities/DTO/Categoria/Categoria";
 import { Imagen } from "../entities/DTO/Imagen";
 
-
 export class CategoriaService {
   private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/categorias`;
 
@@ -15,7 +14,6 @@ export class CategoriaService {
   }
 
   static async obtenerCategorias(activeSucursalId: string): Promise<Categoria[]> {
-    
     try {
       const responseData = await this.request(`/all/${activeSucursalId}`, {
         method: 'GET',
@@ -31,9 +29,9 @@ export class CategoriaService {
     }
   }
 
-  static async obtenerCategoriasPadre(activeSucursalId: string): Promise<Categoria[]> {
+  static async obtenerCategoriasPadre(id:string): Promise<Categoria[]> {
     try {
-      const responseData = await this.request(`/padres/${activeSucursalId}`, {
+      const responseData = await this.request(`/padres/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -62,17 +60,14 @@ export class CategoriaService {
     }
   }
 
-  static async agregarCategoria(idPadre: number, activeSucursalId: string,categoria: Categoria): Promise<Categoria> {
+  static async agregarCategoria(idPadre: number, activeSucursalId: string, categoriaRequest: { categoria: Categoria, sucursalesIds: number[] }): Promise<Categoria> {
     try {
-      console.log("Sucursal",activeSucursalId);
-      
-      
       const responseData = await this.request(`/${activeSucursalId}/${idPadre}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(categoria),
+        body: JSON.stringify(categoriaRequest),
         mode: 'cors'
       });
       return responseData;
@@ -82,31 +77,14 @@ export class CategoriaService {
     }
   }
 
-  static async agregarSubCategoriaCategoria(idCateogriaPadre: number, categoria: Categoria): Promise<Categoria> {
+  static async actualizarCategoria(idCategoria: number, categoriaRequest: { categoria: Categoria, sucursalesIds: number[] }): Promise<Categoria> {
     try {
-      const responseData = await this.request(`/subcategoria/${idCateogriaPadre}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(categoria),
-        mode: 'cors'
-      });
-      return responseData;
-    } catch (error) {
-      console.error('Error al agregar la Categoria:', error);
-      throw error;
-    }
-  }
-
-  static async actualizarCategoria(idCateogria: number, categoria: Categoria): Promise<Categoria> {
-    try {
-      const responseData = await this.request(`/subcategoria/${idCateogria}`, {
+      const responseData = await this.request(`/${idCategoria}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(categoria),
+        body: JSON.stringify(categoriaRequest),
         mode: 'cors'
       });
       return responseData;
@@ -116,7 +94,7 @@ export class CategoriaService {
     }
   }
 
-  static async eliminarCategoriaById(idSucursal : string , id: number): Promise<Categoria> {
+  static async eliminarCategoriaById(idSucursal: string, id: number): Promise<Categoria> {
     try {
       return await this.request(`/${idSucursal}/${id}`, {
         method: 'DELETE',
@@ -151,5 +129,4 @@ export class CategoriaService {
       throw error;
     }
   }
-
 }
