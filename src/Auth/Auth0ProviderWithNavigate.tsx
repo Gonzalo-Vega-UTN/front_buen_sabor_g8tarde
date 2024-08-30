@@ -40,7 +40,6 @@ export const Auth0ProviderWithNavigate = ({ children }: Props) => {
   };
 
   const selectSucursal = (sucursalId: number) => {
-    console.log("entre master sucursal id ",sucursalId)
     setActiveSucursal(String(sucursalId));
   };
 
@@ -98,10 +97,8 @@ const Auth0ContextWrapper = ({
               rol: undefined, // Establecer el rol según la lógica de tu aplicación
             };
             response = await UsuarioService.register(newUsuario, token);
-            console.log("Usuario registrado:", response);
           } else {
             response = await UsuarioService.login(token);
-            console.log("Usuario logueado:", response);
           }
 
           // Verificar si el usuario tiene un cliente vinculado

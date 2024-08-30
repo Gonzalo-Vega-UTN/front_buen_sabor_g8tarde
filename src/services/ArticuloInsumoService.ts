@@ -48,7 +48,6 @@ class ArticuloInsumoService {
   }
 
   static async obtenerArticulosInsumosFiltrados(idSucursal:string, idCategoria?: number, idUnidadMedida?: number, denominacion?: string): Promise<ArticuloInsumo[]> {
-    console.log(idSucursal)
     const params = new URLSearchParams();
     if (idCategoria !== undefined) params.append("categoria_id", idCategoria.toString());
     if (idUnidadMedida !== undefined) params.append("unidad_id", idUnidadMedida.toString());

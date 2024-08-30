@@ -32,7 +32,7 @@ interface ModalProps {
       const fetchSucursales = async () => {
         try {
           const sucursalesData = await SucursalService.fetchSucursalesByEmpresaId(
-            Number(activeSucursal)
+            Number(1)
           );
           setSucursales(sucursalesData);
         } catch (error) {

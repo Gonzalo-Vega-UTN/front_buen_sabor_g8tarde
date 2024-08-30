@@ -62,7 +62,16 @@ export class CategoriaService {
 
   static async agregarCategoria(idPadre: number, activeSucursalId: string, categoriaRequest: { categoria: Categoria, sucursalesIds: number[] }): Promise<Categoria> {
     try {
-      const responseData = await this.request(`/${activeSucursalId}/${idPadre}`, {
+      //Se agrega idpadre en controlador como variable, en caso de no llegar es cat padre
+      const params = new URLSearchParams();
+      
+    if (idPadre !== undefined) params.append("idCategoriaPadre", idPadre.toString());
+      const endpoint = idPadre !== null && idPadre !== undefined 
+      ? `/${activeSucursalId}?${params}`  // Endpoint con idPadre
+      : `/${activeSucursalId}`;  // Endpoint sin idPadre
+      console.log(endpoint);
+      
+      const responseData = await this.request(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
