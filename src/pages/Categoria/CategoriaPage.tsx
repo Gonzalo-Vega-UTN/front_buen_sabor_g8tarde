@@ -140,7 +140,7 @@ export const CategoriaPage = () => {
           setModalShow(false);
           fetchCategorias();
         }}
-        idpadre={clickedCategoria} 
+        idpadre={clickedCategoria.toString()}  
         activeSucursal={activeSucursal ?? ""}
       />
     </Container>

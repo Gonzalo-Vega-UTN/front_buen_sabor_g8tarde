@@ -315,8 +315,7 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
         {step === 3 && (
           <FormularioDomicilio
             onBack={handleBack}
-            onSubmit={handleDomicilioSubmit}
-          />
+            onSubmit={handleDomicilioSubmit} initialDomicilio={new Domicilio}          />
         )}
       </Modal.Body>
     </Modal>

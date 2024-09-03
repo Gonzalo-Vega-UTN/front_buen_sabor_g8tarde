@@ -94,10 +94,12 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
     <Container>
       <h2>Sucursales</h2>
       {error && <p>{error}</p>}
-      <Button onClick={handleAddSucursal}>Agregar Sucursal</Button>
+
+      <Button onClick={handleAddSucursal}>Agregar Sucursal</Button> 
       <Row>
         {sucursales.map(sucursal => (
           <Col key={sucursal.id} sm={12} md={6} lg={4} className="mb-4">
+            <br></br>
             <Card
               onClick={() => handleCardClick(sucursal.id)}
               className={activeSucursal === String(sucursal.id) ? "selected-card" : ""}
