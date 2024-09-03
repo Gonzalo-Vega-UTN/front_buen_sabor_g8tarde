@@ -1,9 +1,9 @@
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
 import Modal from "react-bootstrap/esm/Modal";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { CategoriaService } from "../../services/CategoriaService";
-import { useEffect, useState } from "react";
 import { Imagen } from "../../entities/DTO/Imagen";
 import ImagenCarousel from "../../components/carousel/ImagenCarousel";
 import { Sucursal } from "../../entities/DTO/Sucursal/Sucursal";
@@ -14,6 +14,8 @@ interface ModalProps {
   onHide: () => void;
   idpadre: string;
   activeSucursal: string;
+  editMode: boolean;
+  selectedCategoria: Categoria | null;
 }
 
 const CategoriaModal = ({
@@ -21,6 +23,8 @@ const CategoriaModal = ({
   onHide,
   idpadre,
   activeSucursal,
+  editMode,
+  selectedCategoria,
 }: ModalProps) => {
   const [error, setError] = useState<string>("");
   const [categoria, setCategoria] = useState<Categoria>(new Categoria());
@@ -41,7 +45,14 @@ const CategoriaModal = ({
     };
 
     fetchSucursales();
-  }, [activeSucursal]);
+
+    if (editMode && selectedCategoria) {
+      setCategoria(selectedCategoria);
+      // You might need to set selectedSucursales here based on the selectedCategoria
+    } else {
+      setCategoria(new Categoria());
+    }
+  }, [activeSucursal, editMode, selectedCategoria]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,15 +62,20 @@ const CategoriaModal = ({
         sucursalesIds: selectedSucursales,
       };
 
-      // Convert idpadre to number
-      const idPadreAsNumber = Number(idpadre);
-
-      // Now pass idPadreAsNumber and activeSucursal directly
-      const data = await CategoriaService.agregarCategoria(
-        idPadreAsNumber, // Number expected
-        activeSucursal, // String expected
-        categoriaRequest
-      );
+      let data;
+      if (editMode) {
+        data = await CategoriaService.actualizarCategoria(
+          categoria.id,
+          categoriaRequest
+        );
+      } else {
+        const idPadreAsNumber = Number(idpadre);
+        data = await CategoriaService.agregarCategoria(
+          idPadreAsNumber,
+          activeSucursal,
+          categoriaRequest
+        );
+      }
 
       if (data) {
         onHide();
@@ -105,7 +121,7 @@ const CategoriaModal = ({
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          Crear Categoria
+          {editMode ? "Editar Categoria" : "Crear Categoria"}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -149,7 +165,7 @@ const CategoriaModal = ({
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={onHide}>Cancelar</Button>
-        <Button onClick={handleSave}>Guardar</Button>
+        <Button onClick={handleSave}>{editMode ? "Actualizar" : "Guardar"}</Button>
       </Modal.Footer>
     </Modal>
   );

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Container, ListGroup, Button, Collapse } from "react-bootstrap";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { CategoriaService } from "../../services/CategoriaService";
-import { BsPlusCircleFill, BsTrash, BsChevronDown, BsChevronUp } from "react-icons/bs";
+import { BsPlusCircleFill, BsTrash, BsChevronDown, BsChevronUp, BsPencil } from "react-icons/bs";
 import GenericButton from "../../components/generic/GenericButton";
 import CategoriaModal from "./CategoriaModal";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
@@ -13,6 +13,8 @@ export const CategoriaPage = () => {
   const [activeItems, setActiveItems] = useState<number[]>([]);
   const [collapsedItems, setCollapsedItems] = useState<number[]>([]);
   const [modalShow, setModalShow] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [selectedCategoria, setSelectedCategoria] = useState<Categoria | null>(null);
   const { activeSucursal } = useAuth0Extended();
 
   const fetchCategorias = async () => {
@@ -57,6 +59,15 @@ export const CategoriaPage = () => {
   const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, idPadre: number = 0) => {
     event.stopPropagation();
     setClickedCategoria(idPadre);
+    setEditMode(false);
+    setSelectedCategoria(null);
+    setModalShow(true);
+  };
+
+  const handleEditClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, categoria: Categoria) => {
+    event.stopPropagation();
+    setSelectedCategoria(categoria);
+    setEditMode(true);
     setModalShow(true);
   };
 
@@ -89,6 +100,12 @@ export const CategoriaPage = () => {
                   </div>
                   <div className="d-flex gap-2">
                     <GenericButton
+                      color="#4CAF50"
+                      size={20}
+                      icon={BsPencil}
+                      onClick={(e) => handleEditClick(e, categoria)}
+                    />
+                    <GenericButton
                       color="#FBC02D"
                       size={20}
                       icon={BsTrash}
@@ -118,6 +135,12 @@ export const CategoriaPage = () => {
                         <span>{subCategoria.denominacion}</span>
                         <div className="d-flex gap-2">
                           <GenericButton
+                            color="#4CAF50"
+                            size={20}
+                            icon={BsPencil}
+                            onClick={(e) => handleEditClick(e, subCategoria)}
+                          />
+                          <GenericButton
                             color="#FBC02D"
                             size={20}
                             icon={BsTrash}
@@ -142,6 +165,8 @@ export const CategoriaPage = () => {
         }}
         idpadre={clickedCategoria.toString()}  
         activeSucursal={activeSucursal ?? ""}
+        editMode={editMode}
+        selectedCategoria={selectedCategoria}
       />
     </Container>
   );
