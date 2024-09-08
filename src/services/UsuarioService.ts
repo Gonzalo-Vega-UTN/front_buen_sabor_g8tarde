@@ -113,10 +113,10 @@ class UsuarioService {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(newRol), // Envía el rol directamente como JSON
+        body: newRol, // Envía el rol directamente como JSON
       }) as Usuario;
 
-      // Obtén el token de acceso para la Management API
+      
       const managementToken = await this.getAuth0ManagementToken();
 
       // Actualiza el rol en Auth0
@@ -128,7 +128,7 @@ class UsuarioService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          roles: [newRol] // Asegúrate de que el rol esté mapeado correctamente con los roles de Auth0
+          roles: [newRol] 
         }),
       });
 
