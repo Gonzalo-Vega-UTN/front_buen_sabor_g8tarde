@@ -77,11 +77,22 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
     selectSucursal(sucursalId);
   };
 
-  const handleStatusChange = async (sucursalId: number, _p0?: boolean) => {
+  const handleStatusChange = async (sucursalId: number, activo: boolean) => {
     try {
-      const sucursal = sucursales.find(suc => suc.id === sucursalId);
-      if (sucursal) {
-        await SucursalService.BajaSucursal(sucursal.id);
+      // Encontrar la sucursal que queremos actualizar
+      const sucursalIndex = sucursales.findIndex(suc => suc.id === sucursalId);
+  
+      if (sucursalIndex !== -1) {
+        // Hacer la solicitud para actualizar el estado de alta/baja
+        await SucursalService.bajaSucursal(sucursales[sucursalIndex].id, activo);
+  
+        // Actualizar el estado local de la lista de sucursales para reflejar el cambio
+        const updatedSucursales = [...sucursales];
+        updatedSucursales[sucursalIndex] = {
+          ...sucursales[sucursalIndex],
+          alta: activo,
+        };
+        setSucursales(updatedSucursales); // Actualizamos el estado de las sucursales
       }
     } catch (error) {
       if (error instanceof Error) {

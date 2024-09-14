@@ -99,16 +99,24 @@ export class SucursalService {
       throw error;
     }
   }
-  static async BajaSucursal(id: number): Promise<Sucursal> {
+  static async bajaSucursal(id: number, activo: boolean): Promise<void> {
     try {
-      const responseData = await this.request(`/${id}`, {
-        method: 'DELETE',
+      // Hacemos la solicitud PUT a /baja/{id} con el parámetro de consulta ?activo
+      const response = await fetch(`${this.urlServer}/baja/${id}?activo=${activo}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        mode: 'cors'
+        mode: 'cors', // Incluimos CORS para asegurar la compatibilidad
       });
-      return responseData;
+  
+      // Verificamos si la respuesta fue exitosa (status 204: No Content)
+      if (!response.ok) {
+        // Si no fue exitosa, lanzamos un error con el código de estado y el mensaje
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+  
+      // Si la respuesta fue exitosa, no hay cuerpo en el retorno (status 204), por lo que no necesitamos responseData
     } catch (error) {
       console.error(`Error actualizando sucursal con ID ${id}:`, error);
       throw error;
