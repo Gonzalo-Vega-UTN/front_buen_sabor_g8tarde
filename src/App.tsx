@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import  { useState } from 'react';
 import Sidebar from './components/Sidebar/Sidebar';
 import Footer from './components/Footer/Footer';
 import AppRoutes from './routes/AppRoutes';
@@ -8,7 +7,6 @@ import EmpresaDropdown from './components/EmpresaDropdown/EmpresaDropdown';
 import './custom.css';
 
 const AppContent = () => {
-  const location = useLocation();
   const [selectedEmpresaId, setSelectedEmpresaId] = useState<number | null>(null);
 
   const handleEmpresaChange = (empresaId: number) => {

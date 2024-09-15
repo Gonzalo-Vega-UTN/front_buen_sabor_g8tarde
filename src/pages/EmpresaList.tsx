@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { Empresa } from '../entities/DTO/Empresa/Empresa';
-import { EmpresaService } from '../services/EmpresaService';
+import { EmpresaService } from '../services/EmpresaService';  // Reincorporamos el servicio
 
 interface EmpresaListProps {
   refresh: boolean;
@@ -16,18 +16,19 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchEmpresas = async () => {
-      try {
-        const empresas = await EmpresaService.getAll();
-        setEmpresas(empresas);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        }
+  // Función para obtener las empresas usando EmpresaService
+  const fetchEmpresas = async () => {
+    try {
+      const empresasData = await EmpresaService.getAll();  // Uso del servicio
+      setEmpresas(empresasData);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchEmpresas();
   }, [refresh]);
 
@@ -39,19 +40,8 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
     try {
       const empresa = empresas.find(emp => emp.id === empresaId);
       if (empresa) {
-        const response = await fetch(`http://localhost:8080/api/empresas/${empresaId}`, { //TODO: arreglar
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ ...empresa, alta }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Error al actualizar el estado de la empresa');
-        }
-
-        setEmpresas(empresas.map(emp => emp.id === empresaId ? { ...emp, alta } : emp));
+        const updatedEmpresa = await EmpresaService.update(empresaId, { ...empresa, alta });  // Uso del servicio
+        setEmpresas(empresas.map(emp => emp.id === empresaId ? updatedEmpresa : emp));
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -84,8 +74,8 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
                 </Button>
                 <DropdownButton
                   id="dropdown-basic-button"
-                  title={empresa.alta ? "Alta" : "Baja"} // Título del botón según el estado
-                  variant={empresa.alta ? "success" : "danger"} // Cambiar a rojo si está de baja
+                  title={empresa.alta ? "Alta" : "Baja"} 
+                  variant={empresa.alta ? "success" : "danger"} 
                   className="ml-2"
                   onClick={(e) => e.stopPropagation()}
                 >
