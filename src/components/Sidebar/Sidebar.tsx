@@ -31,7 +31,7 @@ type RoleRoutes = {
 // Define default routes
 const defaultRoutes: RouteItem[] = [
     { path: '/', icon: BsShop, label: 'Tienda' },
-    { path: '/acerca-de', icon: LuChefHat, label: 'Acerca De' }
+  
 ];
 
 // Define role-based routes

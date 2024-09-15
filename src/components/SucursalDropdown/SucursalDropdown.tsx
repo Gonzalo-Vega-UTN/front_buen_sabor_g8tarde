@@ -46,7 +46,7 @@ const SucursalDropdown: React.FC<SucursalDropdownProps> = ({ empresaId }) => {
   }
 
   // Ocultar en rutas específicas
-  if (location.pathname === '/' || location.pathname === '/unidadmedida') {
+  if (location.pathname === '/' || location.pathname === '/unidadmedida' || location.pathname === '/empresas' ) {
     return null;
   }
 

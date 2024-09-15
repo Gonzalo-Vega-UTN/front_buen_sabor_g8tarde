@@ -1,4 +1,4 @@
-// src/context/Auth0Context.tsx
+// src/context/Auth0ProviderWithNavigate.tsx
 import { createContext, useContext, useState, useEffect } from "react";
 import {
   Auth0Provider,
@@ -32,7 +32,10 @@ type Props = {
 export const Auth0ProviderWithNavigate = ({ children }: Props) => {
   const navigate = useNavigate();
   const [activeSucursal, setActiveSucursal] = useState<string>("");
-  const [activeEmpresa, setActiveEmpresa] = useState<string>(""); // Estado para empresa activa
+  const [activeEmpresa, setActiveEmpresa] = useState<string>(() => {
+    // Leer el valor del localStorage si está disponible
+    return localStorage.getItem('activeEmpresa') || "";
+  });
   const domain = import.meta.env.VITE_AUTH0_DOMAIN as string;
   const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID as string;
   const redirectUri = import.meta.env.VITE_AUTH0_CALLBACK_URL as string;
@@ -48,6 +51,7 @@ export const Auth0ProviderWithNavigate = ({ children }: Props) => {
 
   const selectEmpresa = (empresaId: number) => {
     setActiveEmpresa(String(empresaId));
+    localStorage.setItem('activeEmpresa', String(empresaId)); // Guardar en localStorage
   };
 
   if (!(domain && clientId && redirectUri)) {
@@ -67,8 +71,8 @@ export const Auth0ProviderWithNavigate = ({ children }: Props) => {
       <Auth0ContextWrapper
         selectSucursal={selectSucursal}
         activeSucursal={activeSucursal}
-        selectEmpresa={selectEmpresa} // Pasa la función para seleccionar empresa
-        activeEmpresa={activeEmpresa} // Pasa el estado para la empresa activa
+        selectEmpresa={selectEmpresa}
+        activeEmpresa={activeEmpresa}
       >
         {children}
       </Auth0ContextWrapper>
@@ -86,8 +90,8 @@ const Auth0ContextWrapper = ({
   children: JSX.Element;
   selectSucursal: (sucursalId: number) => void;
   activeSucursal: string;
-  selectEmpresa: (empresaId: number) => void; 
-  activeEmpresa: string; 
+  selectEmpresa: (empresaId: number) => void;
+  activeEmpresa: string;
 }) => {
   const { isAuthenticated, getAccessTokenSilently, logout, user } = useAuth0();
   const navigate = useNavigate();
@@ -116,7 +120,7 @@ const Auth0ContextWrapper = ({
 
           // Verificar si el usuario tiene un cliente vinculado
           const cliente = await ClienteService.obtenerClienteByUsername(response.username);
-          if (!cliente && response.rol == Rol.Cliente) {
+          if (!cliente && response.rol === Rol.Cliente) {
             console.error('Cliente no encontrado:', response.username);
             setClientFormCompleted(false);
             navigate("/formulario-cliente");

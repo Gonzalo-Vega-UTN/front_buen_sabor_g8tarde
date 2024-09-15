@@ -3,10 +3,8 @@ import { CartProvider } from "../components/Carrito/ContextCarrito";
 import Home from "../components/Home/Home";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import { Rol } from "../entities/enums/Rol";
-import AcercaDe from "../pages/AcercaDe";
 import DashboardPage from "../pages/ArtManufacturado/DashBoard";
 import { MisPedidosList } from "../pages/Cliente/mipedido";
-import FormularioTrabajo from "../pages/Empleado/FormularioTrabajo";
 import { UnidadesMedidaList } from "../pages/UnidadMedida/UnidadMedidaList";
 import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
 import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
@@ -39,8 +37,8 @@ export default function AppRoutes() {
           </CartProvider>
         }
       />
-      <Route path="/acerca-de" element={<AcercaDe />} />
-      <Route path="/formulario-empleado" element={<FormularioTrabajo />} />
+    
+      
 
       <Route
         path="/registro"

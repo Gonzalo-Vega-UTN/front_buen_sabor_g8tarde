@@ -1,3 +1,4 @@
+// src/components/EmpresaDropdown.tsx
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -12,7 +13,7 @@ interface EmpresaDropdownProps {
 
 const EmpresaDropdown: React.FC<EmpresaDropdownProps> = ({ onEmpresaChange }) => {
   const location = useLocation();
-  const { activeEmpresa } = useAuth0Extended();
+  const { activeEmpresa, selectEmpresa } = useAuth0Extended();
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,46 +21,45 @@ const EmpresaDropdown: React.FC<EmpresaDropdownProps> = ({ onEmpresaChange }) =>
   useEffect(() => {
     const fetchEmpresas = async () => {
       try {
-        const data = await EmpresaService.fetchEmpresas();
-        setEmpresas(data);
+        const empresasData = await EmpresaService.fetchEmpresas();
+        setEmpresas(empresasData);
         setLoading(false);
-      } catch (err) {
-        setError('Error al cargar las empresas');
-        setLoading(false);
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message);
+          setLoading(false);
+        }
       }
     };
 
     fetchEmpresas();
   }, []);
 
-  const handleEmpresaChange = (empresaId: number) => {
-    onEmpresaChange(empresaId);
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = parseInt(event.target.value, 10);
+    onEmpresaChange(selectedId);
+    selectEmpresa(selectedId); // Actualiza empresa activa en el contexto y localStorage
   };
 
-  if (loading) {
-    return <div className="text-right text-muted">Cargando empresas...</div>;
-  }
-
-  if (error) {
-    return <div className="text-right text-danger">{error}</div>;
-  }
-
-  // Ocultar en rutas específicas
-  if (location.pathname === '/' || location.pathname === '/unidadmedida') {
+  // Condiciones para ocultar el dropdown en ciertas rutas
+  if (location.pathname === '/' || location.pathname === '/unidadmedida' || location.pathname === '/empresas') {
     return null;
   }
 
+  if (loading) return <div className="alert alert-info">Loading...</div>;
+  if (error) return <div className="alert alert-danger">{error}</div>;
+
   return (
-    <div className="empresa-dropdown">
-      <label htmlFor="empresa-dropdown" className="form-label">Empresa:</label>
+    <div className="mb-3">
+      <label htmlFor="empresaDropdown" className="form-label">Seleccione una Empresa</label>
       <select
-        id="empresa-dropdown"
+        id="empresaDropdown"
         className="form-select"
+        onChange={handleChange}
         value={activeEmpresa}
-        onChange={(e) => handleEmpresaChange(Number(e.target.value))}
       >
-        <option value="" disabled>Selecciona una empresa</option>
-        {empresas.map((empresa) => (
+        <option value="">Seleccione una Empresa</option>
+        {empresas.map(empresa => (
           <option key={empresa.id} value={empresa.id}>
             {empresa.nombre}
           </option>

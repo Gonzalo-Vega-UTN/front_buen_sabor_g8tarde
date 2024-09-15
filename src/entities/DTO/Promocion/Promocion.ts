@@ -5,6 +5,7 @@ import { Base } from "../Base";
 import { Imagen } from "../Imagen";
 
 export class Promocion extends Base {
+  [x: string]: never[];
   denominacion: string = '';
   fechaDesde: Date = new Date();
   fechaHasta: Date = new Date();

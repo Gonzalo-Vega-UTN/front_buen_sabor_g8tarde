@@ -16,8 +16,7 @@ export class EmpresaService {
 
   static async fetchEmpresas(): Promise<Empresa[]> {
     try {
-      const responseData = await this.getAll();
-      return responseData;
+      return await this.getAll();
     } catch (error) {
       console.error('Error al cargar las empresas:', error);
       throw error;

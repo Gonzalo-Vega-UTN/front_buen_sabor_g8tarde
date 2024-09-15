@@ -1,3 +1,4 @@
+// src/components/EmpresaList.tsx
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -5,6 +6,7 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { Empresa } from '../entities/DTO/Empresa/Empresa';
 import { EmpresaService } from '../services/EmpresaService';  // Reincorporamos el servicio
+import { useAuth0Extended } from '../Auth/Auth0ProviderWithNavigate';
 
 interface EmpresaListProps {
   refresh: boolean;
@@ -15,6 +17,7 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { activeEmpresa, selectEmpresa } = useAuth0Extended();
 
   // Función para obtener las empresas usando EmpresaService
   const fetchEmpresas = async () => {
@@ -42,6 +45,11 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
       if (empresa) {
         const updatedEmpresa = await EmpresaService.update(empresaId, { ...empresa, alta });  // Uso del servicio
         setEmpresas(empresas.map(emp => emp.id === empresaId ? updatedEmpresa : emp));
+
+        // Si la empresa se da de baja, también debemos actualizar el estado en el contexto si es la empresa activa
+        if (String(empresaId) === activeEmpresa) {
+          selectEmpresa(''); // Limpiar empresa activa si se da de baja
+        }
       }
     } catch (error) {
       if (error instanceof Error) {
