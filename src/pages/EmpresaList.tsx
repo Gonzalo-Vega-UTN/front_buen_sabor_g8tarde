@@ -1,11 +1,10 @@
-// src/components/EmpresaList.tsx
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { Empresa } from '../entities/DTO/Empresa/Empresa';
-import { EmpresaService } from '../services/EmpresaService';  // Reincorporamos el servicio
+import { EmpresaService } from '../services/EmpresaService';
 import { useAuth0Extended } from '../Auth/Auth0ProviderWithNavigate';
 
 interface EmpresaListProps {
@@ -17,12 +16,11 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { activeEmpresa, selectEmpresa } = useAuth0Extended();
+  const { activeEmpresa } = useAuth0Extended();
 
-  // Función para obtener las empresas usando EmpresaService
   const fetchEmpresas = async () => {
     try {
-      const empresasData = await EmpresaService.getAll();  // Uso del servicio
+      const empresasData = await EmpresaService.getAll();
       setEmpresas(empresasData);
     } catch (error) {
       if (error instanceof Error) {
@@ -43,12 +41,15 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
     try {
       const empresa = empresas.find(emp => emp.id === empresaId);
       if (empresa) {
-        const updatedEmpresa = await EmpresaService.update(empresaId, { ...empresa, alta });  // Uso del servicio
+        const updatedEmpresa = await EmpresaService.update(empresaId, { ...empresa, alta });
         setEmpresas(empresas.map(emp => emp.id === empresaId ? updatedEmpresa : emp));
-
-        // Si la empresa se da de baja, también debemos actualizar el estado en el contexto si es la empresa activa
-        if (String(empresaId) === activeEmpresa) {
-          selectEmpresa(''); // Limpiar empresa activa si se da de baja
+  
+        // Convert activeEmpresa to number if it is a string
+        const activeEmpresaNumber = Number(activeEmpresa);
+  
+        // Compare empresaId (number) with activeEmpresa (converted to number)
+        if (empresaId === activeEmpresaNumber) {
+        
         }
       }
     } catch (error) {
