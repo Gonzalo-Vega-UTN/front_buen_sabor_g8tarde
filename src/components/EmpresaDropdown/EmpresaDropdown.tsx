@@ -1,14 +1,18 @@
-// src/components/EmpresaDropdown.tsx
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 import { Empresa } from '../../entities/DTO/Empresa/Empresa';
 import { useAuth0Extended } from '../../Auth/Auth0ProviderWithNavigate';
 import { EmpresaService } from '../../services/EmpresaService';
 
-const EmpresaDropdown: React.FC = () => {
+interface EmpresaDropdownProps {
+  onEmpresaChange: (empresaId: number) => void;
+}
+
+const EmpresaDropdown: React.FC<EmpresaDropdownProps> = ({ onEmpresaChange }) => {
   const location = useLocation();
-  const { selectEmpresa, activeEmpresa } = useAuth0Extended();
+  const { activeEmpresa } = useAuth0Extended();
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +33,7 @@ const EmpresaDropdown: React.FC = () => {
   }, []);
 
   const handleEmpresaChange = (empresaId: number) => {
-    selectEmpresa(empresaId);
+    onEmpresaChange(empresaId);
   };
 
   if (loading) {
@@ -40,12 +44,13 @@ const EmpresaDropdown: React.FC = () => {
     return <div className="text-right text-danger">{error}</div>;
   }
 
-  if (location.pathname === '/' || location.pathname === '/empresas' || location.pathname === '/unidadmedida') {
+  // Ocultar en rutas específicas
+  if (location.pathname === '/' || location.pathname === '/unidadmedida') {
     return null;
   }
 
   return (
-    <div className="position-absolute top-0 start-0 m-3">
+    <div className="empresa-dropdown">
       <label htmlFor="empresa-dropdown" className="form-label">Empresa:</label>
       <select
         id="empresa-dropdown"

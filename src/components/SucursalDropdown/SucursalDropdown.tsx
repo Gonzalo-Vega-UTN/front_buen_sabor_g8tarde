@@ -1,4 +1,3 @@
-// src/components/SucursalDropdown.tsx
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,9 +5,13 @@ import { useAuth0Extended } from '../../Auth/Auth0ProviderWithNavigate';
 import { Sucursal } from '../../entities/DTO/Sucursal/Sucursal';
 import SucursalService from '../../services/SucursalService';
 
-const SucursalDropdown: React.FC = () => {
+interface SucursalDropdownProps {
+  empresaId: number;
+}
+
+const SucursalDropdown: React.FC<SucursalDropdownProps> = ({ empresaId }) => {
   const location = useLocation();
-  const { selectSucursal, activeSucursal } = useAuth0Extended();
+  const { activeSucursal } = useAuth0Extended();
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +19,7 @@ const SucursalDropdown: React.FC = () => {
   useEffect(() => {
     const fetchSucursales = async () => {
       try {
-        const data = await SucursalService.fetchSucursales();
+        const data = await SucursalService.fetchSucursalesByEmpresaId(empresaId);
         setSucursales(data);
         setLoading(false);
       } catch (err) {
@@ -25,11 +28,13 @@ const SucursalDropdown: React.FC = () => {
       }
     };
 
-    fetchSucursales();
-  }, []);
+    if (empresaId) {
+      fetchSucursales();
+    }
+  }, [empresaId]);
 
   const handleSucursalChange = (sucursalId: number) => {
-    selectSucursal(sucursalId);
+    console.log("Sucursal seleccionada: ", sucursalId);
   };
 
   if (loading) {
@@ -40,12 +45,13 @@ const SucursalDropdown: React.FC = () => {
     return <div className="text-right text-danger">{error}</div>;
   }
 
-  if (location.pathname === '/' || location.pathname === '/empresas' || location.pathname === '/unidadmedida') {
+  // Ocultar en rutas específicas
+  if (location.pathname === '/' || location.pathname === '/unidadmedida') {
     return null;
   }
 
   return (
-    <div className="position-absolute top-0 end-0 m-3">
+    <div className="sucursal-dropdown">
       <label htmlFor="sucursal-dropdown" className="form-label">Sucursal:</label>
       <select
         id="sucursal-dropdown"
