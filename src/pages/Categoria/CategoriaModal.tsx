@@ -35,9 +35,7 @@ const CategoriaModal = ({
   useEffect(() => {
     const fetchSucursales = async () => {
       try {
-        const sucursalesData = await SucursalService.fetchSucursalesByEmpresaId(
-          Number(1)
-        );
+        const sucursalesData = await SucursalService.fetchSucursalesByEmpresaId(Number(1));
         setSucursales(sucursalesData);
       } catch (error) {
         console.error("Error al obtener las sucursales:", error);
@@ -48,7 +46,13 @@ const CategoriaModal = ({
 
     if (editMode && selectedCategoria) {
       setCategoria(selectedCategoria);
-      // You might need to set selectedSucursales here based on the selectedCategoria
+
+      // Verificar si `selectedCategoria.sucursales` está definida
+      if (selectedCategoria.sucursales) {
+        // Inicializar las sucursales seleccionadas
+        const sucursalIds = selectedCategoria.sucursales.map((sucursal) => sucursal.id);
+        setSelectedSucursales(sucursalIds);
+      }
     } else {
       setCategoria(new Categoria());
     }
@@ -64,17 +68,10 @@ const CategoriaModal = ({
 
       let data;
       if (editMode) {
-        data = await CategoriaService.actualizarCategoria(
-          categoria.id,
-          categoriaRequest
-        );
+        data = await CategoriaService.actualizarCategoria(categoria.id, categoriaRequest);
       } else {
         const idPadreAsNumber = Number(idpadre);
-        data = await CategoriaService.agregarCategoria(
-          idPadreAsNumber,
-          activeSucursal,
-          categoriaRequest
-        );
+        data = await CategoriaService.agregarCategoria(idPadreAsNumber, activeSucursal, categoriaRequest);
       }
 
       if (data) {
@@ -104,9 +101,7 @@ const CategoriaModal = ({
 
   const handleSucursalChange = (id: number) => {
     setSelectedSucursales((prev) =>
-      prev.includes(id)
-        ? prev.filter((sucursalId) => sucursalId !== id)
-        : [...prev, id]
+      prev.includes(id) ? prev.filter((sucursalId) => sucursalId !== id) : [...prev, id]
     );
   };
 
