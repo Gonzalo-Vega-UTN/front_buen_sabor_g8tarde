@@ -58,7 +58,7 @@ export default function ClientTable() {
               <td>{cliente.nombre}</td>
               <td>{cliente.apellido}</td>
               <td>{cliente.telefono}</td>
-              <td>{cliente.email}</td>
+              <td>{cliente.usuario.email}</td>
               <td>{cliente.fechaNacimiento}</td>
             </tr>
           ))}
