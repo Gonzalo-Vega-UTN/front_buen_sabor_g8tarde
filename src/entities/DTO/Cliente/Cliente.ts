@@ -6,7 +6,6 @@ export class Cliente extends Base {
     nombre: string = '';
     apellido: string = '';
     telefono: string = '';
-    email: string = '';
     fechaNacimiento: string | null = '';
     imagenes: Imagen[] = [];
     domicilios: Domicilio[] = [];
