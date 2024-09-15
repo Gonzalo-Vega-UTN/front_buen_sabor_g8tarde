@@ -47,10 +47,8 @@ const CategoriaModal = ({
     if (editMode && selectedCategoria) {
       setCategoria(selectedCategoria);
 
-      // Verificar si `selectedCategoria.sucursales` está definida
       if (selectedCategoria.sucursales) {
-        // Inicializar las sucursales seleccionadas
-        const sucursalIds = selectedCategoria.sucursales.map((sucursal) => sucursal.id);
+        const sucursalIds = selectedCategoria.sucursales.map((sucursal: Sucursal) => sucursal.id);
         setSelectedSucursales(sucursalIds);
       }
     } else {
@@ -138,7 +136,7 @@ const CategoriaModal = ({
 
           <Form.Group className="mb-3" controlId="sucursales">
             <Form.Label>Sucursales</Form.Label>
-            {sucursales.map((sucursal) => (
+            {sucursales.map((sucursal: Sucursal) => (
               <Form.Check
                 key={sucursal.id}
                 type="checkbox"

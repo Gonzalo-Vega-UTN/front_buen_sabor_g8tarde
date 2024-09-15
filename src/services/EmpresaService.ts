@@ -1,8 +1,8 @@
+// src/services/EmpresaService.ts
 import { Empresa } from "../entities/DTO/Empresa/Empresa";
 import { Imagen } from "../entities/DTO/Imagen";
 
 export class EmpresaService {
-
   private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/empresas`;
 
   private static async request(endpoint: string, options: RequestInit) {
@@ -12,6 +12,16 @@ export class EmpresaService {
       throw new Error(responseData.message || 'Error al procesar la solicitud');
     }
     return responseData;
+  }
+
+  static async fetchEmpresas(): Promise<Empresa[]> {
+    try {
+      const responseData = await this.getAll();
+      return responseData;
+    } catch (error) {
+      console.error('Error al cargar las empresas:', error);
+      throw error;
+    }
   }
 
   static async getAll(): Promise<Empresa[]> {
@@ -25,7 +35,7 @@ export class EmpresaService {
       });
       return responseData as Empresa[];
     } catch (error) {
-      console.error('Error al obtener todas los Empresas:', error);
+      console.error('Error al obtener todas las empresas:', error);
       throw error;
     }
   }
@@ -40,41 +50,41 @@ export class EmpresaService {
         mode: 'cors'
       }) as Empresa;
     } catch (error) {
-      console.error(`Error al obtener el Empresa con ID ${id}:`, error);
+      console.error(`Error al obtener la empresa con ID ${id}:`, error);
       throw error;
     }
   }
 
-  static async create(Empresa: Empresa): Promise<Empresa> {
+  static async create(empresa: Empresa): Promise<Empresa> {
     try {
-      const responseData = await this.request(``, {
+      const responseData = await this.request('', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(Empresa),
+        body: JSON.stringify(empresa),
         mode: 'cors'
       });
       return responseData;
     } catch (error) {
-      console.error('Error al agregar el Empresa:', error);
+      console.error('Error al agregar la empresa:', error);
       throw error;
     }
   }
 
-  static async update(id: number, Empresa: Empresa): Promise<Empresa> {
+  static async update(id: number, empresa: Empresa): Promise<Empresa> {
     try {
       const responseData = await this.request(`/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(Empresa),
+        body: JSON.stringify(empresa),
         mode: 'cors'
       });
       return responseData;
     } catch (error) {
-      console.error('Error al actualizar el Empresa:', error);
+      console.error('Error al actualizar la empresa:', error);
       throw error;
     }
   }
@@ -89,12 +99,10 @@ export class EmpresaService {
         mode: 'cors'
       }) as Empresa;
     } catch (error) {
-      console.error(`Error al dar de baja el Empresa con ID ${id}:`, error);
+      console.error(`Error al dar de baja la empresa con ID ${id}:`, error);
       throw error;
     }
   }
-
-
 
   static async uploadFiles(id: number, files: File[]): Promise<Imagen[]> {
     const uploadPromises = files.map(file => {
@@ -116,6 +124,4 @@ export class EmpresaService {
       throw error;
     }
   }
-
 }
-

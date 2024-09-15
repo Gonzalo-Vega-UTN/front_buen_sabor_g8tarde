@@ -5,7 +5,6 @@ import {
   Col,
   Card,
   Button,
-  Navbar,
   Carousel,
 } from "react-bootstrap";
 import "./Home.css";
@@ -22,7 +21,7 @@ import Carrito from "../Carrito/carrito";
 import ArticuloInsumoService from "../../services/ArticuloInsumoService";
 import { Articulo } from "../../entities/DTO/Articulo/Articulo";
 import { Cart, CartFill } from "react-bootstrap-icons";
-import logo from "../../assets/images/Buen sabor logo 1.png";
+
 import { Promocion } from "../../entities/DTO/Promocion/Promocion";
 import { PromocionService } from "../../services/PromocionService";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
@@ -201,16 +200,9 @@ const Home: React.FC = () => {
 
   return (
     <div className="home-container">
-      <Navbar bg="light" expand="lg" className="mb-4">
+     
         <Container fluid>
-          <Navbar.Brand href="#">
-            <img
-              src={logo}
-              height="120"
-              className="d-inline-block align-top"
-              alt="Logo"
-            />
-          </Navbar.Brand>
+         
           <h1>Buen Sabor </h1>
           {currentStep === 1 && <h1></h1>}
           {currentStep >= 2 && (
@@ -223,7 +215,7 @@ const Home: React.FC = () => {
             </Button>
           )}
         </Container>
-      </Navbar>
+     
       <div className="main-content">
         {currentStep === 1 && (
           <Container>

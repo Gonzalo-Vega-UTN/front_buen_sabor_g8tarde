@@ -53,7 +53,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
     PromocionAplicada[]
   >([]);
   const [pedido, setPedido] = useState<PedidoFull>(new PedidoFull());
-  const { activeSucursal } = useAuth0Extended();
+  const { activeSucursal  } = useAuth0Extended();
   const [error, setError] = useState<string>("");
   const { user, isAuthenticated } = useAuth0();
   const [showModal, setShowModal] = useState(false);

@@ -1,11 +1,13 @@
+// src/components/SucursalDropdown.tsx
 import React, { useEffect, useState } from 'react';
-
+import { useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuth0Extended } from '../../Auth/Auth0ProviderWithNavigate';
 import { Sucursal } from '../../entities/DTO/Sucursal/Sucursal';
 import SucursalService from '../../services/SucursalService';
 
 const SucursalDropdown: React.FC = () => {
+  const location = useLocation();
   const { selectSucursal, activeSucursal } = useAuth0Extended();
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +38,10 @@ const SucursalDropdown: React.FC = () => {
 
   if (error) {
     return <div className="text-right text-danger">{error}</div>;
+  }
+
+  if (location.pathname === '/' || location.pathname === '/empresas' || location.pathname === '/unidadmedida') {
+    return null;
   }
 
   return (

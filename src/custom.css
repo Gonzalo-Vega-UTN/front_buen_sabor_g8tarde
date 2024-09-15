@@ -1,0 +1,38 @@
+/* src/styles/custom.css */
+
+.container-fluid.layout {
+    min-height: 100vh;
+    position: relative;
+  }
+  
+  .dropdown-container {
+    position: absolute; /* Alinea el contenedor de los dropdowns en la parte superior */
+    top: 10px; /* Desplazado un poco desde la parte superior */
+    right: 1px; /* Alineado hacia la derecha, pero con un margen interno */
+    left: 1100px;
+    display: flex;
+    justify-content: flex-end; /* Alinea horizontalmente a la derecha */
+    gap: 5px; /* Espacio entre los dropdowns */
+    z-index: 999; /* Asegura que siempre esté encima del contenido principal */
+  }
+  
+  .dropdown-wrapper {
+    display: flex;
+    gap: 15px; /* Espacio entre los dropdowns */
+    align-items: center;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .dropdown-container {
+      flex-direction: column;
+      align-items: flex-end;
+      right: 10px; /* Ajuste para pantallas más pequeñas */
+      gap: 10px;
+    }
+  
+    .dropdown-wrapper {
+      width: 100%;
+    }
+  }
+  

@@ -15,6 +15,7 @@ import { FormaPago } from '../../entities/enums/FormaPago';
 
 interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
   activeSucursal: string;
+  activeEmpresa: string;
 }
 
 interface CarritoProps {
