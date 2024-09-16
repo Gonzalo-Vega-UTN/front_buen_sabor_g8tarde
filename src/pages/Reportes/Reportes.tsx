@@ -8,162 +8,270 @@ import Row from "react-bootstrap/esm/Row";
 import Modal from "react-bootstrap/esm/Modal";
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
+import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
+import Tooltip from "react-bootstrap/esm/Tooltip";
+import OverlayTrigger from "react-bootstrap/esm/OverlayTrigger";
+
 export const Reportes = () => {
-    const [rankingArticulos, setRankingArticulos] = useState<any[]>([]);
-    const [movimientos, setMovimietos] = useState<any[]>([]);
-    const [showModal, setShowModal] = useState<boolean>(false);
+  const [rankingArticulos, setRankingArticulos] = useState<any[]>([]);
+  const [movimientos, setMovimietos] = useState<any[]>([]);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { activeSucursal } = useAuth0Extended();
 
-    const [startDate, setStartDate] = useState<string>('2020-01-01');
-    const [endDate, setEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState<string>("2020-01-01");
+  const [endDate, setEndDate] = useState<string>("2020-01-01");
 
-    useEffect(() => {
-        const today = new Date();
-        const sixMonthsAgo = new Date(today);
-        sixMonthsAgo.setMonth(today.getMonth() - 6);
+  useEffect(() => {
+    fecthRankingComidas(startDate, endDate);
+    fetchMovimientos(startDate, endDate);
+  }, [activeSucursal, startDate, endDate]);
 
-        // Convert to ISO string and then slice to get YYYY-MM-DD format
-        setEndDate(today.toISOString().split('T')[0]);
-        setStartDate(sixMonthsAgo.toISOString().split('T')[0]);
-    }, []);
+  useEffect(() => {
+    const today = new Date();
+    const sixMonthsAgo = new Date(today);
+    sixMonthsAgo.setMonth(today.getMonth() - 6);
 
+    setEndDate(today.toISOString().split("T")[0]);
+    setStartDate(sixMonthsAgo.toISOString().split("T")[0]);
+  }, []);
 
-    const fecthRankingComidas = async (desde: string, hasta: string) => {
-        try {
-            const rankingData = await ReporteService.getRankingPeriodo(desde, hasta);
-            setRankingArticulos(rankingData);
-        } catch (error) {
-            if (error instanceof Error) {
-                console.log(error.message);
-            }
-        }
-    };
+  const fecthRankingComidas = async (desde: string, hasta: string) => {
+    try {
+      const rankingData = await ReporteService.getRankingPeriodo(
+        desde,
+        hasta,
+        activeSucursal
+      );
+      setRankingArticulos(rankingData);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+      }
+    }
+  };
+  const fetchMovimientos = async (desde: string, hasta: string) => {
+    try {
+      const movimientos = await ReporteService.getMovimientos(
+        desde,
+        hasta,
+        activeSucursal
+      );
+      setMovimietos(movimientos);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+      }
+    }
+  };
 
-    const [] = useState<any[]>([]);
+  function generateReportFile(fileName: string, blob: Blob) {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
 
-    const fetchMovimientos = async (desde: string, hasta: string) => {
-        try {
-            const movimientos = await ReporteService.getMovimientos(desde, hasta);
-            setMovimietos(movimientos);
-        } catch (error) {
-            if (error instanceof Error) {
-                console.log(error.message);
-            }
-        }
-    };
+    const filename = `${fileName}_${startDate}_${endDate}.xlsx`;
+    a.download = filename;
 
-    const generateExcelMovimientos = async (desde: string, hasta: string) => {
-        try {
-            const excelData = await ReporteService.getMovimientosExel(desde, hasta);
-            const blob = new Blob([excelData], {
-                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            });
-            const url = window.URL.createObjectURL(blob);
-            window.open(url);
-            //navigate("")
-        } catch (error) {
-            console.error("Error al generar el Excel:", error);
-            if (error instanceof Error) {
-                console.log("FALLO");
-            }
-        }
-    };
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  }
 
-    const generarExcelCompleto = async (desde: string, hasta: string) => {
-        try {
-            const excelData = await ReporteService.getReporteCompleto(desde, hasta);
-            const blob = new Blob([excelData], {
-                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            });
-            const url = window.URL.createObjectURL(blob);
-            window.open(url);
-            //navigate("")
-        } catch (error) {
-            console.error("Error al generar el Excel:", error);
-            if (error instanceof Error) {
-                console.log("FALLO");
-            }
-        }
-    };
+  function formatDate(dateString: string, locale = "es-ES") {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return "Fecha inválida";
+    }
 
+    const formattedDate = date.toLocaleDateString(locale, {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
 
-    return (
-        <>
-            <Container>
-                <h1 className="">Reportes</h1>
-                <Button onClick={() => setShowModal(true)}>Generar Reporte Completo</Button>
-                <Row>
-                    <Col>
-                        <ReporteComponente
-                            titulo="Ranking comidas más pedidas"
-                            fetchData={fecthRankingComidas}
-                            data={rankingArticulos}
-                            typeChart="bar"
-                            generateExcel={generateExcelMovimientos}
-                        />
-                    </Col>
-                    <Col>
-                        <ReporteComponente
-                            titulo="Movimientos Monetarios"
-                            fetchData={fetchMovimientos}
-                            data={movimientos}
-                            typeChart="line"
-                            generateExcel={generateExcelMovimientos}
-                        />
-                    </Col>
-                </Row>
-            </Container>
-            {showModal && (
-                <Modal
-                    show={showModal}
-                    size="lg"
-                    aria-labelledby="contained-modal-title-vcenter"
-                    centered
-                >
-                    <Modal.Header closeButton>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            Reporte Completo
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <h4>Seleccionar rango de fechas</h4>
-                        <Row className='' >
-                            <Col>
-                                <Form.Group controlId="formStartDate">
-                                    <Form.Label>Fecha desde</Form.Label>
-                                    <Form.Control
-                                        type="date"
-                                        value={startDate}
-                                        onChange={(e) => setStartDate(e.target.value)}
-                                        required
-                                    />
-                                </Form.Group>
+    return formattedDate;
+  }
+  const generateExcelMovimientos = async (desde: string, hasta: string) => {
+    setIsGenerating(true);
+    try {
+      const excelData = await ReporteService.getMovimientosExcel(
+        desde,
+        hasta,
+        activeSucursal
+      );
+      const blob = new Blob([excelData], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
 
-                            </Col>
-                            <Col>
-                                <Form.Group controlId="formEndDate" >
-                                    <Form.Label>Fecha hasta</Form.Label>
-                                    <Form.Control
-                                        type="date"
-                                        value={endDate}
-                                        onChange={(e) => setEndDate(e.target.value)}
-                                        required
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col className='d-flex align-items-end'>
+      generateReportFile("reporte_movimientos", blob);
+    } catch (error) {
+      console.error("Error al generar el Excel:", error);
+      if (error instanceof Error) {
+        console.log("FALLO");
+      }
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
-                            </Col>
-                        </Row>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button size="lg" className="mx-2" onClick={() => {
-                            generarExcelCompleto(startDate, endDate)
-                            setShowModal(false)
-                        }}>Generar!</Button>
-                        <Button variant="secondary" onClick={() => setShowModal(false)}>Cerrar</Button>
-                    </Modal.Footer>
-                </Modal>
-            )}
-        </>
-    );
+  const generateExcelTopProducts = async (desde: string, hasta: string) => {
+    setIsGenerating(true);
+    try {
+      const excelData = await ReporteService.getTopProductsExcel(
+        desde,
+        hasta,
+        activeSucursal
+      );
+      const blob = new Blob([excelData], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      generateReportFile("reporte_top_products", blob);
+    } catch (error) {
+      console.error("Error al generar el Excel:", error);
+      if (error instanceof Error) {
+        console.log("FALLO");
+      }
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+   const generarExcelCompleto = async (desde: string, hasta: string) => {
+    setIsGenerating(true);
+    try {
+      const excelData = await ReporteService.getReporteCompleto(
+        desde,
+        hasta,
+        activeSucursal
+      );
+
+      const blob = new Blob([excelData], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      generateReportFile("reporte_general", blob);
+    } catch (error) {
+      console.error("Error al generar el Excel:", error);
+      if (error instanceof Error) {
+        console.log("FALLO");
+      }
+    }finally{
+      setIsGenerating(false);
+    }
+  };
+
+  const tooltip = (
+    <Tooltip id="tooltip">
+      <strong>Genera un reporte de pedidos completo</strong>
+    </Tooltip>
+  );
+  return (
+    <>
+      <Container>
+        <h1>Reportes</h1>
+        {activeSucursal ? (
+          <div>
+            <div className="d-flex align-items-center">
+              <h5>
+                Reportes desde "{formatDate(startDate)}" hasta "
+                {formatDate(endDate)}"
+              </h5>
+              <Button className="mx-3" onClick={() => setShowModal(true)}>
+                Editar Fecha
+              </Button>
+            </div>
+
+            <OverlayTrigger placement="right" overlay={tooltip}>
+              <Button
+                variant="success"
+                onClick={() => generarExcelCompleto(startDate, endDate)}
+                className="my-2"
+                disabled={isGenerating}
+              >
+                {isGenerating ? "Generando..." : "Generar Reporte General"}
+              </Button>
+            </OverlayTrigger>
+            <Row>
+              <Col>
+                <ReporteComponente
+                  titulo="Ranking comidas más pedidas"
+                  data={rankingArticulos}
+                  typeChart="bar"
+                  generateExcel={generateExcelTopProducts}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
+              </Col>
+              <Col>
+                <ReporteComponente
+                  titulo="Movimientos Monetarios"
+                  data={movimientos}
+                  typeChart="line"
+                  generateExcel={generateExcelMovimientos}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
+              </Col>
+            </Row>
+          </div>
+        ) : (
+          <p>Debes seleccionar una sucursal</p>
+        )}
+      </Container>
+      {showModal && (
+        <Modal
+          show={showModal}
+          size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+        >
+          <Modal.Header>
+            <Modal.Title id="contained-modal-title-vcenter">
+              Seleccionar Rango de Fechas
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Row>
+              <Col>
+                <Form.Group controlId="formStartDate">
+                  <Form.Label>Fecha desde</Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group controlId="formEndDate">
+                  <Form.Label>Fecha hasta</Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Modal.Body>
+          <Modal.Footer className="d-flex justify-content-center">
+            <Button
+              size="lg"
+              variant="primary"
+              onClick={() => {
+                setShowModal(false);
+              }}
+            >
+              Seleccionar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
+    </>
+  );
 };
