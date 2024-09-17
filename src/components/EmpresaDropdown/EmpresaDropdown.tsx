@@ -1,4 +1,3 @@
-// src/components/EmpresaDropdown.tsx
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -32,14 +31,33 @@ const EmpresaDropdown: React.FC<EmpresaDropdownProps> = ({ onEmpresaChange }) =>
       }
     };
 
-    fetchEmpresas();
+    // Polling cada 30 segundos para obtener empresas
+    const intervalId = setInterval(() => {
+      fetchEmpresas();
+    }, 30000); // 30 segundos
+
+    fetchEmpresas(); // Primera llamada al cargar
+
+    return () => clearInterval(intervalId); // Limpieza del interval
   }, []);
 
+  // Actualizar empresa seleccionada
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = parseInt(event.target.value, 10);
-    onEmpresaChange(selectedId);
-    selectEmpresa(selectedId); // Actualiza empresa activa en el contexto y localStorage
+    if (!isNaN(selectedId)) {
+      onEmpresaChange(selectedId);
+      selectEmpresa(selectedId);
+      localStorage.setItem('activeEmpresa', selectedId.toString()); // Guardar en localStorage
+    }
   };
+
+  // Cargar empresa seleccionada desde localStorage
+  useEffect(() => {
+    const storedEmpresaId = localStorage.getItem('activeEmpresa');
+    if (storedEmpresaId) {
+      onEmpresaChange(parseInt(storedEmpresaId, 10));
+    }
+  }, [onEmpresaChange]);
 
   // Condiciones para ocultar el dropdown en ciertas rutas
   if (location.pathname === '/' || location.pathname === '/unidadmedida' || location.pathname === '/empresas') {
@@ -56,7 +74,7 @@ const EmpresaDropdown: React.FC<EmpresaDropdownProps> = ({ onEmpresaChange }) =>
         id="empresaDropdown"
         className="form-select"
         onChange={handleChange}
-        value={activeEmpresa}
+        value={activeEmpresa || ''}
       >
         <option value="">Seleccione una Empresa</option>
         {empresas.map(empresa => (
