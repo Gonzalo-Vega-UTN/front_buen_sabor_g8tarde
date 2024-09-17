@@ -58,27 +58,20 @@ export default function ProductTable() {
 
   const fetchProducts = async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string) => {
     const productsFiltered = await ProductServices.getAllFiltered(activeSucursal, idCategoria, idUnidadMedida, denominacion)
-    console.log(productsFiltered);
-
-    //const products = await ProductServices.getProducts();
     setProducts(productsFiltered);
     setIsLoading(false);
 
   }
+  const fetchCategorias = async () => {
+    const categorias = await CategoriaService.obtenerCategorias(activeSucursal);
+    setCategorias(categorias);
+  };
+
   useEffect(() => {
-
-    fetchProducts();
-  }, []);
-
-
-  useEffect(() => {
-    const fetchCategorias = async () => {
-      const categorias = await CategoriaService.obtenerCategorias(activeSucursal);
-      setCategorias(categorias);
-    };
-
     fetchCategorias();
-  }, []);
+    fetchProducts();
+  }, [activeSucursal]);
+
 
   useEffect(() => {
     const fetchUnidadadMedida = async () => {
@@ -113,7 +106,6 @@ export default function ProductTable() {
       fetchProducts();
     } catch (error) {
       console.error(error);
-      // toast.error("Ha ocurrido un error");
     }
   };
   return (

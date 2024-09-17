@@ -31,7 +31,10 @@ type Props = {
 
 export const Auth0ProviderWithNavigate = ({ children }: Props) => {
   const navigate = useNavigate();
-  const [activeSucursal, setActiveSucursal] = useState<string>("");
+  const [activeSucursal, setActiveSucursal] = useState<string>(() => {
+    // Leer el valor del localStorage si está disponible
+    return localStorage.getItem('activeSucursal') || "";
+  });
   const [activeEmpresa, setActiveEmpresa] = useState<string>(() => {
     // Leer el valor del localStorage si está disponible
     return localStorage.getItem('activeEmpresa') || "";
@@ -47,6 +50,7 @@ export const Auth0ProviderWithNavigate = ({ children }: Props) => {
 
   const selectSucursal = (sucursalId: number) => {
     setActiveSucursal(String(sucursalId));
+    localStorage.setItem('activeSucursal', String(sucursalId));
   };
 
   const selectEmpresa = (empresaId: number) => {

@@ -16,7 +16,7 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { activeEmpresa } = useAuth0Extended();
+  const { activeEmpresa, selectEmpresa } = useAuth0Extended();
 
   const fetchEmpresas = async () => {
     try {
@@ -34,6 +34,7 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
   }, [refresh]);
 
   const handleCardClick = (empresaId: number) => {
+    selectEmpresa(empresaId)
     navigate(`/sucursales/${empresaId}`);
   };
 
