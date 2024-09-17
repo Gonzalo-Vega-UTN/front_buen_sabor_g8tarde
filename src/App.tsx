@@ -6,16 +6,11 @@ import SucursalDropdown from './components/SucursalDropdown/SucursalDropdown';
 import EmpresaDropdown from './components/EmpresaDropdown/EmpresaDropdown';
 import './custom.css';
 import { useAuth0Extended } from './Auth/Auth0ProviderWithNavigate';
-import { useNavigate } from 'react-router-dom';
 
 const AppContent = () => {
 
   const { activeEmpresa, selectEmpresa} = useAuth0Extended();
-  const navigate = useNavigate();
 
-  if(!activeEmpresa){
-    navigate("/empresas");
-  }
   return (
     <div className="container-fluid p-0 layout">
       <div className="row g-0">
