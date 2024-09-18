@@ -3,7 +3,6 @@ import { CartProvider } from "../components/Carrito/ContextCarrito";
 import Home from "../components/Home/Home";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import { Rol } from "../entities/enums/Rol";
-import DashboardPage from "../pages/ArtManufacturado/DashBoard";
 import { MisPedidosList } from "../pages/Cliente/mipedido";
 import { UnidadesMedidaList } from "../pages/UnidadMedida/UnidadMedidaList";
 import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
@@ -25,6 +24,7 @@ import SucursalesPage from "../pages/SucursalPage";
 import FormularioCliente from "../pages/Cliente/FormularioCliente";
 
 import UserList from "../pages/UserList";
+import ProductTable from "../pages/ArtManufacturado/ProductTable";
 
 export default function AppRoutes() {
   return (
@@ -51,7 +51,7 @@ export default function AppRoutes() {
         path="/productos"
         element={
           <PrivateRoute
-            element={DashboardPage}
+            element={ProductTable}
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
