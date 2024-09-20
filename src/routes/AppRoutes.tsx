@@ -7,7 +7,6 @@ import { MisPedidosList } from "../pages/Cliente/mipedido";
 import { UnidadesMedidaList } from "../pages/UnidadMedida/UnidadMedidaList";
 import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
 import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
-import { FormularioArtManuf } from "../pages/ArtManufacturado/FormularioArtManuf";
 import ArticuloInsumoPage from "../pages/ArticuloInsumo/ArticulosInsumosPage";
 import { PedidosCajero } from "../components/PedidosXEstado/PedidosCajero";
 import { PedidosCocinero } from "../components/PedidosXEstado/PedidosCocinero";
@@ -75,15 +74,6 @@ export default function AppRoutes() {
         }
       />
 
-      <Route
-        path="/create-product/:id"
-        element={
-          <PrivateRoute
-            element={FormularioArtManuf}
-            roles={[Rol.Admin, Rol.Cocinero]} // Solo admin puede acceder
-          />
-        }
-      />
       <Route
         path="/ingredientes"
         element={

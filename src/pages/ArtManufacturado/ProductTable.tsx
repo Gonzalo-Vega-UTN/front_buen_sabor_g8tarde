@@ -4,7 +4,6 @@ import { Table } from "react-bootstrap";
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { ArticuloManufacturado } from "../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
-import { useNavigate } from "react-router-dom";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { CategoriaService } from "../../services/CategoriaService";
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
@@ -17,14 +16,16 @@ import { FaSave } from "react-icons/fa";
 import "./tableProdict.css";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 import { ArticuloManufacturadoModal } from "./ArticuloManufacturadoModal";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductTable() {
-  const navigate = useNavigate();
   //Producto seleccionado que se va a pasar como prop al modal
   const [product, setProduct] = useState<ArticuloManufacturado>(
     new ArticuloManufacturado()
   );
-  const [products, setProducts] = useState<ArticuloManufacturado[]>([]);
+  const [articulosManufacturados, setArticulosManufacturados] = useState<
+    ArticuloManufacturado[]
+  >([]);
 
   //const para manejar el estado del modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -39,11 +40,20 @@ export default function ProductTable() {
     useState<number>();
   const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
 
+  const [currentArtManufacturado, setCurrentArtManufacturado] =
+    useState<ArticuloManufacturado>(new ArticuloManufacturado());
+
   const { activeSucursal } = useAuth0Extended();
 
   //Logica del modal
   const handleClick = (id: number) => {
-    //navigate("/create-product/" + id)
+    if (id === 0) {
+      setCurrentArtManufacturado(new ArticuloManufacturado());
+    } else {
+      setCurrentArtManufacturado(
+        articulosManufacturados.filter((art) => id === art.id)[0]
+      );
+    }
     setShowModal(!showModal);
   };
 
@@ -72,7 +82,7 @@ export default function ProductTable() {
       idUnidadMedida,
       denominacion
     );
-    setProducts(productsFiltered);
+    setArticulosManufacturados(productsFiltered);
     setIsLoading(false);
   };
   const fetchCategorias = async () => {
@@ -122,6 +132,43 @@ export default function ProductTable() {
       console.error(error);
     }
   };
+
+  const handleSubmit = async (
+    newArticuloManufacturado: ArticuloManufacturado
+  ) => {
+    try {
+      //quitar blobs
+      newArticuloManufacturado.imagenes =
+        newArticuloManufacturado.imagenes.filter(
+          (imagen) => !imagen.url.includes("blob")
+        );
+      let response: ArticuloManufacturado;
+      if (newArticuloManufacturado.id === 0) {
+        // Crear un nuevo ArticuloManufacturado
+        const response = await ProductServices.create(
+          newArticuloManufacturado,
+          activeSucursal
+        );
+
+        // Agregar el nuevo Articulo al estado
+        setArticulosManufacturados((prev) => [...prev, response]);
+      } else {
+        // Actualizar el ArticuloManufacturado existente
+        const response = await ProductServices.update(
+          newArticuloManufacturado.id,
+          newArticuloManufacturado
+        );
+
+        // Actualizar el array con el artículo modificado
+        setArticulosManufacturados((prev) =>
+          prev.map((art) => (art.id === response.id ? response : art))
+        );
+      }
+    } catch (error) {
+      console.log("Algo salió mal UPDATE", error);
+    }
+  };
+
   return (
     <div className="container">
       <GenericButton
@@ -155,7 +202,7 @@ export default function ProductTable() {
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
+          {articulosManufacturados.map((product) => (
             <tr key={product.id} className={"text-center"}>
               <td className={product.alta ? "" : "bg-secondary"}>
                 {product.id}
@@ -210,10 +257,11 @@ export default function ProductTable() {
 
       {showModal && (
         <ArticuloManufacturadoModal
+          handleSubmit={handleSubmit}
           categorias={categorias}
           unidadesMedida={unidadesMedida}
           readOnly={true}
-          articuloManufacturado={new ArticuloManufacturado()}
+          articuloManufacturado={currentArtManufacturado}
           onHide={() => handleClick(1)}
         />
       )}

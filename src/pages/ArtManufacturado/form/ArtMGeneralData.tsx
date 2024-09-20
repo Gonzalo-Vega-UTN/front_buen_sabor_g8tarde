@@ -1,8 +1,4 @@
-import React from "react";
 import { FormWrapper } from "./FormWrapper";
-import { MyFormGroupInput } from "../../../components/formComponents/FormGroupInput";
-import { ValidationEnum } from "../../../utils/ValidationEnum";
-import Col from "react-bootstrap/esm/Col";
 import Form from "react-bootstrap/esm/Form";
 import { ArticuloManufacturado } from "../../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
 import Row from "react-bootstrap/esm/Row";

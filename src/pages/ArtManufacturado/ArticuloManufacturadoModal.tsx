@@ -10,6 +10,7 @@ import { ArtMGeneralData } from "./form/ArtMGeneralData";
 import { useMultistepForm } from "../../hooks/useMultistepForm";
 import ImagenCarousel from "../../components/carousel/ImagenCarousel";
 import { Imagen } from "../../entities/DTO/Imagen";
+import { ArtMDetails } from "./form/ArtMDetails";
 
 interface Props {
   categorias: Categoria[];
@@ -17,7 +18,7 @@ interface Props {
   readOnly: boolean;
   articuloManufacturado: ArticuloManufacturado;
   onHide: () => void;
-  //handleSubmit: (articuloManufacturado: ArticuloManufacturado) => void; //TODO: verificar
+  handleSubmit: (articuloManufacturado: ArticuloManufacturado) => void;
 }
 export const ArticuloManufacturadoModal = ({
   categorias,
@@ -25,6 +26,7 @@ export const ArticuloManufacturadoModal = ({
   readOnly,
   articuloManufacturado,
   onHide,
+  handleSubmit,
 }: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [artManufacturado, setArtManufacturado] =
@@ -49,6 +51,23 @@ export const ArticuloManufacturadoModal = ({
     }
   };
 
+  const handleCantidadChange = (index: number, newCantidad: number) => {
+    setArtManufacturado((prev) => {
+      const updatedDetalles = [...prev.articuloManufacturadoDetalles];
+      const detalle = updatedDetalles[index];
+      if (detalle) {
+        updatedDetalles[index] = {
+          ...detalle,
+          cantidad: newCantidad,
+        };
+      }
+      return {
+        ...prev,
+        articuloManufacturadoDetalles: updatedDetalles,
+      };
+    });
+  };
+
   const validateFields = () => {
     const newErrors: {
       denominacion?: string;
@@ -58,6 +77,7 @@ export const ArticuloManufacturadoModal = ({
       tiempoEstimadoMinutos?: string;
       categoria?: string;
       unidadMedida?: string;
+      articuloManufacturadoDetalles?: string;
     } = {};
 
     if (currentStepIndex === 0) {
@@ -95,6 +115,17 @@ export const ArticuloManufacturadoModal = ({
         newErrors.unidadMedida = "Debes seleccionar una unidad de medida";
       }
     }
+    if (currentStepIndex === 2) {
+      if (artManufacturado.articuloManufacturadoDetalles.length === 0 ) {
+        newErrors.articuloManufacturadoDetalles =
+          "Debes cargar articulos insumos";
+      }
+
+      if (artManufacturado.articuloManufacturadoDetalles.find(art => art.cantidad  === 0)) {
+        newErrors.articuloManufacturadoDetalles =
+          "Debes cargarle una cantidad valida al articulo insumos";
+      }
+    }
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
@@ -126,6 +157,14 @@ export const ArticuloManufacturadoModal = ({
         unidadesMedida={unidadesMedida}
         errors={errors}
       />,
+      <ArtMDetails
+        categorias={categorias}
+        errors={errors}
+        unidadesMedida={unidadesMedida}
+        detalles={artManufacturado.articuloManufacturadoDetalles}
+        onCantidadChange={handleCantidadChange}
+        onAddInsumo={handleChange}
+      />,
       <ImagenCarousel
         imagenesExistentes={articuloManufacturado.imagenes}
         onFilesChange={handleFileChange}
@@ -141,19 +180,14 @@ export const ArticuloManufacturadoModal = ({
   function save() {
     if (validateFields()) {
       setIsLoading(true);
-      console.log("BOTON APRETADO");
+      handleSubmit(artManufacturado);
       onHide();
     }
   }
 
   return (
-    <Modal
-      show={true}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton>
+    <Modal show={true} size="lg" backdrop="static" keyboard={false} centered>
+      <Modal.Header>
         <Modal.Title id="contained-modal-title-vcenter">
           <h2>Formulario de Articulo Manufacturado</h2>
         </Modal.Title>
@@ -173,7 +207,7 @@ export const ArticuloManufacturadoModal = ({
             }}
           >
             {!isFirstStep && (
-              <Button type="button" onClick={back}>
+              <Button type="button" variant="secondary" onClick={back}>
                 Atras
               </Button>
             )}
@@ -182,7 +216,7 @@ export const ArticuloManufacturadoModal = ({
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>
+        <Button variant="danger" onClick={onHide}>
           Cerrar
         </Button>
         {isLastStep && (

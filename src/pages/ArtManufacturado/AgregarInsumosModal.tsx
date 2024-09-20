@@ -3,18 +3,12 @@ import { Button, Modal, Table } from 'react-bootstrap'
 import { ArticuloInsumo } from '../../entities/DTO/Articulo/Insumo/ArticuloInsumo';
 import { BsTrashFill } from 'react-icons/bs';
 import { Categoria } from '../../entities/DTO/Categoria/Categoria';
-import { CategoriaService } from '../../services/CategoriaService';
 import ArticuloInsumoService from '../../services/ArticuloInsumoService';
 import { UnidadMedida } from '../../entities/DTO/UnidadMedida/UnidadMedida';
-import UnidadMedidaServices from '../../services/UnidadMedidaServices';
-import { useAuth0, Auth0ContextInterface, User } from "@auth0/auth0-react";
 import FiltroProductos from '../../components/Filtrado/FiltroArticulo';
 import GenericButton from '../../components/generic/GenericButton';
 import { FaSave } from 'react-icons/fa';
-
-interface Auth0ContextInterfaceExtended<UserType extends User> extends Auth0ContextInterface<UserType> {
-    activeSucursal: string ;
-  }
+import { useAuth0Extended } from '../../Auth/Auth0ProviderWithNavigate';
 
 interface AgregarInsumosProps {
     show: boolean;
@@ -22,14 +16,14 @@ interface AgregarInsumosProps {
     title: string;
     handleSave: (articulosInsumo: ArticuloInsumo[]) => void;
     articulosExistentes: ArticuloInsumo[];
+    categorias: Categoria[];
+    unidadesMedida: UnidadMedida[];
 
 }
-export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulosExistentes }: AgregarInsumosProps) => {
+export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulosExistentes, categorias, unidadesMedida }: AgregarInsumosProps) => {
 
     const [listaFiltrada, setListaFiltrada] = useState<ArticuloInsumo[]>([]);
 
-    const [categorias, setCategorias] = useState<Categoria[]>([])
-    const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([])
 
     const [articulosAgregados, setArticulosAgregados] = useState<ArticuloInsumo[]>(articulosExistentes ? articulosExistentes : [])
 
@@ -37,7 +31,7 @@ export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulos
     const [unidadMedidaSeleccionada, setUnidadMedidaSeleccionada] = useState<number>();
     const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
 
-    const { activeSucursal } = useAuth0() as Auth0ContextInterfaceExtended<User>;
+    const { activeSucursal } = useAuth0Extended();
 
     const fetchDataArticulosInsumo = async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string) => {
         const articulos = await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(activeSucursal, idCategoria, idUnidadMedida, denominacion);
@@ -49,26 +43,6 @@ export const AgregarInsumosModal = ({ show, onHide, title, handleSave, articulos
 
         fetchDataArticulosInsumo();
     }, []);
-
-
-    useEffect(() => {
-        const fetchCategorias = async () => {
-            const categorias = await CategoriaService.obtenerCategorias(activeSucursal);
-            setCategorias(categorias);
-        };
-
-        fetchCategorias();
-    }, []);
-
-    useEffect(() => {
-        const fetchUnidadadMedida = async () => {
-            const unidadesMedida = await UnidadMedidaServices.getAll();
-            setUnidadesMedida(unidadesMedida);
-        };
-
-        fetchUnidadadMedida();
-    }, []);
-
 
     const handleClick = (articulo: ArticuloInsumo) => {
         if (articulosAgregados.find(selected => selected.id === articulo.id)) {
