@@ -3,12 +3,10 @@ import { CartProvider } from "../components/Carrito/ContextCarrito";
 import Home from "../components/Home/Home";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import { Rol } from "../entities/enums/Rol";
-import DashboardPage from "../pages/ArtManufacturado/DashBoard";
 import { MisPedidosList } from "../pages/Cliente/mipedido";
 import { UnidadesMedidaList } from "../pages/UnidadMedida/UnidadMedidaList";
 import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
 import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
-import { FormularioArtManuf } from "../pages/ArtManufacturado/FormularioArtManuf";
 import ArticuloInsumoPage from "../pages/ArticuloInsumo/ArticulosInsumosPage";
 import { PedidosCajero } from "../components/PedidosXEstado/PedidosCajero";
 import { PedidosCocinero } from "../components/PedidosXEstado/PedidosCocinero";
@@ -25,6 +23,7 @@ import SucursalesPage from "../pages/SucursalPage";
 import FormularioCliente from "../pages/Cliente/FormularioCliente";
 
 import UserList from "../pages/UserList";
+import ProductTable from "../pages/ArtManufacturado/ProductTable";
 
 export default function AppRoutes() {
   return (
@@ -51,7 +50,7 @@ export default function AppRoutes() {
         path="/productos"
         element={
           <PrivateRoute
-            element={DashboardPage}
+            element={ProductTable}
             roles={[Rol.Admin]} // Solo admin puede acceder
           />
         }
@@ -75,15 +74,6 @@ export default function AppRoutes() {
         }
       />
 
-      <Route
-        path="/create-product/:id"
-        element={
-          <PrivateRoute
-            element={FormularioArtManuf}
-            roles={[Rol.Admin, Rol.Cocinero]} // Solo admin puede acceder
-          />
-        }
-      />
       <Route
         path="/ingredientes"
         element={
