@@ -5,17 +5,18 @@ import { Base } from "../Base";
 import { Imagen } from "../Imagen";
 
 export class Promocion extends Base {
-  [x: string]: never[];
+  id: number = 0;
+  tipoPromocion!: TipoPromocion;
   denominacion: string = '';
-  fechaDesde: Date = new Date();
-  fechaHasta: Date = new Date();
-  horaDesde: string  = '';
-  horaHasta: string  = '';
+  fechaDesde!: Date;
+  fechaHasta!: Date;
+  horaDesde!: string;
+  horaHasta!: string;
   descripcionDescuento: string = '';
   precioPromocional: number = 0;
-  tipoPromocion: TipoPromocion | undefined = undefined;
   detallesPromocion: PromocionDetalle[] = [];
   imagenes: Imagen[] = [];
+  alta: boolean = true;
 }
 export class PromocionDetalle extends Base {
     cantidad: number = 0;

@@ -16,7 +16,7 @@ import ClientTable from "../pages/ClientesList";
 import FormularioDomicilio from "../pages/Domicilio/FormDomicilio";
 import EmpresasPage from "../pages/EmpresasPage";
 import { PedidosList } from "../pages/PedidosList";
-import PromocionForm from "../pages/Promocion/FormularioPromocion";
+
 import PromocionesPage from "../pages/Promocion/PromocionesPage";
 import { Reportes } from "../pages/Reportes/Reportes";
 import SucursalesPage from "../pages/SucursalPage";
@@ -24,6 +24,7 @@ import FormularioCliente from "../pages/Cliente/FormularioCliente";
 
 import UserList from "../pages/UserList";
 import ProductTable from "../pages/ArtManufacturado/ProductTable";
+
 
 export default function AppRoutes() {
   return (
@@ -155,15 +156,7 @@ export default function AppRoutes() {
           />
         }
       />
-      <Route
-        path="/create-promotion/:id"
-        element={
-          <PrivateRoute
-            element={PromocionForm}
-            roles={[Rol.Admin, Rol.Cocinero]} // Solo admin puede acceder
-          />
-        }
-      />
+      
       <Route
         path="/PedidosCajero"
         element={

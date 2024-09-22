@@ -1,42 +1,47 @@
-import { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
-import {  BsTrashFill } from "react-icons/bs";
+import { BsTrashFill, BsPencilSquare } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
-import { useNavigate } from "react-router-dom";
 import { Promocion } from "../../entities/DTO/Promocion/Promocion";
 import PromocionService from "../../services/PromocionService";
 import CustomButton from "../../components/generic/GenericButton";
 import GenericButton from "../../components/generic/GenericButton";
 import { FaSave } from "react-icons/fa";
-import PromModal from "./ModalPromocion";
+
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
+import PromotionFormModal from "./PromotionFormModal";
+
 
 export default function PromotionTable() {
-  const navigate = useNavigate();
-
-  const [promocion, setPromocion] = useState<Promocion>(new Promocion());
+  const [, setPromocion] = useState<Promocion>(new Promocion());
   const [promociones, setPromociones] = useState<Promocion[]>([]);
+  const [, setShowDeleteModal] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [selectedPromocionId, setSelectedPromocionId] = useState<number | undefined>(undefined);
+  const [, setTitle] = useState("");
 
-  // const para manejar el estado del modal
-  const [showModal, setShowModal] = useState(false);
-  const [title, setTitle] = useState("");
+  const { activeSucursal } = useAuth0Extended();
 
-  const {activeSucursal} = useAuth0Extended();
+  const handleOpenFormModal = (id?: number) => {
+    setSelectedPromocionId(id);
+    setShowFormModal(true);
+  };
 
-  const handleClick = (id: number) => {
-    navigate("/create-promotion/" + id);
+  const handleCloseFormModal = () => {
+    setShowFormModal(false);
+    setSelectedPromocionId(undefined);
   };
 
   const handleClickEliminar = (newTitle: string, promo: Promocion) => {
     setTitle(newTitle);
-    setShowModal(true);
+    setShowDeleteModal(true);
     setPromocion(promo);
   };
 
-  const handleDelete = async (id: number) => {
+  async (id: number) => {
     try {
       await PromocionService.delete(Number(activeSucursal), id);
-      setShowModal(false);
+      setShowDeleteModal(false);
       fetchPromotions();
     } catch (error) {
       console.error(error);
@@ -50,9 +55,8 @@ export default function PromotionTable() {
 
   useEffect(() => {
     fetchPromotions();
-  }, []);
+  }, [activeSucursal]);
 
-  
   return (
     <div className="container">
       <CustomButton
@@ -61,7 +65,7 @@ export default function PromotionTable() {
         size={25}
         icon={CiCirclePlus}
         text="Nueva Promoción"
-        onClick={() => handleClick(0)}
+        onClick={() => handleOpenFormModal()}
       />
       <Table hover>
         <thead>
@@ -74,7 +78,7 @@ export default function PromotionTable() {
             <th>Hora Hasta</th>
             <th>Tipo Promocion</th>
             <th>Precio Promocional</th>
-          
+            <th>Editar</th>
             <th>Eliminar</th>
           </tr>
         </thead>
@@ -87,13 +91,20 @@ export default function PromotionTable() {
             >
               <td>{promotion.id}</td>
               <td>{promotion.denominacion}</td>
-              <td>{promotion.fechaDesde.toString()}</td>
-              <td>{promotion.fechaHasta.toString()}</td>
+              <td>{new Date(promotion.fechaDesde).toLocaleDateString()}</td>
+              <td>{new Date(promotion.fechaHasta).toLocaleDateString()}</td>
               <td>{promotion.horaDesde}</td>
               <td>{promotion.horaHasta}</td>
               <td>{promotion.tipoPromocion}</td>
-              <td>{promotion.precioPromocional}</td>
-             
+              <td>${promotion.precioPromocional.toFixed(2)}</td>
+              <td>
+                <GenericButton
+                  color="#007bff"
+                  size={23}
+                  icon={BsPencilSquare}
+                  onClick={() => handleOpenFormModal(promotion.id)}
+                />
+              </td>
               <td>
                 <GenericButton
                   color={promotion.alta ? "#D32F2F" : "#50C878"}
@@ -101,7 +112,7 @@ export default function PromotionTable() {
                   icon={promotion.alta ? BsTrashFill : FaSave}
                   onClick={() =>
                     handleClickEliminar(
-                      "Alta/Baja Articulo",
+                      promotion.alta ? "Dar de Baja Promoción" : "Dar de Alta Promoción",
                       promotion
                     )
                   }
@@ -112,15 +123,12 @@ export default function PromotionTable() {
         </tbody>
       </Table>
 
-      {showModal && (
-        <PromModal
-          show={showModal}
-          onHide={() => setShowModal(false)}
-          title={title}
-          handleDelete={handleDelete}
-          promo={promocion}
-        />
-      )}
+      <PromotionFormModal
+        show={showFormModal}
+        onHide={handleCloseFormModal}
+        onSave={fetchPromotions}
+        promocionId={selectedPromocionId}
+      />
     </div>
   );
 }
