@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button, Row, Col, InputGroup, ListGroup } from 'react-bootstrap';
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import { Modal, Form, Button, Row, Col, InputGroup, ListGroup, Image } from 'react-bootstrap';
 import { Promocion } from '../../entities/DTO/Promocion/Promocion';
 import { Articulo } from '../../entities/DTO/Articulo/Articulo';
 import { TipoPromocion } from '../../entities/enums/TipoPromocion';
@@ -17,7 +17,9 @@ interface PromotionFormModalProps {
 const PromotionFormModal: React.FC<PromotionFormModalProps> = ({ show, onHide, onSave, promocionId }) => {
   const [promocion, setPromocion] = useState<Promocion>(new Promocion());
   const [availableArticulos, setAvailableArticulos] = useState<Articulo[]>([]);
-  const [submitError, setSubmitError] = useState<string>("");
+  const [submitError, setSubmitError] = useState<string>('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { activeSucursal } = useAuth0Extended();
 
   useEffect(() => {
@@ -26,8 +28,11 @@ const PromotionFormModal: React.FC<PromotionFormModalProps> = ({ show, onHide, o
         try {
           const fetchedPromocion = await PromocionService.getOne(promocionId);
           setPromocion(fetchedPromocion);
+          if (fetchedPromocion.imagenes && fetchedPromocion.imagenes.length > 0) {
+            setImagePreview(fetchedPromocion.imagenes[0]);
+          }
         } catch (error) {
-          console.error("Error obteniendo Promocion:", error);
+          console.error('Error obteniendo Promocion:', error);
         }
       } else {
         setPromocion(new Promocion());
@@ -37,7 +42,7 @@ const PromotionFormModal: React.FC<PromotionFormModalProps> = ({ show, onHide, o
         const manufacturados = await ProductServices.getAllFiltered(activeSucursal);
         setAvailableArticulos(manufacturados);
       } catch (error) {
-        console.error("Error al obtener los articulos manufacturados", error);
+        console.error('Error al obtener los articulos manufacturados', error);
       }
     };
 
@@ -52,18 +57,18 @@ const PromotionFormModal: React.FC<PromotionFormModalProps> = ({ show, onHide, o
   };
 
   const handleChangeSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const tipo = event.target.value === "HappyHour" ? TipoPromocion.HappyHour : TipoPromocion.Promocion;
+    const tipo = event.target.value === 'HappyHour' ? TipoPromocion.HappyHour : TipoPromocion.Promocion;
     setPromocion({ ...promocion, tipoPromocion: tipo });
   };
 
   const handleArticuloSelect = (articulo: Articulo) => {
-    if (!promocion.detallesPromocion.find(d => d.articulo.id === articulo.id)) {
+    if (!promocion.detallesPromocion.find((d) => d.articulo.id === articulo.id)) {
       setPromocion({
         ...promocion,
         detallesPromocion: [
           ...promocion.detallesPromocion,
-          { cantidad: 1, articulo: articulo, id: 0, alta: true }
-        ]
+          { cantidad: 1, articulo: articulo, id: 0, alta: true },
+        ],
       });
     }
   };
@@ -71,50 +76,61 @@ const PromotionFormModal: React.FC<PromotionFormModalProps> = ({ show, onHide, o
   const handleArticuloRemove = (articuloId: number) => {
     setPromocion({
       ...promocion,
-      detallesPromocion: promocion.detallesPromocion.filter(d => d.articulo.id !== articuloId)
+      detallesPromocion: promocion.detallesPromocion.filter((d) => d.articulo.id !== articuloId),
     });
   };
 
   const handleCantidadChange = (articuloId: number, cantidad: number) => {
     setPromocion({
       ...promocion,
-      detallesPromocion: promocion.detallesPromocion.map(d => 
+      detallesPromocion: promocion.detallesPromocion.map((d) =>
         d.articulo.id === articuloId ? { ...d, cantidad } : d
-      )
+      ),
     });
   };
 
   const validateInputs = () => {
     if (!promocion.denominacion || promocion.denominacion.trim().length === 0) {
-      setSubmitError("Agrega una denominacion");
+      setSubmitError('Agrega una denominacion');
       return false;
     }
     if (!promocion.fechaDesde || !promocion.fechaHasta) {
-      setSubmitError("Agrega fechas válidas");
+      setSubmitError('Agrega fechas válidas');
       return false;
     }
     if (!promocion.horaDesde || !promocion.horaHasta) {
-      setSubmitError("Agrega horarios válidos");
+      setSubmitError('Agrega horarios válidos');
       return false;
     }
     if (!promocion.descripcionDescuento || promocion.descripcionDescuento.trim().length === 0) {
-      setSubmitError("Agrega una descripcion del descuento");
+      setSubmitError('Agrega una descripcion del descuento');
       return false;
     }
     if (!promocion.precioPromocional || promocion.precioPromocional < 0) {
-      setSubmitError("Agrega un precio promocional valido");
+      setSubmitError('Agrega un precio promocional valido');
       return false;
     }
     if (!promocion.tipoPromocion) {
-      setSubmitError("Agrega un tipo de promocion");
+      setSubmitError('Agrega un tipo de promocion');
       return false;
     }
     if (promocion.detallesPromocion.length === 0) {
-      setSubmitError("Agrega al menos un detalle de promocion");
+      setSubmitError('Agrega al menos un detalle de promocion');
       return false;
     }
-    setSubmitError("");
+    setSubmitError('');
     return true;
+  };
+
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImageFile(null);
+      setImagePreview(null);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -122,14 +138,14 @@ const PromotionFormModal: React.FC<PromotionFormModalProps> = ({ show, onHide, o
     if (validateInputs()) {
       try {
         if (promocion.id !== 0) {
-          await PromocionService.update(promocion.id, promocion);
+          await PromocionService.update(promocion.id, promocion, imageFile);
         } else {
-          await PromocionService.create(activeSucursal, promocion);
+          await PromocionService.create(activeSucursal, promocion, imageFile);
         }
         onSave();
         onHide();
       } catch (error) {
-        console.error("Error saving promotion:", error);
+        console.error('Error guardando la promoción:', error);
       }
     }
   };
@@ -160,7 +176,7 @@ const PromotionFormModal: React.FC<PromotionFormModalProps> = ({ show, onHide, o
                 type="date"
                 name="fechaDesde"
                 value={promocion.fechaDesde ? new Date(promocion.fechaDesde).toISOString().split('T')[0] : ''}
-                onChange={(e) => setPromocion({...promocion, fechaDesde: new Date(e.target.value)})}
+                onChange={(e) => setPromocion({ ...promocion, fechaDesde: new Date(e.target.value) })}
               />
             </Form.Group>
             <Form.Group as={Col} controlId="fechaHasta">
@@ -169,7 +185,7 @@ const PromotionFormModal: React.FC<PromotionFormModalProps> = ({ show, onHide, o
                 type="date"
                 name="fechaHasta"
                 value={promocion.fechaHasta ? new Date(promocion.fechaHasta).toISOString().split('T')[0] : ''}
-                onChange={(e) => setPromocion({...promocion, fechaHasta: new Date(e.target.value)})}
+                onChange={(e) => setPromocion({ ...promocion, fechaHasta: new Date(e.target.value) })}
               />
             </Form.Group>
           </Row>
@@ -220,59 +236,73 @@ const PromotionFormModal: React.FC<PromotionFormModalProps> = ({ show, onHide, o
 
           <Form.Group className="mb-3" controlId="tipoPromocion">
             <Form.Label>Tipo de Promoción</Form.Label>
-            <Form.Select
-                value={promocion.tipoPromocion}
-                onChange={handleChangeSelect}
-            >
-                <option value="">Seleccionar Tipo</option>
-                <option value="HappyHour">Happy Hour</option>
-                <option value="Promocion">Promoción</option>
+            <Form.Select value={promocion.tipoPromocion} onChange={handleChangeSelect}>
+              <option value="">Seleccionar...</option>
+              <option value={TipoPromocion.Promocion}>Promoción</option>
+              <option value={TipoPromocion.HappyHour}>Happy Hour</option>
             </Form.Select>
-            </Form.Group>
+          </Form.Group>
 
+          <Form.Group className="mb-3" controlId="imagen">
+            <Form.Label>Imagen de la Promoción</Form.Label>
+            <Form.Control type="file" onChange={handleImageChange} />
+            {imagePreview && (
+              <Image src={imagePreview} alt="Vista previa de la imagen" fluid className="mt-3" />
+            )}
+          </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Productos Manufacturados Disponibles</Form.Label>
+            <Form.Label>Artículos en Promoción</Form.Label>
             <ListGroup>
-              {availableArticulos.filter(a => !promocion.detallesPromocion.find(d => d.articulo.id === a.id)).map(articulo => (
-                <ListGroup.Item key={articulo.id} action onClick={() => handleArticuloSelect(articulo)}>
+              {availableArticulos.map((articulo) => (
+                <ListGroup.Item
+                  key={articulo.id}
+                  onClick={() => handleArticuloSelect(articulo)}
+                  action
+                  variant={promocion.detallesPromocion.some((d) => d.articulo.id === articulo.id) ? 'success' : undefined}
+                >
                   {articulo.denominacion}
                 </ListGroup.Item>
               ))}
             </ListGroup>
           </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Productos Seleccionados</Form.Label>
-            <ListGroup>
-              {promocion.detallesPromocion.map(detalle => (
-                <ListGroup.Item key={detalle.articulo.id}>
-                  <Row>
-                    <Col>{detalle.articulo.denominacion}</Col>
-                    <Col xs={3}>
-                      <Form.Control
-                        type="number"
-                        min="1"
-                        value={detalle.cantidad}
-                        onChange={(e) => handleCantidadChange(detalle.articulo.id, parseInt(e.target.value))}
-                      />
-                    </Col>
-                    <Col xs={2}>
-                      <Button variant="danger" size="sm" onClick={() => handleArticuloRemove(detalle.articulo.id)}>
-                        Eliminar
-                      </Button>
-                    </Col>
-                  </Row>
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
-          </Form.Group>
+          {promocion.detallesPromocion.length > 0 && (
+            <>
+              <h5>Detalles de Promoción</h5>
+              <ListGroup>
+                {promocion.detallesPromocion.map((detalle) => (
+                  <ListGroup.Item key={detalle.articulo.id}>
+                    <Row>
+                      <Col>{detalle.articulo.denominacion}</Col>
+                      <Col>
+                        <Form.Control
+                          type="number"
+                          value={detalle.cantidad}
+                          onChange={(e) => handleCantidadChange(detalle.articulo.id, parseInt(e.target.value))}
+                        />
+                      </Col>
+                      <Col>
+                        <Button variant="danger" onClick={() => handleArticuloRemove(detalle.articulo.id)}>
+                          Eliminar
+                        </Button>
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            </>
+          )}
 
-          {submitError && <p className="text-danger">{submitError}</p>}
-
-          <Button variant="primary" type="submit">
-            Guardar
-          </Button>
+          {submitError && <div className="text-danger mt-3">{submitError}</div>}
+          <Modal.Footer>
+            <Button variant="secondary" onClick={onHide}>
+              Cancelar
+            </Button>
+            <Button type="submit" variant="primary">
+              Guardar Promoción
+            </Button>
+          </Modal.Footer>
         </Form>
       </Modal.Body>
     </Modal>

@@ -62,7 +62,7 @@ export class PromocionService {
     }
   }
 
-  static async create(idSucursal: string, promocion: Promocion): Promise<Promocion> {
+  static async create(idSucursal: string, promocion: Promocion, imageFile: File | null): Promise<Promocion> {
     try {
       if (!promocion.tipoPromocion) {
         promocion.tipoPromocion = TipoPromocion.HappyHour;
@@ -82,7 +82,7 @@ export class PromocionService {
     }
   }
 
-  static async update(id: number, promocion: Promocion): Promise<Promocion> {
+  static async update(id: number, promocion: Promocion, imageFile: File | null): Promise<Promocion> {
     try {
       const responseData = await this.request(`/${id}`, {
         method: 'PUT',
