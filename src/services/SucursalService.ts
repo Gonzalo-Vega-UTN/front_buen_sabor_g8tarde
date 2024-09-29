@@ -49,9 +49,9 @@ export class SucursalService {
     }
   }
 
-  static async fetchSucursalesByEmpresaId(empresaId: number): Promise<Sucursal[]> {
+  static async fetchSucursalesByActiveEmpresa(activeEmpresa: number): Promise<Sucursal[]> {
     try {
-      const responseData = await this.request(`/empresa/${empresaId}`, {
+      const responseData = await this.request(`/empresa/${activeEmpresa}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export class SucursalService {
       });
       return responseData as Sucursal[];
     } catch (error) {
-      console.error(`Error al obtener sucursales por empresa ID ${empresaId}:`, error);
+      console.error(`Error al obtener sucursales por empresa activa ${activeEmpresa}:`, error);
       throw error;
     }
   }
@@ -99,24 +99,20 @@ export class SucursalService {
       throw error;
     }
   }
+
   static async bajaSucursal(id: number, activo: boolean): Promise<void> {
     try {
-      // Hacemos la solicitud PUT a /baja/{id} con el parámetro de consulta ?activo
       const response = await fetch(`${this.urlServer}/baja/${id}?activo=${activo}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        mode: 'cors', // Incluimos CORS para asegurar la compatibilidad
+        mode: 'cors',
       });
   
-      // Verificamos si la respuesta fue exitosa (status 204: No Content)
       if (!response.ok) {
-        // Si no fue exitosa, lanzamos un error con el código de estado y el mensaje
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
-  
-      // Si la respuesta fue exitosa, no hay cuerpo en el retorno (status 204), por lo que no necesitamos responseData
     } catch (error) {
       console.error(`Error actualizando sucursal con ID ${id}:`, error);
       throw error;
@@ -143,6 +139,6 @@ export class SucursalService {
       throw error;
     }
   }
-};
+}
 
 export default SucursalService;

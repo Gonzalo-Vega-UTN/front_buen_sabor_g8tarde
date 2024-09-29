@@ -28,9 +28,7 @@ const PromotionFormModal: React.FC<PromotionFormModalProps> = ({ show, onHide, o
         try {
           const fetchedPromocion = await PromocionService.getOne(promocionId);
           setPromocion(fetchedPromocion);
-          if (fetchedPromocion.imagenes && fetchedPromocion.imagenes.length > 0) {
-            setImagePreview(fetchedPromocion.imagenes[0]);
-          }
+          
         } catch (error) {
           console.error('Error obteniendo Promocion:', error);
         }

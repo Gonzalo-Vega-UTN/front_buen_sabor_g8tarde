@@ -29,12 +29,12 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
   const [domicilio, setDomicilio] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
-  const [, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [currentStep, setCurrentStep] = useState<number>(1);
 
   useEffect(() => {
     if (domicilio !== null) {
-      handleSubmitStep2(); // Llama a la función sin pasar un evento
+      handleSubmitStep2();
     }
   }, [domicilio]);
 
@@ -59,22 +59,25 @@ const SucursalForm: React.FC<AddSucursalFormProps> = ({
     }
     try {
       let response: Sucursal;
+      const sucursalToSave = {
+        ...sucursal,
+        domicilio,
+        empresa: empresa,
+      };
       if (sucursalEditando) {
-        response = await SucursalService.updateSucursal(sucursalEditando.id, {
-          ...sucursal,
-          domicilio,
-        });
+        response = await SucursalService.updateSucursal(sucursalEditando.id, sucursalToSave);
       } else {
-        response = await SucursalService.createSucursal({
-          ...sucursal,
-          domicilio,
-        });
+        response = await SucursalService.createSucursal(sucursalToSave);
       }
       if (response) {
+        if (files.length > 0) {
+          await SucursalService.uploadFiles(response.id, files);
+        }
         setSuccess(true);
         setSucursal(new Sucursal());
         setError(null);
         setDomicilio(null);
+        setFiles([]);
         onAddSucursal();
       }
     } catch (err) {

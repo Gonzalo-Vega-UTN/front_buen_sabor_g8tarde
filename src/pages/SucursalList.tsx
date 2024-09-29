@@ -1,25 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button, Dropdown, DropdownButton, Modal } from 'react-bootstrap';
+import { Row, Col, Card, Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import SucursalForm from './SucursalForm';
 import { Sucursal } from '../entities/DTO/Sucursal/Sucursal';
 import { Empresa } from '../entities/DTO/Empresa/Empresa';
 import { useAuth0Extended } from '../Auth/Auth0ProviderWithNavigate';
-import './styles.css';
 import SucursalService from '../services/SucursalService';
+import './styles.css';
 
 interface SucursalListProps {
   refresh: boolean;
   empresa?: Empresa;
+  onAddSucursal: () => void;
 }
 
-const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
+const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa, onAddSucursal }) => {
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [sucursalEditando, setSucursalEditando] = useState<Sucursal | null>(null);
-  const [showModal, setShowModal] = useState(false);
-
   const { selectSucursal, activeSucursal } = useAuth0Extended();
 
   useEffect(() => {
@@ -27,7 +24,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
       try {
         let data;
         if (empresa) {
-          data = await SucursalService.fetchSucursalesByEmpresaId(empresa.id);
+          data = await SucursalService.fetchSucursalesByActiveEmpresa(empresa.id);
         } else {
           data = await SucursalService.fetchSucursales();
         }
@@ -45,32 +42,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
   }, [refresh, empresa]);
 
   const handleEdit = (sucursal: Sucursal) => {
-    setSucursalEditando(sucursal);
-    setShowModal(true);
-  };
-
-  const handleAddSucursal = () => {
-    setSucursalEditando(null);
-    setShowModal(true);
-  };
-
-  const handleCloseModal = async () => {
-    setShowModal(false);
-    try {
-      let data;
-      if (empresa) {
-        data = await SucursalService.fetchSucursalesByEmpresaId(empresa.id);
-      } else {
-        data = await SucursalService.fetchSucursales();
-      }
-      setSucursales(data);
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("An unknown error occurred");
-      }
-    }
+    // Implementar lógica de edición
   };
 
   const handleCardClick = (sucursalId: number) => {
@@ -79,20 +51,15 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
 
   const handleStatusChange = async (sucursalId: number, activo: boolean) => {
     try {
-      // Encontrar la sucursal que queremos actualizar
       const sucursalIndex = sucursales.findIndex(suc => suc.id === sucursalId);
-  
       if (sucursalIndex !== -1) {
-        // Hacer la solicitud para actualizar el estado de alta/baja
         await SucursalService.bajaSucursal(sucursales[sucursalIndex].id, activo);
-  
-        // Actualizar el estado local de la lista de sucursales para reflejar el cambio
         const updatedSucursales = [...sucursales];
         updatedSucursales[sucursalIndex] = {
           ...sucursales[sucursalIndex],
           alta: activo,
         };
-        setSucursales(updatedSucursales); // Actualizamos el estado de las sucursales
+        setSucursales(updatedSucursales);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -102,15 +69,12 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
   };
 
   return (
-    <Container>
-      <h2>Sucursales</h2>
+    <div>
+      <Button onClick={onAddSucursal}>Agregar Sucursal</Button>
       {error && <p>{error}</p>}
-
-      <Button onClick={handleAddSucursal}>Agregar Sucursal</Button> 
       <Row>
         {sucursales.map(sucursal => (
           <Col key={sucursal.id} sm={12} md={6} lg={4} className="mb-4">
-            <br></br>
             <Card
               onClick={() => handleCardClick(sucursal.id)}
               className={activeSucursal === String(sucursal.id) ? "selected-card" : ""}
@@ -142,15 +106,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa }) => {
           </Col>
         ))}
       </Row>
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>{sucursalEditando ? 'Editar Sucursal' : 'Agregar Sucursal'}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {empresa && <SucursalForm onAddSucursal={handleCloseModal} sucursalEditando={sucursalEditando} empresa={empresa} />}
-        </Modal.Body>
-      </Modal>
-    </Container>
+    </div>
   );
 };
 
