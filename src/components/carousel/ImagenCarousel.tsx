@@ -16,7 +16,6 @@ const ImagenCarousel: React.FC<Props> = ({
   onImagenesChange,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const handleAgregarImagenButton = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();

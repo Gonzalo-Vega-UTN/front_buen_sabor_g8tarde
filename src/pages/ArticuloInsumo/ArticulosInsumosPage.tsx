@@ -12,15 +12,11 @@ import ArticuloInsumoService from "../../services/ArticuloInsumoService";
 import ArticuloInsumoModal from "./ArticuloInsumoModal";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 
-
-
 export default function ArticuloInsumoPage() {
-
   //Estados
   const [showModalCrear, setShowModalCrear] = useState<boolean>(false);
   const [, setError] = useState<string>("");
   const { activeSucursal } = useAuth0Extended();
-
 
   //Estados Listas Entidades
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -32,13 +28,14 @@ export default function ArticuloInsumoPage() {
   const [unidadMedida, setUnidadMedida] = useState<number>();
   const [searchedDenominacion, setSearchedDenominacion] = useState<string>();
 
-
   // Estado para manejar los archivos
   // const [, setSelectedFiles] = useState<File[]>([]);
 
   useEffect(() => {
     const fetchCategorias = async () => {
-      const categorias = await CategoriaService.obtenerCategorias(activeSucursal);
+      const categorias = await CategoriaService.obtenerCategorias(
+        activeSucursal
+      );
       setCategorias(categorias);
     };
 
@@ -54,8 +51,18 @@ export default function ArticuloInsumoPage() {
     fetchUnidadadMedida();
   }, []);
 
-  const fetchDataArticulosInsumo = async (idCategoria?: number, idUnidadMedida?: number, denominacion?: string) => {
-    const articulos = await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(activeSucursal, idCategoria, idUnidadMedida, denominacion);
+  const fetchDataArticulosInsumo = async (
+    idCategoria?: number,
+    idUnidadMedida?: number,
+    denominacion?: string
+  ) => {
+    const articulos =
+      await ArticuloInsumoService.obtenerArticulosInsumosFiltrados(
+        activeSucursal,
+        idCategoria,
+        idUnidadMedida,
+        denominacion
+      );
     setArticuloInsumo(articulos);
   };
 
@@ -64,30 +71,42 @@ export default function ArticuloInsumoPage() {
   }, []);
 
   useEffect(() => {
-      fetchDataArticulosInsumo(categoria,unidadMedida,searchedDenominacion);
-
+    fetchDataArticulosInsumo(categoria, unidadMedida, searchedDenominacion);
   }, [categoria, unidadMedida, searchedDenominacion]);
 
-
-  const handleSaveUpdate = async (art: ArticuloInsumo) => {
+  const handleSaveUpdate = async (art: ArticuloInsumo, files: File[]) => {
     try {
       let response: ArticuloInsumo;
       //quitar blobs
-      art.imagenes =  art.imagenes.filter(imagen => !imagen.url.includes("blob"))
-      if (art.id === 0) { // Artículo nuevo
-        response = await ArticuloInsumoService.crearArticuloInsumo(art, activeSucursal);
-      } else { // Actualizar artículo
-        response = await ArticuloInsumoService.actualizarArticuloInsumo(art.id, art);
+      art.imagenes = art.imagenes.filter(
+        (imagen) => !imagen.url.includes("blob")
+      );
+      if (art.id === 0) {
+        // Artículo nuevo
+        response = await ArticuloInsumoService.crearArticuloInsumo(
+          art,
+          activeSucursal
+        );
+      } else {
+        // Actualizar artículo
+        response = await ArticuloInsumoService.actualizarArticuloInsumo(
+          art.id,
+          art
+        );
       }
-  
+
       if (response) {
-        setArticuloInsumo(prevArticulos => [...prevArticulos.filter(a => a.id !== art.id), response]);
+        setArticuloInsumo((prevArticulos) => [
+          ...prevArticulos.filter((a) => a.id !== art.id),
+          response,
+        ]);
         setError("");
-        fetchDataArticulosInsumo(); 
-      } 
+        fetchDataArticulosInsumo();
+      }
       // Si el artículo se creó o actualizó correctamente, proceder a subir los archivos
       if (response.id) {
-       fetchDataArticulosInsumo(); 
+        await ArticuloInsumoService.uploadFiles(response.id, files);
+        fetchDataArticulosInsumo();
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -99,10 +118,14 @@ export default function ArticuloInsumoPage() {
 
   const handleDelete = async (artId: number) => {
     try {
-      const response = await ArticuloInsumoService.eliminarArticuloInsumoById(artId);
+      const response = await ArticuloInsumoService.eliminarArticuloInsumoById(
+        artId
+      );
 
       if (response) {
-        setArticuloInsumo(prevArticulos => prevArticulos.filter(a => a.id !== artId)); // Filtra el articulo eliminado
+        setArticuloInsumo((prevArticulos) =>
+          prevArticulos.filter((a) => a.id !== artId)
+        ); // Filtra el articulo eliminado
         setError("");
         fetchDataArticulosInsumo(); // Llama a fetchDataArticulosInsumo después de actualizar el estado
       }
@@ -114,22 +137,27 @@ export default function ArticuloInsumoPage() {
     }
   };
 
-
   const handleChangeCategoria = (id: number) => {
     setCategoria(id > 0 ? id : undefined);
-}
+  };
 
-const handleChangeUnidadMedida = (id: number) => {
+  const handleChangeUnidadMedida = (id: number) => {
     setUnidadMedida(id > 0 ? id : undefined);
-}
+  };
 
-const handleChangeText = (denominacion: string) => {
+  const handleChangeText = (denominacion: string) => {
     setSearchedDenominacion(denominacion ? denominacion : undefined);
-}
+  };
 
   return (
     <>
-      <Button className="mt-4 mb-3" color="#4CAF50" size={25} icon={CiCirclePlus} text="Nuevo Ingrediente" onClick={() => setShowModalCrear(true)}
+      <Button
+        className="mt-4 mb-3"
+        color="#4CAF50"
+        size={25}
+        icon={CiCirclePlus}
+        text="Nuevo Ingrediente"
+        onClick={() => setShowModalCrear(true)}
       />
 
       <ArticuloInsumoTable

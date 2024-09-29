@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
 import Modal from "react-bootstrap/esm/Modal";
@@ -7,54 +7,35 @@ import { CategoriaService } from "../../services/CategoriaService";
 import { Imagen } from "../../entities/DTO/Imagen";
 import ImagenCarousel from "../../components/carousel/ImagenCarousel";
 import { Sucursal } from "../../entities/DTO/Sucursal/Sucursal";
-import SucursalService from "../../services/SucursalService";
+import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 
 interface ModalProps {
   show: boolean;
   onHide: () => void;
   idpadre: string;
-  activeSucursal: string;
   editMode: boolean;
-  selectedCategoria: Categoria | null;
+  selectedCategoria: Categoria;
+  sucursales: Sucursal[];
 }
 
 const CategoriaModal = ({
   show,
   onHide,
   idpadre,
-  activeSucursal,
   editMode,
   selectedCategoria,
+  sucursales,
 }: ModalProps) => {
   const [error, setError] = useState<string>("");
-  const [categoria, setCategoria] = useState<Categoria>(new Categoria());
+  const [categoria, setCategoria] = useState<Categoria>(() => {
+    return selectedCategoria;
+  });
   const [files, setFiles] = useState<File[]>([]);
-  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
-  const [selectedSucursales, setSelectedSucursales] = useState<number[]>([]);
 
-  useEffect(() => {
-    const fetchSucursales = async () => {
-      try {
-        const sucursalesData = await SucursalService.fetchSucursalesByEmpresaId(Number(1));
-        setSucursales(sucursalesData);
-      } catch (error) {
-        console.error("Error al obtener las sucursales:", error);
-      }
-    };
-
-    fetchSucursales();
-
-    if (editMode && selectedCategoria) {
-      setCategoria(selectedCategoria);
-
-      if (selectedCategoria.sucursales) {
-        const sucursalIds = selectedCategoria.sucursales.map((sucursal: Sucursal) => sucursal.id);
-        setSelectedSucursales(sucursalIds);
-      }
-    } else {
-      setCategoria(new Categoria());
-    }
-  }, [activeSucursal, editMode, selectedCategoria]);
+  const [selectedSucursales, setSelectedSucursales] = useState<number[]>(
+    selectedCategoria.sucursales.map((sucursal: Sucursal) => sucursal.id)
+  );
+  const { activeSucursal } = useAuth0Extended();
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,10 +47,17 @@ const CategoriaModal = ({
 
       let data;
       if (editMode) {
-        data = await CategoriaService.actualizarCategoria(categoria.id, categoriaRequest);
+        data = await CategoriaService.actualizarCategoria(
+          categoria.id,
+          categoriaRequest
+        );
       } else {
         const idPadreAsNumber = Number(idpadre);
-        data = await CategoriaService.agregarCategoria(idPadreAsNumber, activeSucursal, categoriaRequest);
+        data = await CategoriaService.agregarCategoria(
+          idPadreAsNumber,
+          activeSucursal,
+          categoriaRequest
+        );
       }
 
       if (data) {
@@ -99,7 +87,9 @@ const CategoriaModal = ({
 
   const handleSucursalChange = (id: number) => {
     setSelectedSucursales((prev) =>
-      prev.includes(id) ? prev.filter((sucursalId) => sucursalId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((sucursalId) => sucursalId !== id)
+        : [...prev, id]
     );
   };
 
@@ -157,8 +147,12 @@ const CategoriaModal = ({
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={onHide}>Cancelar</Button>
-        <Button onClick={handleSave}>{editMode ? "Actualizar" : "Guardar"}</Button>
+        <Button variant="secondary" onClick={onHide}>
+          Cancelar
+        </Button>
+        <Button onClick={handleSave}>
+          {editMode ? "Actualizar" : "Guardar"}
+        </Button>
       </Modal.Footer>
     </Modal>
   );

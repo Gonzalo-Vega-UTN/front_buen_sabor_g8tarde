@@ -2,10 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Container, ListGroup, Button, Collapse } from "react-bootstrap";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { CategoriaService } from "../../services/CategoriaService";
-import { BsPlusCircleFill, BsTrash, BsChevronDown, BsChevronUp, BsPencil } from "react-icons/bs";
+import {
+  BsPlusCircleFill,
+  BsTrash,
+  BsChevronDown,
+  BsChevronUp,
+  BsPencil,
+} from "react-icons/bs";
 import GenericButton from "../../components/generic/GenericButton";
 import CategoriaModal from "./CategoriaModal";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
+import { Sucursal } from "../../entities/DTO/Sucursal/Sucursal";
+import SucursalService from "../../services/SucursalService";
 
 export const CategoriaPage = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -14,22 +22,37 @@ export const CategoriaPage = () => {
   const [collapsedItems, setCollapsedItems] = useState<number[]>([]);
   const [modalShow, setModalShow] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [selectedCategoria, setSelectedCategoria] = useState<Categoria | null>(null);
-  const { activeSucursal } = useAuth0Extended();
+  const [selectedCategoria, setSelectedCategoria] = useState<Categoria>(
+    new Categoria()
+  );
+  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
+  const { activeSucursal, activeEmpresa } = useAuth0Extended();
 
   const fetchCategorias = async () => {
     if (activeSucursal) {
       try {
-        const categorias = await CategoriaService.obtenerCategoriasPadre(activeSucursal);
+        const categorias = await CategoriaService.obtenerCategoriasPadre(
+          activeSucursal
+        );
         setCategorias(categorias);
       } catch (error) {
         console.log(error);
       }
     }
   };
+  const fetchSucursales = async (empresaId: number) => {
+    try {
+      const sucursalesData =
+        await SucursalService.fetchSucursalesByActiveEmpresa(empresaId);
+      setSucursales(sucursalesData);
+    } catch (error) {
+      console.error("Error al obtener las sucursales:", error);
+    }
+  };
 
   useEffect(() => {
     fetchCategorias();
+    fetchSucursales(Number(activeEmpresa));
   }, [activeSucursal]);
 
   const handleItemClick = (id: number) => {
@@ -48,7 +71,10 @@ export const CategoriaPage = () => {
     }
   };
 
-  const handleButtonClickDelete = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+  const handleButtonClickDelete = async (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    id: number
+  ) => {
     event.stopPropagation();
     if (activeSucursal) {
       await CategoriaService.eliminarCategoriaById(activeSucursal, id);
@@ -56,15 +82,21 @@ export const CategoriaPage = () => {
     }
   };
 
-  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, idPadre: number = 0) => {
+  const handleButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    idPadre: number = 0
+  ) => {
     event.stopPropagation();
+    setSelectedCategoria(new Categoria());
     setClickedCategoria(idPadre);
     setEditMode(false);
-    setSelectedCategoria(null);
     setModalShow(true);
   };
 
-  const handleEditClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, categoria: Categoria) => {
+  const handleEditClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    categoria: Categoria
+  ) => {
     event.stopPropagation();
     setSelectedCategoria(categoria);
     setEditMode(true);
@@ -86,7 +118,9 @@ export const CategoriaPage = () => {
                 <ListGroup.Item
                   className={
                     "d-flex justify-content-between align-items-center" +
-                    (categoria.alta ? " text-primary" : " text-secondary text-opacity-50")
+                    (categoria.alta
+                      ? " text-primary"
+                      : " text-secondary text-opacity-50")
                   }
                   onClick={() => handleItemClick(categoria.id)}
                   aria-controls={`subcategoria-collapse-${categoria.id}`}
@@ -129,7 +163,9 @@ export const CategoriaPage = () => {
                         key={subCategoria.id}
                         className={
                           "d-flex justify-content-between align-items-center" +
-                          (subCategoria.alta ? " text-primary" : " text-secondary text-opacity-50")
+                          (subCategoria.alta
+                            ? " text-primary"
+                            : " text-secondary text-opacity-50")
                         }
                       >
                         <span>{subCategoria.denominacion}</span>
@@ -144,7 +180,9 @@ export const CategoriaPage = () => {
                             color="#FBC02D"
                             size={20}
                             icon={BsTrash}
-                            onClick={(e) => handleButtonClickDelete(e, subCategoria.id)}
+                            onClick={(e) =>
+                              handleButtonClickDelete(e, subCategoria.id)
+                            }
                           />
                         </div>
                       </ListGroup.Item>
@@ -157,17 +195,19 @@ export const CategoriaPage = () => {
       ) : (
         <p>No hay categorías</p>
       )}
-      <CategoriaModal
-        show={modalShow}
-        onHide={() => {
-          setModalShow(false);
-          fetchCategorias();
-        }}
-        idpadre={clickedCategoria.toString()}  
-        activeSucursal={activeSucursal ?? ""}
-        editMode={editMode}
-        selectedCategoria={selectedCategoria}
-      />
+      {modalShow && (
+        <CategoriaModal
+          show={modalShow}
+          onHide={() => {
+            setModalShow(false);
+            fetchCategorias();
+          }}
+          idpadre={clickedCategoria.toString()}
+          editMode={editMode}
+          selectedCategoria={selectedCategoria}
+          sucursales={sucursales}
+        />
+      )}
     </Container>
   );
 };

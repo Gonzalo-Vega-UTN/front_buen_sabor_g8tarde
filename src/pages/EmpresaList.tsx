@@ -45,10 +45,8 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ refresh, onEditEmpresa }) => 
         const updatedEmpresa = await EmpresaService.update(empresaId, { ...empresa, alta });
         setEmpresas(empresas.map(emp => emp.id === empresaId ? updatedEmpresa : emp));
   
-        // Convert activeEmpresa to number if it is a string
         const activeEmpresaNumber = Number(activeEmpresa);
   
-        // Compare empresaId (number) with activeEmpresa (converted to number)
         if (empresaId === activeEmpresaNumber) {
         
         }

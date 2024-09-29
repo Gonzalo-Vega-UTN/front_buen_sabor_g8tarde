@@ -32,7 +32,7 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
   }, []);
 
   useEffect(() => {
-    if (provinciaId) {
+    if (provinciaId && provinciaId !== "0" ) {
       fetchLocalidades(Number(provinciaId));
     }
   }, [provinciaId]);
@@ -143,6 +143,7 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
           value={localidadId}
           onChange={(e) => setLocalidadId(e.target.value)}
           required
+          disabled={provinciaId && provinciaId !== "0" ? false : true}
         >
           <option value="">Selecciona una localidad</option>
           {localidades.map((loc) => (

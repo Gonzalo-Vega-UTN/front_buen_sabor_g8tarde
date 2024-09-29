@@ -18,7 +18,10 @@ const RightSidebar: React.FC = () => {
     const fetchSucursales = async () => {
       if (activeEmpresa) {
         try {
-          const sucursalesData = await SucursalService.fetchSucursalesByActiveEmpresa(activeEmpresa);
+          const sucursalesData =
+            await SucursalService.fetchSucursalesByActiveEmpresa(
+              Number(activeEmpresa)
+            );
           setSucursales(sucursalesData);
         } catch (error) {
           console.error("Error al obtener las sucursales:", error);
@@ -36,13 +39,19 @@ const RightSidebar: React.FC = () => {
       <button onClick={toggleSidebar} className="toggle-btn">
         {isOpen ? <ChevronRight /> : <ChevronLeft />}
       </button>
-      <div className="sidebar-content">
+      <div
+        className="sidebar-content"
+        style={{
+          backgroundColor: "grey",
+          maxHeight: "20%",
+        }}
+      >
         {/* Dropdown para seleccionar empresa */}
         <EmpresaDropdown onEmpresaChange={selectEmpresa} />
 
         {/* Si existe una empresa activa, mostrar el dropdown de sucursales */}
         {activeEmpresa && sucursales.length > 0 && (
-          <SucursalDropdown empresaId={activeEmpresa.toString()} sucursales={sucursales} />
+          <SucursalDropdown sucursales={sucursales} />
         )}
       </div>
     </div>

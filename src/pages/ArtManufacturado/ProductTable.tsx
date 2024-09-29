@@ -134,7 +134,8 @@ export default function ProductTable() {
   };
 
   const handleSubmit = async (
-    newArticuloManufacturado: ArticuloManufacturado
+    newArticuloManufacturado: ArticuloManufacturado,
+    files: File[]
   ) => {
     try {
       //quitar blobs
@@ -145,25 +146,31 @@ export default function ProductTable() {
       let response: ArticuloManufacturado;
       if (newArticuloManufacturado.id === 0) {
         // Crear un nuevo ArticuloManufacturado
-        const response = await ProductServices.create(
+        response = await ProductServices.create(
           newArticuloManufacturado,
           activeSucursal
         );
-
-        // Agregar el nuevo Articulo al estado
-        setArticulosManufacturados((prev) => [...prev, response]);
       } else {
         // Actualizar el ArticuloManufacturado existente
-        const response = await ProductServices.update(
+        response = await ProductServices.update(
           newArticuloManufacturado.id,
           newArticuloManufacturado
         );
-
-        // Actualizar el array con el artículo modificado
-        setArticulosManufacturados((prev) =>
-          prev.map((art) => (art.id === response.id ? response : art))
-        );
       }
+      console.log(response);
+      if (response) {
+        console.log(response);
+        await ProductServices.uploadFiles(response.id, files);
+      }
+      setArticulosManufacturados((prev) => {
+        // Si el artículo tiene un id, significa que es una actualización
+        if (prev.some((art) => art.id === response.id)) {
+          return prev.map((art) => (art.id === response.id ? response : art));
+        } else {
+          // Si no tiene id, es un nuevo artículo, lo añadimos a la lista
+          return [...prev, response];
+        }
+      });
     } catch (error) {
       console.log("Algo salió mal UPDATE", error);
     }

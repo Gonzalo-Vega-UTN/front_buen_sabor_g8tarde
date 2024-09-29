@@ -120,7 +120,7 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa, onAddSucu
           <SucursalForm
             onAddSucursal={onAddSucursal}
             sucursalEditando={sucursalEditando}
-            empresa={empresa!} // Asegúrate de pasar la empresa activa
+            empresa={empresa!}
           />
         </Modal.Body>
       </Modal>

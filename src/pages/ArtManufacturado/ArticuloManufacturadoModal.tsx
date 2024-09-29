@@ -11,6 +11,7 @@ import { useMultistepForm } from "../../hooks/useMultistepForm";
 import ImagenCarousel from "../../components/carousel/ImagenCarousel";
 import { Imagen } from "../../entities/DTO/Imagen";
 import { ArtMDetails } from "./form/ArtMDetails";
+import { Spinner } from "react-bootstrap";
 
 interface Props {
   categorias: Categoria[];
@@ -18,7 +19,10 @@ interface Props {
   readOnly: boolean;
   articuloManufacturado: ArticuloManufacturado;
   onHide: () => void;
-  handleSubmit: (articuloManufacturado: ArticuloManufacturado) => void;
+  handleSubmit: (
+    articuloManufacturado: ArticuloManufacturado,
+    files: File[]
+  ) => void;
 }
 export const ArticuloManufacturadoModal = ({
   categorias,
@@ -35,7 +39,7 @@ export const ArticuloManufacturadoModal = ({
   const [errors, setErrors] = useState<
     Partial<Record<keyof ArticuloManufacturado, string>>
   >({});
-  const [, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
 
   const handleChange = (field: Partial<ArticuloManufacturado>) => {
     setArtManufacturado((prev) => ({
@@ -116,12 +120,16 @@ export const ArticuloManufacturadoModal = ({
       }
     }
     if (currentStepIndex === 2) {
-      if (artManufacturado.articuloManufacturadoDetalles.length === 0 ) {
+      if (artManufacturado.articuloManufacturadoDetalles.length === 0) {
         newErrors.articuloManufacturadoDetalles =
           "Debes cargar articulos insumos";
       }
 
-      if (artManufacturado.articuloManufacturadoDetalles.find(art => art.cantidad  === 0)) {
+      if (
+        artManufacturado.articuloManufacturadoDetalles.find(
+          (art) => art.cantidad === 0
+        )
+      ) {
         newErrors.articuloManufacturadoDetalles =
           "Debes cargarle una cantidad valida al articulo insumos";
       }
@@ -166,7 +174,7 @@ export const ArticuloManufacturadoModal = ({
         onAddInsumo={handleChange}
       />,
       <ImagenCarousel
-        imagenesExistentes={articuloManufacturado.imagenes}
+        imagenesExistentes={artManufacturado.imagenes}
         onFilesChange={handleFileChange}
         onImagenesChange={handleImagenesChange}
       />,
@@ -180,8 +188,12 @@ export const ArticuloManufacturadoModal = ({
   function save() {
     if (validateFields()) {
       setIsLoading(true);
-      handleSubmit(artManufacturado);
-      onHide();
+
+      setTimeout(() => {
+        handleSubmit(artManufacturado, files);
+        setIsLoading(false);
+        onHide();
+      }, 2000);
     }
   }
 
@@ -220,8 +232,20 @@ export const ArticuloManufacturadoModal = ({
           Cerrar
         </Button>
         {isLastStep && (
-          <Button variant="primary" type="button" onClick={save}>
-            Guardar
+          <Button
+            variant="primary"
+            type="button"
+            onClick={save}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Spinner size="sm" />
+                Guardando...
+              </>
+            ) : (
+              "Guardar"
+            )}
           </Button>
         )}
       </Modal.Footer>

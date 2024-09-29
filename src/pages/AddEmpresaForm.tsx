@@ -14,17 +14,10 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
   onAddEmpresa,
   empresaEditando,
 }) => {
-  const [empresa, setEmpresa] = useState<Empresa>(new Empresa());
+  const [empresa, setEmpresa] = useState<Empresa>(!empresaEditando || empresaEditando == null ? new Empresa() : empresaEditando);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
-  const [, setFiles] = useState<File[]>([]);
-
-  useEffect(() => {
-    if (empresaEditando) {
-      console.log("empresaeditando", empresaEditando)
-      setEmpresa(empresaEditando);
-    }
-  }, [empresaEditando]);
+  const [files, setFiles] = useState<File[]>([]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -53,6 +46,9 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
         response = await EmpresaService.create(empresa);
       }
       if (response) {
+        if (files.length > 0) {
+          await EmpresaService.uploadFiles(response.id, files);
+        }
         setSuccess(true);
         setEmpresa(new Empresa());
         setError(null);

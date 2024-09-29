@@ -26,7 +26,7 @@ const EmpresaDropdown: React.FC<EmpresaDropdownProps> = ({
         setEmpresas(empresasData);
         if (!activeEmpresa && empresasData && empresasData.length > 0) {
           selectEmpresa(empresasData[0].id);
-        } 
+        }
         setLoading(false);
       } catch (error) {
         if (error instanceof Error) {
