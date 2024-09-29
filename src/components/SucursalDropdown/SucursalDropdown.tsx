@@ -1,45 +1,20 @@
-import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 import { Sucursal } from "../../entities/DTO/Sucursal/Sucursal";
-import SucursalService from "../../services/SucursalService";
+import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
+import { useState } from "react";
 
 interface SucursalDropdownProps {
-  empresaId: string;
+  sucursales: Sucursal[];  // Ahora recibimos sucursales directamente
 }
 
-const SucursalDropdown: React.FC<SucursalDropdownProps> = ({ empresaId }) => {
+const SucursalDropdown: React.FC<SucursalDropdownProps> = ({ sucursales }) => {
   const location = useLocation();
   const { activeSucursal, selectSucursal } = useAuth0Extended();
-  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);  // Ya no necesitamos cargar aquí
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchSucursales = async () => {
-      try {
-        const data = await SucursalService.fetchSucursalesByEmpresaId(
-          Number(empresaId)
-        );
-        setSucursales(data);
-        if(data && data.length > 0){
-          selectSucursal(data[0].id)
-        }
-        setLoading(false);
-      } catch (err) {
-        setError("Error al cargar las sucursales");
-        setLoading(false);
-      }
-    };
-
-    if (empresaId) {
-      fetchSucursales();
-    }
-  }, [empresaId]);
-
   const handleSucursalChange = (sucursalId: number) => {
-    selectSucursal(sucursalId)
+    selectSucursal(sucursalId);
   };
 
   if (loading) {

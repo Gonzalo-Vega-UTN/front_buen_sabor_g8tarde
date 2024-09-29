@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, Button, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Row, Col, Card, Button, Dropdown, DropdownButton, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { Sucursal } from '../entities/DTO/Sucursal/Sucursal';
 import { Empresa } from '../entities/DTO/Empresa/Empresa';
 import { useAuth0Extended } from '../Auth/Auth0ProviderWithNavigate';
 import SucursalService from '../services/SucursalService';
+import SucursalForm from './SucursalForm'; // Asegúrate de importar el formulario de edición
 import './styles.css';
 
 interface SucursalListProps {
@@ -18,6 +19,8 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa, onAddSucu
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { selectSucursal, activeSucursal } = useAuth0Extended();
+  const [sucursalEditando, setSucursalEditando] = useState<Sucursal | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     const getSucursales = async () => {
@@ -42,7 +45,8 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa, onAddSucu
   }, [refresh, empresa]);
 
   const handleEdit = (sucursal: Sucursal) => {
-    // Implementar lógica de edición
+    setSucursalEditando(sucursal); // Almacena la sucursal que se va a editar
+    setShowEditModal(true); // Muestra el modal de edición
   };
 
   const handleCardClick = (sucursalId: number) => {
@@ -106,6 +110,20 @@ const SucursalList: React.FC<SucursalListProps> = ({ refresh, empresa, onAddSucu
           </Col>
         ))}
       </Row>
+
+      {/* Modal para editar la sucursal */}
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Editar Sucursal</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <SucursalForm
+            onAddSucursal={onAddSucursal}
+            sucursalEditando={sucursalEditando}
+            empresa={empresa!} // Asegúrate de pasar la empresa activa
+          />
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
