@@ -81,7 +81,7 @@ const Home: React.FC = () => {
   const fetchSucursales = async (idEmpresa: number) => {
     try {
       setLoading(true);
-      const data = await SucursalService.fetchSucursalesByEmpresaId(idEmpresa);
+      const data = await SucursalService.fetchSucursalesByActiveEmpresa(idEmpresa);
       setSucursales(data);
       setShowSucursales(true);
     } catch (error) {

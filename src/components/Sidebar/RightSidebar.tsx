@@ -34,6 +34,13 @@ const RightSidebar: React.FC = () => {
     fetchSucursales();
   }, [activeEmpresa]);
 
+  if (location.pathname === "/") {
+    return null;
+  }
+
+  if (location.pathname === "/empresas") {
+    return null;
+  }
   return (
     <div className={`right-sidebar ${isOpen ? "open" : ""}`}>
       <button onClick={toggleSidebar} className="toggle-btn">
@@ -42,7 +49,7 @@ const RightSidebar: React.FC = () => {
       <div
         className="sidebar-content"
         style={{
-          backgroundColor: "grey",
+          backgroundColor: "white",
           maxHeight: "20%",
         }}
       >
