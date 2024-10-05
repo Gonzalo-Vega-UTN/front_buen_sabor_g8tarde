@@ -1,10 +1,8 @@
+import Sidebar from "./components/Sidebar/Sidebar";
+import AppRoutes from "./routes/AppRoutes";
 
-import Sidebar from './components/Sidebar/Sidebar';
-import Footer from './components/Footer/Footer';
-import AppRoutes from './routes/AppRoutes';
-
-import './custom.css';
-import RightSidebar from './components/Sidebar/RightSidebar';
+import "./custom.css";
+import RightSidebar from "./components/Sidebar/RightSidebar";
 
 const AppContent = () => {
   return (
@@ -17,7 +15,6 @@ const AppContent = () => {
           <main className="flex-grow-1">
             <AppRoutes />
           </main>
-          <Footer />
         </div>
       </div>
       <RightSidebar />

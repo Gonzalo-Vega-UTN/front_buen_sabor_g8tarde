@@ -71,6 +71,8 @@ export const Auth0ProviderWithNavigate = ({ children }: Props) => {
         audience: audience,
       }}
       onRedirectCallback={onRedirectCallback}
+      useRefreshTokens
+      cacheLocation="localstorage"
     >
       <Auth0ContextWrapper
         selectSucursal={selectSucursal}

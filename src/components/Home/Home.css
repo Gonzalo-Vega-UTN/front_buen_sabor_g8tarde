@@ -1,6 +1,6 @@
 .home-container {
   background-color: #343a40;
-  min-height: 100vh;
+  max-height: 100vh;
 }
 
 

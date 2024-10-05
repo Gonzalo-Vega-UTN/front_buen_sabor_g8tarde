@@ -1,9 +1,10 @@
 .sidebar {
-    transition: width 0.3s, height 0.3s;
+    transition: transform 1.3s ease;
     overflow: hidden;
     height: 100%; /* Asegura que el sidebar use todo el alto de la pantalla */
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     width: 90px; /* Default collapsed width */
 }
 
