@@ -8,6 +8,7 @@ import { Imagen } from "../../entities/DTO/Imagen";
 import ImagenCarousel from "../../components/carousel/ImagenCarousel";
 import { Sucursal } from "../../entities/DTO/Sucursal/Sucursal";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
+import Alert from "react-bootstrap/Alert";
 
 interface ModalProps {
   show: boolean;
@@ -27,19 +28,39 @@ const CategoriaModal = ({
   sucursales,
 }: ModalProps) => {
   const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [categoria, setCategoria] = useState<Categoria>(() => {
     return selectedCategoria;
   });
   const [files, setFiles] = useState<File[]>([]);
-
   const [selectedSucursales, setSelectedSucursales] = useState<number[]>(
-    selectedCategoria.sucursales.map((sucursal: Sucursal) => sucursal.id)
+    selectedCategoria.sucursales
+      ? selectedCategoria.sucursales.map((sucursal: Sucursal) => sucursal.id)
+      : []
   );
   const { activeSucursal } = useAuth0Extended();
 
+  const resetForm = () => {
+    setCategoria(new Categoria());
+    setFiles([]);
+    setSelectedSucursales([]);
+    setError("");
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setIsLoading(true);
+    
     try {
+      if (!categoria.denominacion?.trim()) {
+        throw new Error("La denominación es requerida");
+      }
+
+      if (selectedSucursales.length === 0) {
+        throw new Error("Debe seleccionar al menos una sucursal");
+      }
+
       const categoriaRequest = {
         categoria: { ...categoria, alta: true },
         sucursalesIds: selectedSucursales,
@@ -61,16 +82,21 @@ const CategoriaModal = ({
       }
 
       if (data) {
-        onHide();
-        setCategoria(new Categoria());
-        if (data.id) {
+        if (data.id && files.length > 0) {
           await CategoriaService.uploadFiles(data.id, files);
         }
+        resetForm();
+        onHide();
       }
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
+      } else {
+        setError("Error inesperado al guardar la categoría");
       }
+      console.error("Error detallado:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -99,28 +125,38 @@ const CategoriaModal = ({
       aria-labelledby="contained-modal-title-vcenter"
       centered
       show={show}
-      onHide={onHide}
+      onHide={() => {
+        resetForm();
+        onHide();
+      }}
       backdrop="static"
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          {editMode ? "Editar Categoria" : "Crear Categoria"}
+          {editMode ? "Editar Categoría" : "Crear Categoría"}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form>
+        {error && (
+          <Alert variant="danger" onClose={() => setError("")} dismissible>
+            {error}
+          </Alert>
+        )}
+        <Form onSubmit={handleSave}>
           <Form.Group className="mb-3" controlId="denominacion">
-            <Form.Label>Denominacion</Form.Label>
+            <Form.Label>Denominación</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Ingresar Denominacion"
+              placeholder="Ingresar Denominación"
               onChange={(e) =>
                 setCategoria((prev) => ({
                   ...prev,
                   denominacion: e.target.value,
                 }))
               }
-              value={categoria.denominacion}
+              value={categoria.denominacion || ""}
+              disabled={isLoading}
+              required
             />
           </Form.Group>
 
@@ -133,6 +169,7 @@ const CategoriaModal = ({
                 label={sucursal.nombre}
                 checked={selectedSucursales.includes(sucursal.id)}
                 onChange={() => handleSucursalChange(sucursal.id)}
+                disabled={isLoading}
               />
             ))}
           </Form.Group>
@@ -142,16 +179,24 @@ const CategoriaModal = ({
             onFilesChange={handleFileChange}
             onImagenesChange={handleImagenesChange}
           />
-
-          {error && <p className="text-danger">{error}</p>}
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>
+        <Button 
+          variant="secondary" 
+          onClick={() => {
+            resetForm();
+            onHide();
+          }}
+          disabled={isLoading}
+        >
           Cancelar
         </Button>
-        <Button onClick={handleSave}>
-          {editMode ? "Actualizar" : "Guardar"}
+        <Button 
+          onClick={handleSave}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Guardando...' : (editMode ? "Actualizar" : "Guardar")}
         </Button>
       </Modal.Footer>
     </Modal>
