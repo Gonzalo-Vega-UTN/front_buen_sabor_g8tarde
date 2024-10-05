@@ -4,13 +4,13 @@ import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 import { useState } from "react";
 
 interface SucursalDropdownProps {
-  sucursales: Sucursal[];  
+  sucursales: Sucursal[];
 }
 
 const SucursalDropdown: React.FC<SucursalDropdownProps> = ({ sucursales }) => {
   const location = useLocation();
   const { activeSucursal, selectSucursal } = useAuth0Extended();
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSucursalChange = (sucursalId: number) => {

@@ -1,8 +1,8 @@
-import Sidebar from "./components/Sidebar/Sidebar";
+import Sidebar from "./components/shared/Sidebar/Sidebar";
 import AppRoutes from "./routes/AppRoutes";
 
 import "./custom.css";
-import RightSidebar from "./components/Sidebar/RightSidebar";
+import RightSidebar from "./components/shared/Sidebar/RightSidebar";
 
 const AppContent = () => {
   return (
