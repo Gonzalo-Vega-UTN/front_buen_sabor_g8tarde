@@ -46,9 +46,9 @@ class PedidoService {
         }
     }
 
-    static async obtenerPedidos(fecha : string): Promise<PedidoFull[]> {
+    static async obtenerPedidos(fecha : string, idSucursal : string): Promise<PedidoFull[]> {
         try {
-            return await this.request('/fecha/' + fecha , {
+            return await this.request(`/${idSucursal}/fecha/${fecha}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,9 +74,9 @@ class PedidoService {
             throw error;
         }
     }
-    static async obtenerPedidosXEstado(estado : Estado): Promise<PedidoFull[]> {
+    static async obtenerPedidosXEstado(estado : Estado, idSucursal : string): Promise<PedidoFull[]> {
         try {
-            return await this.request('/estado/' + estado , {
+            return await this.request(`/${idSucursal}/estado/${estado}` , {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

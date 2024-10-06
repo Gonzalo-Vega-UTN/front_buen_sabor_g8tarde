@@ -3,16 +3,19 @@ import { Accordion, Button, ListGroup, Spinner, Alert } from "react-bootstrap";
 import PedidoFull from "../../../entities/DTO/Pedido/PedidoFull";
 import PedidoService from "../../../services/PedidoService";
 import { Estado } from "../../../entities/enums/Estado";
+import { useAuth0Extended } from "../../../Auth/Auth0ProviderWithNavigate";
 
 export const PedidosCocinero = () => {
   const [pedidos, setPedidos] = useState<PedidoFull[]>([]);
   const [loadingPedidoId, setLoadingPedidoId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const {activeSucursal} = useAuth0Extended();
 
   const fetchPedidos = async () => {
     try {
       const pedidos = await PedidoService.obtenerPedidosXEstado(
-        Estado.Preparacion
+        Estado.Preparacion,
+        activeSucursal
       );
       setPedidos(pedidos);
     } catch (error) {
@@ -36,7 +39,7 @@ export const PedidosCocinero = () => {
 
   useEffect(() => {
     fetchPedidos();
-  }, []);
+  }, [activeSucursal]);
 
   return (
     <>

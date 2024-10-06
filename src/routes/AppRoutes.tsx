@@ -155,7 +155,7 @@ export default function AppRoutes() {
       />
 
       <Route
-        path="/PedidosCajero"
+        path="/pedidos-cajero"
         element={
           <PrivateRoute
             element={PedidosCajero} //Recordar cambiar
@@ -164,7 +164,7 @@ export default function AppRoutes() {
         }
       />
       <Route
-        path="/PedidosCocinero"
+        path="/pedidos-cocinero"
         element={
           <PrivateRoute
             element={PedidosCocinero} //Recordar cambiar
@@ -173,7 +173,7 @@ export default function AppRoutes() {
         }
       />
       <Route
-        path="/PedidosDelivery"
+        path="/pedidos-delivery"
         element={
           <PrivateRoute
             element={PedidosDelivery} //Recordar cambiar

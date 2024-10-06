@@ -51,22 +51,22 @@ const roleRoutes: RoleRoutes = {
     { path: "/clientes", icon: BsFillPeopleFill, label: "Clientes" },
     { path: "/categorias", icon: MdOutlineCategory, label: "Categorias" },
     { path: "/reportes", icon: BsGraphUp, label: "Reportes" },
-    { path: "/PedidosCajero", icon: LiaCashRegisterSolid, label: "Cajero" },
-    { path: "/PedidosDelivery", icon: MdDeliveryDining, label: "Delivery" },
-    { path: "/PedidosCocinero", icon: LuChefHat, label: "Cocinero" },
+    { path: "/pedidos-cajero", icon: LiaCashRegisterSolid, label: "Cajero" },
+    { path: "/pedidos-delivery", icon: MdDeliveryDining, label: "Delivery" },
+    { path: "/pedidos-cocinero", icon: LuChefHat, label: "Cocinero" },
     { path: "/usuarios", icon: BsPersonLinesFill, label: "Usuarios" },
   ],
   [Rol.Cocinero]: [
     { path: "/unidadmedida", icon: TbRulerMeasure, label: "Medidas" },
     { path: "/ingredientes", icon: BsBasket, label: "Ingredientes" },
     { path: "/promociones", icon: BsPercent, label: "Promociones" },
-    { path: "/PedidosCocinero", icon: LuChefHat, label: "Cocinero" },
+    { path: "/pedidos-cocinero", icon: LuChefHat, label: "Cocinero" },
   ],
   [Rol.Cajero]: [
-    { path: "/PedidosCajero", icon: LiaCashRegisterSolid, label: "Cajero" },
+    { path: "/pedidos-cajero", icon: LiaCashRegisterSolid, label: "Cajero" },
   ],
   [Rol.Delivery]: [
-    { path: "/PedidosDelivery", icon: MdDeliveryDining, label: "Delivery" },
+    { path: "/pedidos-delivery", icon: MdDeliveryDining, label: "Delivery" },
   ],
   [Rol.Cliente]: [
     { path: "/misPedidos", icon: MdDeliveryDining, label: "Mis Pedidos" },

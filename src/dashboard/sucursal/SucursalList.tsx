@@ -103,7 +103,7 @@ const SucursalList: React.FC<SucursalListProps> = ({
             <Card
               onClick={() => handleCardClick(sucursal.id)}
               className={
-                activeSucursal === String(sucursal.id) ? "selected-card" : ""
+                activeSucursal == String(sucursal.id) ? "selected-card" : ""
               }
               style={{ backgroundColor: sucursal.alta ? "white" : "darkgrey" }}
             >

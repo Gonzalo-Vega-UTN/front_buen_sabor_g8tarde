@@ -16,6 +16,8 @@ export const Reportes = () => {
   const [rankingArticulos, setRankingArticulos] = useState<any[]>([]);
   const [movimientos, setMovimietos] = useState<any[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
+
   const [isGenerating, setIsGenerating] = useState(false);
   const { activeSucursal } = useAuth0Extended();
 
@@ -139,7 +141,7 @@ export const Reportes = () => {
     }
   };
 
-   const generarExcelCompleto = async (desde: string, hasta: string) => {
+  const generarExcelCompleto = async (desde: string, hasta: string) => {
     setIsGenerating(true);
     try {
       const excelData = await ReporteService.getReporteCompleto(
@@ -153,12 +155,13 @@ export const Reportes = () => {
       });
 
       generateReportFile("reporte_general", blob);
-    } catch (error) {
-      console.error("Error al generar el Excel:", error);
-      if (error instanceof Error) {
-        console.log("FALLO");
+    } catch (error: any) {
+      if (error.status === 404) {
+        setShowErrorModal(true);
+      } else if (error instanceof Error) {
+        console.log("Error:", error.message);
       }
-    }finally{
+    } finally {
       setIsGenerating(false);
     }
   };
@@ -272,6 +275,28 @@ export const Reportes = () => {
           </Modal.Footer>
         </Modal>
       )}
+
+        <Modal
+          show={showErrorModal}
+          size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title id="contained-modal-title-vcenter">
+              Hubo un Error!
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>
+              No hay datos encontrados ente {startDate} y {endDate} para generar
+              el reporte completo
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={() => setShowErrorModal(false)}>Cerrar</Button>
+          </Modal.Footer>
+        </Modal>
     </>
   );
 };

@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import PedidoFull from "../../entities/DTO/Pedido/PedidoFull";
 import PedidoService from "../../services/PedidoService";
 import { Accordion, Container, ListGroup } from "react-bootstrap";
+import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 
 export const PedidosList = () => {
   const [pedidos, setPedidos] = useState<PedidoFull[]>();
   const [fecha, setFecha] = useState(new Date().toISOString().slice(0, 10));
-
+  const {activeSucursal} = useAuth0Extended();
   const fetchPedidos = async () => {
     try {
-      const pedidos = await PedidoService.obtenerPedidos(fecha);
+      const pedidos = await PedidoService.obtenerPedidos(fecha, activeSucursal);
       setPedidos(pedidos);
     } catch (error) {
       console.log(error);

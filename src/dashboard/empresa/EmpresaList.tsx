@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { Empresa } from "../../entities/DTO/Empresa/Empresa";
 import { EmpresaService } from "../../services/EmpresaService";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
-
+import "./styles.css";
 interface EmpresaListProps {
   refresh: boolean;
   onEditEmpresa: (empresa: Empresa) => void;
@@ -46,7 +46,7 @@ const EmpresaList: React.FC<EmpresaListProps> = ({
 
   const handleCardClick = (empresaId: number) => {
     selectEmpresa(empresaId);
-    navigate(`/sucursales/${empresaId}`);
+    navigate(`/sucursales`);
   };
 
   const handleStatusChange = async (empresaId: number, alta: boolean) => {
@@ -81,6 +81,9 @@ const EmpresaList: React.FC<EmpresaListProps> = ({
         {empresas.map((empresa) => (
           <Col key={empresa.id} sm={12} md={6} lg={4} className="mb-4">
             <Card
+              className={
+                activeEmpresa == String(empresa.id) ? "selected-card" : ""
+              }
               onClick={() => handleCardClick(empresa.id)}
               style={{ backgroundColor: empresa.alta ? "white" : "darkgrey" }}
             >

@@ -45,10 +45,13 @@ const Home: React.FC = () => {
   const [promociones, setPromociones] = useState<Promocion[]>([]);
   const [showPromociones, setShowPromociones] = useState<boolean>(false);
   const { loginWithRedirect } = useAuth0();
+
+
   useEffect(() => {
     fetchEmpresas();
     fetchPromociones();
-  }, []);
+    fetchProductos()
+  }, [selectedSucursal]);
 
   const fetchEmpresas = async () => {
     try {
@@ -62,11 +65,15 @@ const Home: React.FC = () => {
   };
 
   const fetchPromociones = async () => {
-    try {
-      const data = await PromocionService.getAll();
-      setPromociones(data);
-    } catch (error) {
-      console.error("Error fetching promociones:", error);
+    if (selectedSucursal) {
+      try {
+        const data = await PromocionService.getAllBySucursal(
+          selectedSucursal.id
+        );
+        setPromociones(data);
+      } catch (error) {
+        console.error("Error fetching promociones:", error);
+      }
     }
   };
 

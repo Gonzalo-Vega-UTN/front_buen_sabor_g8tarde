@@ -1,22 +1,25 @@
-import { useEffect, useState } from "react";
+import { act, useEffect, useState } from "react";
 import { Accordion, Button, ListGroup, Alert, Spinner } from "react-bootstrap";
 import PedidoFull from "../../../entities/DTO/Pedido/PedidoFull";
 import PedidoService from "../../../services/PedidoService";
 import { Estado } from "../../../entities/enums/Estado";
 import { TipoEnvio } from "../../../entities/enums/TipoEnvio";
+import { useAuth0Extended } from "../../../Auth/Auth0ProviderWithNavigate";
 
 export const PedidosCajero = () => {
   const [pedidos, setPedidos] = useState<PedidoFull[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loadingPedidoId, setLoadingPedidoId] = useState<number | null>(null);
-
+  const {activeSucursal} = useAuth0Extended();
   const fetchPedidos = async () => {
     try {
       const pedidosEnProceso = await PedidoService.obtenerPedidosXEstado(
-        Estado.EnProceso
+        Estado.EnProceso,
+        activeSucursal
       );
       const pedidosPendientes = await PedidoService.obtenerPedidosXEstado(
-        Estado.Pendiente
+        Estado.Pendiente,
+        activeSucursal
       );
       setPedidos([...pedidosEnProceso, ...pedidosPendientes]);
     } catch (error) {
@@ -53,7 +56,7 @@ export const PedidosCajero = () => {
 
   useEffect(() => {
     fetchPedidos();
-  }, []);
+  }, [activeSucursal]);
 
   return (
     <>

@@ -18,7 +18,11 @@ export class ReporteService {
     private static async requestExcel(endpoint: string, idSucursal: string, options: RequestInit) {
         const response = await fetch(`${this.urlServer}/sucursal/${idSucursal}${endpoint}`, options);
         if (!response.ok) {
-            throw new Error('Error al generar el reporte Excel');
+            throw {
+                status: response.status,
+                statusText: response.statusText,
+                response: await response.json(),
+            };
         }
         return response.blob();
     }
@@ -114,10 +118,11 @@ export class ReporteService {
                 },
                 mode: 'cors'
             });
+
             return response;
         } catch (error) {
-            console.error('Error al generar Excel', error);
-            throw error;
+            console.error('Error al generar Excel:', error);
+            throw error; 
         }
     }
 
