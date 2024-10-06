@@ -1,30 +1,29 @@
 import { Route, Routes } from "react-router-dom";
-import { CartProvider } from "../components/Carrito/ContextCarrito";
-import Home from "../components/Home/Home";
-import PrivateRoute from "../PrivateRoute/PrivateRoute";
+import { CartProvider } from "../shop/carrito/ContextCarrito";
+import Home from "../shop/home/Home";
+import PrivateRoute from "./PrivateRoute";
 import { Rol } from "../entities/enums/Rol";
-import { MisPedidosList } from "../pages/Cliente/mipedido";
-import { UnidadesMedidaList } from "../pages/UnidadMedida/UnidadMedidaList";
-import RegistroUsuarioCliente from "../components/Log-Register/FormRegistro";
-import ClienteFormulario from "../components/Log-Register/ClienteFormulario";
-import ArticuloInsumoPage from "../pages/ArticuloInsumo/ArticulosInsumosPage";
-import { PedidosCajero } from "../components/PedidosXEstado/PedidosCajero";
-import { PedidosCocinero } from "../components/PedidosXEstado/PedidosCocinero";
-import { PedidosDelivery } from "../components/PedidosXEstado/PedidosDelivery";
-import { CategoriaPage } from "../pages/Categoria/CategoriaPage";
-import ClientTable from "../pages/ClientesList";
-import FormularioDomicilio from "../pages/Domicilio/FormDomicilio";
-import EmpresasPage from "../pages/EmpresasPage";
-import { PedidosList } from "../pages/PedidosList";
+import { MisPedidosList } from "../shop/Cliente/mipedido";
+import { UnidadesMedidaList } from "../dashboard/unidad-medida/UnidadMedidaList";
+import RegistroUsuarioCliente from "../components/shared/Log-Register/FormRegistro";
+import ClienteFormulario from "../components/shared/Log-Register/ClienteFormulario";
+import ArticuloInsumoPage from "../dashboard/articulos/insumos/ArticulosInsumosPage";
+import { PedidosCajero } from "../dashboard/pedido/PedidosXEstado/PedidosCajero";
+import { PedidosCocinero } from "../dashboard/pedido/PedidosXEstado/PedidosCocinero";
+import { PedidosDelivery } from "../dashboard/pedido/PedidosXEstado/PedidosDelivery";
+import { CategoriaPage } from "../dashboard/categoria/CategoriaPage";
+import ClientTable from "../dashboard/cliente/ClientesList";
+import FormularioDomicilio from "../components/shared/form-domicilio/FormDomicilio";
+import EmpresasPage from "../dashboard/empresa/EmpresasPage";
+import { PedidosList } from "../dashboard/pedido/PedidosList";
 
-import PromocionesPage from "../pages/Promocion/PromocionesPage";
-import { Reportes } from "../pages/Reportes/Reportes";
-import SucursalesPage from "../pages/SucursalPage";
-import FormularioCliente from "../pages/Cliente/FormularioCliente";
+import PromocionesPage from "../dashboard/promocion/PromocionesPage";
+import SucursalesPage from "../dashboard/sucursal/SucursalPage";
+import FormularioCliente from "../shop/Cliente/FormularioCliente";
 
-import UserList from "../pages/UserList";
-import ProductTable from "../pages/ArtManufacturado/ProductTable";
-
+import UserList from "../dashboard/user/UserList";
+import ProductTable from "../dashboard/articulos/manufacturados/ProductTable";
+import { Reportes } from "../dashboard/reportes/Reportes";
 
 export default function AppRoutes() {
   return (
@@ -37,8 +36,6 @@ export default function AppRoutes() {
           </CartProvider>
         }
       />
-    
-      
 
       <Route
         path="/registro"
@@ -156,7 +153,7 @@ export default function AppRoutes() {
           />
         }
       />
-      
+
       <Route
         path="/PedidosCajero"
         element={
