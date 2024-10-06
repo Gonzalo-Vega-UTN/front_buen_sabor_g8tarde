@@ -4,8 +4,8 @@ import { BsTrashFill, BsPencilSquare } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { Promocion } from "../../entities/DTO/Promocion/Promocion";
 import PromocionService from "../../services/PromocionService";
-import CustomButton from "../../components/generic/GenericButton";
-import GenericButton from "../../components/generic/GenericButton";
+import CustomButton from "../../components/generic/buttons/GenericButton";
+import GenericButton from "../../components/generic/buttons/GenericButton";
 import { FaSave } from "react-icons/fa";
 
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";

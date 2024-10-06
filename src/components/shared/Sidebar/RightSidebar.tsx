@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth0Extended } from "../../../Auth/Auth0ProviderWithNavigate";
-import EmpresaDropdown from "../../generic/EmpresaDropdown/EmpresaDropdown";
-import SucursalDropdown from "../../SucursalDropdown/SucursalDropdown";
+import EmpresaDropdown from "../../../dashboard/dropdown-sucursal-empresa/EmpresaDropdown";
+import SucursalDropdown from "../../../dashboard/dropdown-sucursal-empresa/SucursalDropdown";
 import SucursalService from "../../../services/SucursalService";
 import { Sucursal } from "../../../entities/DTO/Sucursal/Sucursal";
 

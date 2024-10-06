@@ -9,7 +9,7 @@ import {
   BsChevronUp,
   BsPencil,
 } from "react-icons/bs";
-import GenericButton from "../../components/generic/GenericButton";
+import GenericButton from "../../components/generic/buttons/GenericButton";
 import CategoriaModal from "./CategoriaModal";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 import { Sucursal } from "../../entities/DTO/Sucursal/Sucursal";

@@ -8,8 +8,8 @@ import { Categoria } from "../../../entities/DTO/Categoria/Categoria";
 import { CategoriaService } from "../../../services/CategoriaService";
 import { UnidadMedida } from "../../../entities/DTO/UnidadMedida/UnidadMedida";
 import UnidadMedidaServices from "../../../services/UnidadMedidaServices";
-import GenericButton from "../../../components/generic/GenericButton";
-import FiltroProductos from "../../../components/generic/Filtrado/FiltroArticulo";
+import GenericButton from "../../../components/generic/buttons/GenericButton";
+import FiltroProductos from "../FiltroArticulo";
 
 import ProductModal from "./ProductModal";
 import { FaSave } from "react-icons/fa";

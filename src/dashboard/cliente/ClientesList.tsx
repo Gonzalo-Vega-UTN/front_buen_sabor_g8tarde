@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { Cliente } from "../../entities/DTO/Cliente/Cliente";
 import ClienteService from "../../services/ClienteService";
-import FiltroClientes from "../../components/generic/Filtrado/FiltroCliente";
+import FiltroClientes from "./FiltroCliente";
 
 export default function ClientTable() {
   const [clientes, setClientes] = useState<Cliente[]>([]);

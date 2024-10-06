@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import { Empresa } from "../../../entities/DTO/Empresa/Empresa";
-import { useAuth0Extended } from "../../../Auth/Auth0ProviderWithNavigate";
-import { EmpresaService } from "../../../services/EmpresaService";
+import { Empresa } from "../../entities/DTO/Empresa/Empresa";
+import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
+import { EmpresaService } from "../../services/EmpresaService";
 
 interface EmpresaDropdownProps {
   onEmpresaChange: (empresaId: number) => void;

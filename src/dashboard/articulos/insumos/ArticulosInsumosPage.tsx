@@ -1,7 +1,7 @@
 import { CiCirclePlus } from "react-icons/ci";
 import ArticuloInsumoTable from "./ArticuloInsumoTable";
 import { ModalType } from "../../../components/enums/ModalType";
-import Button from "../../../components/generic/GenericButton";
+import Button from "../../../components/generic/buttons/GenericButton";
 import { useEffect, useState } from "react";
 import { Categoria } from "../../../entities/DTO/Categoria/Categoria";
 import { UnidadMedida } from "../../../entities/DTO/UnidadMedida/UnidadMedida";

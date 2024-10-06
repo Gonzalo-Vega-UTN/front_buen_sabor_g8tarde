@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Table } from "react-bootstrap";
-import Button from "../../../components/generic/GenericButton";
+import Button from "../../../components/generic/buttons/GenericButton";
 import { ModalType } from "../../../components/enums/ModalType";
 import ArticuloInsumoModal from "./ArticuloInsumoModal";
 import { BsFillPencilFill, BsTrashFill } from "react-icons/bs";
 import { ArticuloInsumo } from "../../../entities/DTO/Articulo/Insumo/ArticuloInsumo";
 import { FaSave } from "react-icons/fa";
-import FiltroProductos from "../../../components/generic/Filtrado/FiltroArticulo";
+import FiltroProductos from "../FiltroArticulo";
 import { Categoria } from "../../../entities/DTO/Categoria/Categoria";
 import { UnidadMedida } from "../../../entities/DTO/UnidadMedida/UnidadMedida";
 

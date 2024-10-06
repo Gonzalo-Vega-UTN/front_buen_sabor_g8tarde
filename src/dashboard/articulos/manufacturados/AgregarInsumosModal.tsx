@@ -5,8 +5,8 @@ import { BsTrashFill } from "react-icons/bs";
 import { Categoria } from "../../../entities/DTO/Categoria/Categoria";
 import ArticuloInsumoService from "../../../services/ArticuloInsumoService";
 import { UnidadMedida } from "../../../entities/DTO/UnidadMedida/UnidadMedida";
-import FiltroProductos from "../../../components/generic/Filtrado/FiltroArticulo";
-import GenericButton from "../../../components/generic/GenericButton";
+import FiltroProductos from "../FiltroArticulo";
+import GenericButton from "../../../components/generic/buttons/GenericButton";
 import { FaSave } from "react-icons/fa";
 import { useAuth0Extended } from "../../../Auth/Auth0ProviderWithNavigate";
 

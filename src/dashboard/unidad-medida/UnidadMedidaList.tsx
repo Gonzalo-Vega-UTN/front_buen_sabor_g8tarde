@@ -5,7 +5,7 @@ import UnidadMedidaModal from "./UnidadMedidaModal";
 import "./UnidadesMedidaList.css";
 import UnidadMedidaService from "../../services/UnidadMedidaServices";
 import { UnidadMedida } from "../../entities/DTO/UnidadMedida/UnidadMedida";
-import GenericButton from "../../components/generic/GenericButton";
+import GenericButton from "../../components/generic/buttons/GenericButton";
 
 export const UnidadesMedidaList = () => {
   const [unidades, setUnidades] = useState<UnidadMedida[]>([]);
