@@ -18,26 +18,15 @@ export class CategoriaService {
 
   private static async request(endpoint: string, options: RequestInit) {
     try {
-      // Log de la petición para debugging
-      console.log('Request URL:', `${this.urlServer}${endpoint}`);
-      console.log('Request Options:', {
-        ...options,
-        body: options.body ? JSON.parse(options.body as string) : undefined
-      });
-
       const response = await fetch(`${this.urlServer}${endpoint}`, options);
       const contentType = response.headers.get("content-type");
       
-      console.log('Response Status:', response.status);
-      console.log('Response Headers:', Object.fromEntries(response.headers.entries()));
       
       let responseData;
       if (contentType && contentType.includes("application/json")) {
         responseData = await response.json();
-        console.log('Response Data:', responseData);
       } else {
         responseData = await response.text();
-        console.log('Response Text:', responseData);
       }
 
       if (!response.ok) {
@@ -65,7 +54,6 @@ export class CategoriaService {
 
   static async obtenerCategorias(activeSucursalId: string): Promise<Categoria[]> {
     try {
-      console.log('Obteniendo categorías para sucursal:', activeSucursalId);
       const responseData = await this.request(`/all/${activeSucursalId}`, {
         method: 'GET',
         headers: {
@@ -82,7 +70,6 @@ export class CategoriaService {
 
   static async obtenerCategoriasPadre(id: string): Promise<Categoria[]> {
     try {
-      console.log('Obteniendo categorías padre para:', id);
       const responseData = await this.request(`/padres/${id}`, {
         method: 'GET',
         headers: {
@@ -99,7 +86,6 @@ export class CategoriaService {
 
   static async obtenerCategoriaById(id: number): Promise<Categoria> {
     try {
-      console.log('Obteniendo categoría por ID:', id);
       return await this.request(`/${id}`, {
         method: 'GET',
         headers: {
@@ -122,7 +108,6 @@ export class CategoriaService {
     }
   ): Promise<Categoria> {
     try {
-      console.log('Agregando categoría:', { idPadre, activeSucursalId, categoriaRequest });
       
       if (!categoriaRequest.categoria.denominacion?.trim()) {
         throw new Error('La denominación es requerida');
@@ -173,7 +158,6 @@ export class CategoriaService {
     }
   ): Promise<Categoria> {
     try {
-      console.log('Actualizando categoría:', { idCategoria, categoriaRequest });
 
       if (!idCategoria) {
         throw new Error('ID de categoría es requerido');
@@ -192,6 +176,7 @@ export class CategoriaService {
           id: categoriaRequest.categoria.id,
           denominacion: categoriaRequest.categoria.denominacion.trim(),
           alta: true,
+          sucursales: categoriaRequest.categoria.sucursales || [],
           imagenes: categoriaRequest.categoria.imagenes || [],
           subCategorias: categoriaRequest.categoria.subCategorias || []
         },
@@ -231,7 +216,6 @@ export class CategoriaService {
 
   static async eliminarCategoriaById(idSucursal: string, id: number): Promise<Categoria> {
     try {
-      console.log('Eliminando categoría:', { idSucursal, id });
 
       if (!idSucursal || !id) {
         throw new Error('ID de sucursal y categoría son requeridos');
@@ -255,7 +239,6 @@ export class CategoriaService {
       throw new Error('ID y archivos son requeridos');
     }
 
-    console.log('Subiendo archivos:', { id, filesCount: files.length });
 
     const uploadPromises = files.map(file => {
       const formData = new FormData();

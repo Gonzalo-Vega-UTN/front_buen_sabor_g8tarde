@@ -42,9 +42,9 @@ export const CategoriaPage = () => {
   };
   const fetchSucursales = async (empresaId: number) => {
     try {
-      const sucursalesData =
-        await SucursalService.fetchSucursalesByActiveEmpresa(empresaId);
+      const sucursalesData = await SucursalService.fetchSucursalesByActiveEmpresa(empresaId);
       setSucursales(sucursalesData);
+      
     } catch (error) {
       console.error("Error al obtener las sucursales:", error);
     }

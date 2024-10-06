@@ -55,6 +55,7 @@ const CategoriaModal = ({
     try {
       if (!categoria.denominacion?.trim()) {
         throw new Error("La denominación es requerida");
+        
       }
 
       if (selectedSucursales.length === 0) {
@@ -62,12 +63,14 @@ const CategoriaModal = ({
       }
 
       const categoriaRequest = {
-        categoria: { ...categoria, alta: true },
+        categoria: { ...categoria, alta: true ,sucursales:selectedCategoria.sucursales},
         sucursalesIds: selectedSucursales,
       };
 
       let data;
-      if (editMode) {
+      if (editMode) { 
+        
+      
         data = await CategoriaService.actualizarCategoria(
           categoria.id,
           categoriaRequest
