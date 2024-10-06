@@ -1,8 +1,9 @@
 .home-container {
-  background-color: #343a40;
-  max-height: 100vh;
+  min-height: 100vh; /* Ocupar toda la ventana del navegador */
+  display: flex;
+  flex-direction: column;
+  background-color: #343a40; /* Cambia este valor por el color de fondo deseado */
 }
-
 
 
 

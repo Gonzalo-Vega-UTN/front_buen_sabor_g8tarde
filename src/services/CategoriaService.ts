@@ -1,20 +1,71 @@
 import { Categoria } from "../entities/DTO/Categoria/Categoria";
 import { Imagen } from "../entities/DTO/Imagen";
 
+interface ApiError {
+  message: string;
+  status?: number;
+  details?: {
+    timestamp?: string;
+    status?: number;
+    error?: string;
+    message?: string;
+    path?: string;
+  };
+}
+
 export class CategoriaService {
   private static urlServer = `${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}/api/categorias`;
 
   private static async request(endpoint: string, options: RequestInit) {
-    const response = await fetch(`${this.urlServer}${endpoint}`, options);
-    const responseData = await response.json();
-    if (!response.ok) {
-      throw new Error(responseData.message || 'Error al procesar la solicitud');
+    try {
+      // Log de la petición para debugging
+      console.log('Request URL:', `${this.urlServer}${endpoint}`);
+      console.log('Request Options:', {
+        ...options,
+        body: options.body ? JSON.parse(options.body as string) : undefined
+      });
+
+      const response = await fetch(`${this.urlServer}${endpoint}`, options);
+      const contentType = response.headers.get("content-type");
+      
+      console.log('Response Status:', response.status);
+      console.log('Response Headers:', Object.fromEntries(response.headers.entries()));
+      
+      let responseData;
+      if (contentType && contentType.includes("application/json")) {
+        responseData = await response.json();
+        console.log('Response Data:', responseData);
+      } else {
+        responseData = await response.text();
+        console.log('Response Text:', responseData);
+      }
+
+      if (!response.ok) {
+        const error: ApiError = {
+          message: responseData.message || 'Error al procesar la solicitud',
+          status: response.status,
+          details: responseData
+        };
+        throw error;
+      }
+      
+      return responseData;
+    } catch (error) {
+      console.error('Error completo:', error);
+      if ((error as ApiError).status) {
+        throw error;
+      }
+      throw {
+        message: 'Error de red o servidor no disponible',
+        status: 500,
+        details: error
+      };
     }
-    return responseData;
   }
 
   static async obtenerCategorias(activeSucursalId: string): Promise<Categoria[]> {
     try {
+      console.log('Obteniendo categorías para sucursal:', activeSucursalId);
       const responseData = await this.request(`/all/${activeSucursalId}`, {
         method: 'GET',
         headers: {
@@ -29,8 +80,9 @@ export class CategoriaService {
     }
   }
 
-  static async obtenerCategoriasPadre(id:string): Promise<Categoria[]> {
+  static async obtenerCategoriasPadre(id: string): Promise<Categoria[]> {
     try {
+      console.log('Obteniendo categorías padre para:', id);
       const responseData = await this.request(`/padres/${id}`, {
         method: 'GET',
         headers: {
@@ -47,6 +99,7 @@ export class CategoriaService {
 
   static async obtenerCategoriaById(id: number): Promise<Categoria> {
     try {
+      console.log('Obteniendo categoría por ID:', id);
       return await this.request(`/${id}`, {
         method: 'GET',
         headers: {
@@ -60,23 +113,49 @@ export class CategoriaService {
     }
   }
 
-  static async agregarCategoria(idPadre: number, activeSucursalId: string, categoriaRequest: { categoria: Categoria, sucursalesIds: number[] }): Promise<Categoria> {
+  static async agregarCategoria(
+    idPadre: number, 
+    activeSucursalId: string, 
+    categoriaRequest: { 
+      categoria: Categoria, 
+      sucursalesIds: number[] 
+    }
+  ): Promise<Categoria> {
     try {
-      //Se agrega idpadre en controlador como variable, en caso de no llegar es cat padre
+      console.log('Agregando categoría:', { idPadre, activeSucursalId, categoriaRequest });
+      
+      if (!categoriaRequest.categoria.denominacion?.trim()) {
+        throw new Error('La denominación es requerida');
+      }
+
+      if (!categoriaRequest.sucursalesIds?.length) {
+        throw new Error('Debe seleccionar al menos una sucursal');
+      }
+
       const params = new URLSearchParams();
+      if (idPadre !== undefined) {
+        params.append("idCategoriaPadre", idPadre.toString());
+      }
       
-    if (idPadre !== undefined) params.append("idCategoriaPadre", idPadre.toString());
       const endpoint = idPadre !== null && idPadre !== undefined 
-      ? `/${activeSucursalId}?${params}`  // Endpoint con idPadre
-      : `/${activeSucursalId}`;  // Endpoint sin idPadre
-      console.log(endpoint);
-      
+        ? `/${activeSucursalId}?${params}`
+        : `/${activeSucursalId}`;
+
+      const requestBody = {
+        categoria: {
+          denominacion: categoriaRequest.categoria.denominacion.trim(),
+          alta: true,
+          imagenes: categoriaRequest.categoria.imagenes || []
+        },
+        sucursalesIds: categoriaRequest.sucursalesIds
+      };
+
       const responseData = await this.request(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(categoriaRequest),
+        body: JSON.stringify(requestBody),
         mode: 'cors'
       });
       return responseData;
@@ -86,25 +165,78 @@ export class CategoriaService {
     }
   }
 
-  static async actualizarCategoria(idCategoria: number, categoriaRequest: { categoria: Categoria, sucursalesIds: number[] }): Promise<Categoria> {
+  static async actualizarCategoria(
+    idCategoria: number, 
+    categoriaRequest: { 
+      categoria: Categoria, 
+      sucursalesIds: number[] 
+    }
+  ): Promise<Categoria> {
     try {
+      console.log('Actualizando categoría:', { idCategoria, categoriaRequest });
+
+      if (!idCategoria) {
+        throw new Error('ID de categoría es requerido');
+      }
+      
+      if (!categoriaRequest.categoria.denominacion?.trim()) {
+        throw new Error('La denominación es requerida');
+      }
+
+      if (!categoriaRequest.sucursalesIds?.length) {
+        throw new Error('Debe seleccionar al menos una sucursal');
+      }
+
+      const requestBody = {
+        categoria: {
+          id: categoriaRequest.categoria.id,
+          denominacion: categoriaRequest.categoria.denominacion.trim(),
+          alta: true,
+          imagenes: categoriaRequest.categoria.imagenes || [],
+          subCategorias: categoriaRequest.categoria.subCategorias || []
+        },
+        sucursalesIds: categoriaRequest.sucursalesIds
+      };
+
       const responseData = await this.request(`/${idCategoria}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(categoriaRequest),
+        body: JSON.stringify(requestBody),
         mode: 'cors'
       });
+
       return responseData;
     } catch (error) {
       console.error('Error al actualizar la Categoria:', error);
-      throw error;
+      
+      if ((error as ApiError).status === 404) {
+        throw new Error('Categoría no encontrada');
+      } else if ((error as ApiError).status === 400) {
+        const apiError = error as ApiError;
+        const errorMessage = apiError.details?.message || 'Datos de categoría inválidos';
+        throw new Error(errorMessage);
+      } else if ((error as ApiError).status === 403) {
+        throw new Error('No tiene permisos para actualizar esta categoría');
+      }
+      
+      if (error instanceof Error) {
+        throw error;
+      }
+      
+      throw new Error('Error al actualizar la categoría. Por favor, intente nuevamente.');
     }
   }
 
   static async eliminarCategoriaById(idSucursal: string, id: number): Promise<Categoria> {
     try {
+      console.log('Eliminando categoría:', { idSucursal, id });
+
+      if (!idSucursal || !id) {
+        throw new Error('ID de sucursal y categoría son requeridos');
+      }
+
       return await this.request(`/${idSucursal}/${id}`, {
         method: 'DELETE',
         headers: {
@@ -119,6 +251,12 @@ export class CategoriaService {
   }
 
   static async uploadFiles(id: number, files: File[]): Promise<Imagen[]> {
+    if (!id || !files.length) {
+      throw new Error('ID y archivos son requeridos');
+    }
+
+    console.log('Subiendo archivos:', { id, filesCount: files.length });
+
     const uploadPromises = files.map(file => {
       const formData = new FormData();
       formData.append('uploads', file);
