@@ -9,37 +9,37 @@ import GenericButton from "../../components/generic/buttons/GenericButton";
 import { FaSave } from "react-icons/fa";
 
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
-import PromotionFormModal from "./PromotionFormModal";
+import { PromocionFormModal } from "./PromocionFormModal";
+import DeleteModalPromocion from "./DeleteModalPromocion";
 
 export default function PromotionTable() {
-  const [, setPromocion] = useState<Promocion>(new Promocion());
+  const [currentPromocion, setCurrentPromocion] = useState<Promocion>(
+    new Promocion()
+  );
   const [promociones, setPromociones] = useState<Promocion[]>([]);
-  const [, setShowDeleteModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
-  const [selectedPromocionId, setSelectedPromocionId] = useState<
-    number | undefined
-  >(undefined);
-  const [, setTitle] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [title, setTitle] = useState("");
 
   const { activeSucursal } = useAuth0Extended();
 
-  const handleOpenFormModal = (id?: number) => {
-    setSelectedPromocionId(id);
-    setShowFormModal(true);
-  };
-
-  const handleCloseFormModal = () => {
-    setShowFormModal(false);
-    setSelectedPromocionId(undefined);
+  //Logica del modal
+  const handleClick = (id: number) => {
+    if (id === 0) {
+      setCurrentPromocion(new Promocion());
+    } else {
+      setCurrentPromocion(promociones.filter((promos) => id === promos.id)[0]);
+    }
+    setShowFormModal(!showFormModal);
   };
 
   const handleClickEliminar = (newTitle: string, promo: Promocion) => {
     setTitle(newTitle);
     setShowDeleteModal(true);
-    setPromocion(promo);
+    setCurrentPromocion(promo);
   };
 
-  async (id: number) => {
+  const handleEliminar = async (id: number) => {
     try {
       await PromocionService.delete(Number(activeSucursal), id);
       setShowDeleteModal(false);
@@ -60,6 +60,35 @@ export default function PromotionTable() {
     fetchPromotions();
   }, [activeSucursal]);
 
+  const handleSubmit = async (promocion: Promocion, files: File[]) => {
+    try {
+      //quitar blobs
+      promocion.imagenes = promocion.imagenes.filter(
+        (imagen) => !imagen.url.includes("blob")
+      );
+      let response: Promocion;
+      if (promocion.id !== 0) {
+        response = await PromocionService.update(promocion.id, promocion);
+      } else {
+        response = await PromocionService.create(activeSucursal, promocion);
+      }
+      if (response) {
+        await PromocionService.uploadFiles(response.id, files);
+      }
+
+      setPromociones((prev) => {
+        // Si el artículo tiene un id, significa que es una actualización
+        if (prev.some((art) => art.id === response.id)) {
+          return prev.map((art) => (art.id === response.id ? response : art));
+        } else {
+          // Si no tiene id, es un nuevo artículo, lo añadimos a la lista
+          return [...prev, response];
+        }
+      });
+    } catch (error) {
+      console.error("Error guardando la promoción:", error);
+    }
+  };
   return (
     <div className="container">
       <CustomButton
@@ -68,7 +97,7 @@ export default function PromotionTable() {
         size={25}
         icon={CiCirclePlus}
         text="Nueva Promoción"
-        onClick={() => handleOpenFormModal()}
+        onClick={() => handleClick(0)}
       />
       <Table hover>
         <thead>
@@ -107,7 +136,7 @@ export default function PromotionTable() {
                   color="#007bff"
                   size={23}
                   icon={BsPencilSquare}
-                  onClick={() => handleOpenFormModal(promotion.id)}
+                  onClick={() => handleClick(promotion.id)}
                 />
               </td>
               <td>
@@ -130,12 +159,23 @@ export default function PromotionTable() {
         </tbody>
       </Table>
 
-      <PromotionFormModal
-        show={showFormModal}
-        onHide={handleCloseFormModal}
-        onSave={fetchPromotions}
-        promocionId={selectedPromocionId}
-      />
+      {showFormModal && (
+        <PromocionFormModal
+          promocion={currentPromocion}
+          handleSubmit={handleSubmit}
+          onHide={() => handleClick(1)}
+        />
+      )}
+
+      {showDeleteModal && (
+        <DeleteModalPromocion
+          show={showDeleteModal}
+          onHide={() => setShowDeleteModal(false)}
+          title={title}
+          handleDelete={handleEliminar}
+          promo={currentPromocion}
+        />
+      )}
     </div>
   );
 }

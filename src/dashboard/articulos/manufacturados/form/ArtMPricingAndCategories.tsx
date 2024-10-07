@@ -1,4 +1,4 @@
-import { FormWrapper } from "./FormWrapper";
+import { FormWrapper } from "../../../../components/generic/FormWrapper";
 import Form from "react-bootstrap/esm/Form";
 import { ArticuloManufacturado } from "../../../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturado";
 import Row from "react-bootstrap/esm/Row";

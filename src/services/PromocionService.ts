@@ -1,3 +1,4 @@
+import { Imagen } from "../entities/DTO/Imagen";
 import { Promocion } from "../entities/DTO/Promocion/Promocion";
 import { TipoPromocion } from "../entities/enums/TipoPromocion";
 
@@ -62,7 +63,7 @@ export class PromocionService {
     }
   }
 
-  static async create(idSucursal: string, promocion: Promocion, imageFile: File | null): Promise<Promocion> {
+  static async create(idSucursal: string, promocion: Promocion): Promise<Promocion> {
     try {
       if (!promocion.tipoPromocion) {
         promocion.tipoPromocion = TipoPromocion.HappyHour;
@@ -82,7 +83,7 @@ export class PromocionService {
     }
   }
 
-  static async update(id: number, promocion: Promocion, imageFile: File | null): Promise<Promocion> {
+  static async update(id: number, promocion: Promocion): Promise<Promocion> {
     try {
       const responseData = await this.request(`/${id}`, {
         method: 'PUT',
@@ -110,6 +111,27 @@ export class PromocionService {
       }) as Promocion;
     } catch (error) {
       console.error(`Error al eliminar la promoción con ID ${id}:`, error);
+      throw error;
+    }
+  }
+
+  static async uploadFiles(id: number, files: File[]): Promise<Imagen[]> {
+    const uploadPromises = files.map(file => {
+      const formData = new FormData();
+      formData.append('uploads', file);
+      formData.append('id', String(id));
+
+      return this.request(`/uploads`, {
+        method: 'POST',
+        body: formData,
+        mode: 'cors'
+      }) as Promise<Imagen>;
+    });
+
+    try {
+      return await Promise.all(uploadPromises);
+    } catch (error) {
+      console.error(`Error al subir imágenes para el id ${id}:`, error);
       throw error;
     }
   }

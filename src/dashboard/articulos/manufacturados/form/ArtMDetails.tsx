@@ -1,5 +1,5 @@
 import Table from "react-bootstrap/esm/Table";
-import { FormWrapper } from "./FormWrapper";
+import { FormWrapper } from "../../../../components/generic/FormWrapper";
 import { ArticuloManufacturadoDetalle } from "../../../../entities/DTO/Articulo/ManuFacturado/ArticuloManufacturadoDetalle";
 import Form from "react-bootstrap/esm/Form";
 import { Categoria } from "../../../../entities/DTO/Categoria/Categoria";
