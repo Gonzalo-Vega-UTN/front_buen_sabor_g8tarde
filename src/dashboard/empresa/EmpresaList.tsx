@@ -49,22 +49,16 @@ const EmpresaList: React.FC<EmpresaListProps> = ({
     navigate(`/sucursales`);
   };
 
-  const handleStatusChange = async (empresaId: number, alta: boolean) => {
+  const handleStatusChange = async (empresa: Empresa, alta: boolean) => {
     try {
-      const empresa = empresas.find((emp) => emp.id === empresaId);
       if (empresa) {
-        const updatedEmpresa = await EmpresaService.update(empresaId, {
+        const updatedEmpresa = await EmpresaService.update(empresa.id, {
           ...empresa,
           alta,
         });
         setEmpresas(
-          empresas.map((emp) => (emp.id === empresaId ? updatedEmpresa : emp))
+          empresas.map((emp) => (emp.id === empresa.id ? updatedEmpresa : emp))
         );
-
-        const activeEmpresaNumber = Number(activeEmpresa);
-
-        if (empresaId === activeEmpresaNumber) {
-        }
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -84,7 +78,11 @@ const EmpresaList: React.FC<EmpresaListProps> = ({
               className={
                 activeEmpresa == String(empresa.id) ? "selected-card" : ""
               }
-              onClick={() => handleCardClick(empresa.id)}
+              onClick={() => {
+                if (empresa.alta) {
+                  handleCardClick(empresa.id);
+                }
+              }}
               style={{ backgroundColor: empresa.alta ? "white" : "darkgrey" }}
             >
               <Card.Img
@@ -119,12 +117,12 @@ const EmpresaList: React.FC<EmpresaListProps> = ({
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Dropdown.Item
-                    onClick={() => handleStatusChange(empresa.id, true)}
+                    onClick={() => handleStatusChange(empresa, true)}
                   >
                     Alta
                   </Dropdown.Item>
                   <Dropdown.Item
-                    onClick={() => handleStatusChange(empresa.id, false)}
+                    onClick={() => handleStatusChange(empresa, false)}
                   >
                     Baja
                   </Dropdown.Item>
