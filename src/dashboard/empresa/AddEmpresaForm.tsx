@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
+import { Form, Button, Alert, Spinner } from "react-bootstrap";
 import { EmpresaService } from "../../services/EmpresaService";
 import { Empresa } from "../../entities/DTO/Empresa/Empresa";
 import ImagenCarousel from "../../components/generic/carousel/ImagenCarousel";
@@ -22,6 +22,7 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -49,19 +50,19 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
       } else {
         response = await EmpresaService.create(empresa);
       }
-      if (response) {
-        if (files.length > 0) {
-          await EmpresaService.uploadFiles(response.id, files);
-        }
-        setSuccess(true);
-        setEmpresa(new Empresa());
-        setError(null);
-        onAddEmpresa();
+      if (response && files.length > 0) {
+        await EmpresaService.uploadFiles(response.id, files);
       }
-
-      // Si el artículo se creó o actualizó correctamente, proceder a subir los archivos
+      // Si la empresa se creó o actualizó correctamente, proceder a subir los archivos
       if (response.id) {
-        onAddEmpresa();
+        setIsLoading(true);
+        setTimeout(() => {
+          setSuccess(true);
+          setEmpresa(new Empresa());
+          setError(null);
+          setIsLoading(false);
+          onAddEmpresa();
+        }, 1500);
       }
     } catch (err) {
       setError("Error al crear o actualizar la empresa");
@@ -121,8 +122,17 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
           onFilesChange={handleFileChange}
           onImagenesChange={handleImagenesChange}
         />
-        <Button variant="primary" type="submit">
-          {empresaEditando ? "Actualizar" : "Agregar"}
+        <Button variant="primary" type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Spinner size="sm" />
+              {empresaEditando ? " Actualizando..." : " Agregando..."}
+            </>
+          ) : empresaEditando ? (
+            "Actualizar"
+          ) : (
+            "Agregar"
+          )}
         </Button>
       </Form>
       {success && (
