@@ -41,6 +41,11 @@ const RightSidebar: React.FC = () => {
   if (location.pathname === "/empresas") {
     return null;
   }
+
+  if (location.pathname === "/unidadmedida") {
+    return null;
+  }
+
   return (
     <div className={`right-sidebar ${isOpen ? "open" : ""}`}>
       <button onClick={toggleSidebar} className="toggle-btn">

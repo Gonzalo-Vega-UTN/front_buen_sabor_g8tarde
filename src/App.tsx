@@ -18,6 +18,7 @@ const AppContent = () => {
         </div>
       </div>
       <RightSidebar />
+      
     </div>
   );
 };
