@@ -20,13 +20,13 @@ export const ReporteComponente = ({
   startDate,
   endDate,
 }: Props) => {
+  console.log(data);
+
   return (
     <Container className="mt-2">
       <h3>{titulo}</h3>
       {data && data.length <= 1 ? (
-        <p>
-          No hay datos para la fecha elegida
-        </p>
+        <p>No hay datos para la fecha elegida</p>
       ) : (
         <>
           {typeChart === "bar" ? (
