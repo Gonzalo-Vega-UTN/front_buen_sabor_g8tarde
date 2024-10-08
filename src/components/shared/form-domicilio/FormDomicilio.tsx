@@ -115,6 +115,7 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
         <Form.Control
           type="number"
           value={numero}
+          min={1}
           onChange={(e) => setNumero(Number(e.target.value))}
           required
         />
@@ -124,6 +125,7 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
         <Form.Control
           type="number"
           value={cp}
+          min={1}
           onChange={(e) => setCp(Number(e.target.value))}
           required
         />

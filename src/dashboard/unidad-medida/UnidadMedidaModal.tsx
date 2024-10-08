@@ -23,7 +23,12 @@ function UnidadMedidaModal(props: { show: boolean, onHide: () => void, editing: 
             setUnidad(new UnidadMedida());
         }
     }, [props.editing, props.id]);
-
+    
+    const handleClose = () => {
+        setUnidad(new UnidadMedida());
+        setError(""); 
+        props.onHide();
+    };
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -32,7 +37,7 @@ function UnidadMedidaModal(props: { show: boolean, onHide: () => void, editing: 
             } else {
                 await UnidadMedidaService.create(unidad);
             }
-            props.onHide();
+            handleClose();
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);
@@ -61,7 +66,9 @@ function UnidadMedidaModal(props: { show: boolean, onHide: () => void, editing: 
                             ...prev,
                             denominacion: e.target.value
                         }))}
-                            value={unidad.denominacion} />
+                            value={unidad.denominacion} 
+                            required
+                            />
                     </Form.Group>
                 </Form>
                 {error && <p className='text-danger'>{error}</p>}
