@@ -72,8 +72,6 @@ export class EmpresaService {
   }
 
   static async update(id: number, empresa: Empresa): Promise<Empresa> {
-    console.log("AAAAAAAAAAA", empresa)
-    console.log(JSON.stringify(empresa))
     try {
       const responseData = await this.request(`/${id}`, {
         method: 'PUT',
