@@ -78,6 +78,7 @@ export const PromocionItems = ({
         <ListGroup>
           {availableArticulos.map((articulo) => (
             <ListGroup.Item
+              className="d-flex justify-content-between pe-5"
               key={articulo.id}
               onClick={(e) => {
                 e.preventDefault();
@@ -92,21 +93,27 @@ export const PromocionItems = ({
               }
             >
               {articulo.denominacion}
+              <span>Precio Venta: ${articulo.precioVenta}</span>
             </ListGroup.Item>
           ))}
         </ListGroup>
       </Form.Group>
 
-      {promocion.detallesPromocion.length > 0 && (
+      {promocion.detallesPromocion && promocion.detallesPromocion.length > 0 ? (
         <>
           <h5>Detalles de Promoción</h5>
           <ListGroup>
             {promocion.detallesPromocion.map((detalle) => (
               <ListGroup.Item key={detalle.articulo.id}>
                 <Row>
-                  <Col>{detalle.articulo.denominacion}</Col>
+                  <Col>
+                    <label htmlFor={`cantidad-${detalle.articulo.id}`}>
+                      {detalle.articulo.denominacion}
+                    </label>
+                  </Col>
                   <Col>
                     <Form.Control
+                      id={`cantidad-${detalle.articulo.id}`}
                       type="number"
                       value={detalle.cantidad}
                       onChange={(e) =>
@@ -121,11 +128,7 @@ export const PromocionItems = ({
                     <Button
                       variant="danger"
                       type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleArticuloRemove(detalle.articulo.id);
-                      }}
+                      onClick={() => handleArticuloRemove(detalle.articulo.id)}
                     >
                       Eliminar
                     </Button>
@@ -134,12 +137,16 @@ export const PromocionItems = ({
               </ListGroup.Item>
             ))}
           </ListGroup>
-          {errors.promocionDetalles && (
-            <Form.Text className="text-danger">
-              {errors.promocionDetalles}
-            </Form.Text>
-          )}
         </>
+      ) : (
+        <p>No hay detalles cargados</p>
+      )}
+      {errors.promocionDetalles && (
+        <p className="text-danger">{errors.promocionDetalles}</p>
+      )}
+
+      {errors.precioPromocional && (
+        <p className="text-danger">{errors.precioPromocional}</p>
       )}
     </FormWrapper>
   );

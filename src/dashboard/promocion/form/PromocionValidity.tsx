@@ -12,6 +12,7 @@ interface Props {
     fechaHasta?: string;
     horaDesde?: string;
     horaHasta?: string;
+    validez?: string;
   };
 }
 export const PromocionValidity = ({
@@ -71,7 +72,7 @@ export const PromocionValidity = ({
             <Form.Control
               type="time"
               name="horaDesde"
-              value={promocion.horaDesde}
+              value={promocion.horaDesde || ""}
               onChange={(e) => handleChange({ horaDesde: e.target.value })}
             />
             {errors.horaDesde && (
@@ -85,7 +86,7 @@ export const PromocionValidity = ({
             <Form.Control
               type="time"
               name="horaHasta"
-              value={promocion.horaHasta}
+              value={promocion.horaHasta || ""}
               onChange={(e) => handleChange({ horaHasta: e.target.value })}
             />
             {errors.horaHasta && (
@@ -94,6 +95,9 @@ export const PromocionValidity = ({
           </Form.Group>
         </Col>
       </Row>
+      {errors.validez && (
+        <Form.Text className="text-danger">{errors.validez}</Form.Text>
+      )}
     </FormWrapper>
   );
 };

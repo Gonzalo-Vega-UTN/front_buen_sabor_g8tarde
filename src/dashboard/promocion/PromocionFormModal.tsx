@@ -123,32 +123,110 @@ export const PromocionFormModal = ({
     }
   }
 
-  const validateFields = () => {
-    const newErrors: {
-      denominacion?: string;
-      descripcionDescuento?: string;
-      tipoPromocion?: string;
-      fechaDesde?: string;
-      fechaHasta?: string;
-      horaDesde?: string;
-      horaHasta?: string;
-      promocionDetalles?: string;
-    } = {};
-
+  interface ValidationErrors {
+    denominacion?: string;
+    descripcionDescuento?: string;
+    tipoPromocion?: string;
+    fechaDesde?: string;
+    fechaHasta?: string;
+    horaDesde?: string;
+    horaHasta?: string;
+    validez?: string;
+    promocionDetalles?: string;
+    precioPromocional?: string;
+  }
+  
+  const isEmpty = (value: any): boolean => value == null || value === '';
+  
+  const validateDateTime = (
+    fechaDesde: Date,
+    fechaHasta: Date,
+    horaDesde: string,
+    horaHasta: string
+  ): boolean => {
+    const fechaHoraDesde = new Date(fechaDesde);
+    const fechaHoraHasta = new Date(fechaHasta);
+  
+    if (horaDesde && horaHasta) {
+      const [horaDesdeNum, minutosDesde] = horaDesde.split(":").map(Number);
+      const [horaHastaNum, minutosHasta] = horaHasta.split(":").map(Number);
+      fechaHoraDesde.setHours(horaDesdeNum, minutosDesde);
+      fechaHoraHasta.setHours(horaHastaNum, minutosHasta);
+    }
+  
+    return fechaHoraDesde <= fechaHoraHasta;
+  };
+  
+  const validateFields = (): boolean => {
+    const newErrors: ValidationErrors = {};
+    
     if (currentStepIndex === 0) {
-      if (!currentPromocion.denominacion) {
+      if (isEmpty(currentPromocion.denominacion)) {
         newErrors.denominacion = "La denominación es requerida";
       }
-
-      if (!currentPromocion.descripcionDescuento) {
+  
+      if (isEmpty(currentPromocion.descripcionDescuento)) {
         newErrors.descripcionDescuento = "La descripción es requerida";
       }
+  
+      if (isEmpty(currentPromocion.tipoPromocion)) {
+        newErrors.tipoPromocion = "Debe seleccionar un tipo de promoción";
+      }
     }
-
+  
+    if (currentStepIndex === 1) {
+      if (isEmpty(currentPromocion.fechaDesde)) {
+        newErrors.fechaDesde = "La fecha desde es requerida";
+      }
+      if (isEmpty(currentPromocion.fechaHasta)) {
+        newErrors.fechaHasta = "La fecha hasta es requerida";
+      }
+      if (isEmpty(currentPromocion.horaDesde)) {
+        newErrors.horaDesde = "La hora desde es requerida";
+      }
+      if (isEmpty(currentPromocion.horaHasta)) {
+        newErrors.horaHasta = "La hora hasta es requerida";
+      }
+  
+      if (
+        currentPromocion.fechaDesde &&
+        currentPromocion.fechaHasta &&
+        currentPromocion.horaDesde &&
+        currentPromocion.horaHasta &&
+        !validateDateTime(currentPromocion.fechaDesde, currentPromocion.fechaHasta, currentPromocion.horaDesde, currentPromocion.horaHasta)
+      ) {
+        newErrors.validez = "La fecha y hora de inicio deben ser anteriores a la fecha y hora de finalización.";
+      }
+    }
+  
+    if (currentStepIndex === 2) {
+      if (currentPromocion.detallesPromocion.length === 0) {
+        newErrors.promocionDetalles = "Debes cargar artículos";
+      }
+  
+      const invalidCantidad = currentPromocion.detallesPromocion.some(detalle => detalle.cantidad <= 0);
+      if (invalidCantidad) {
+        newErrors.promocionDetalles = "Debes cargarle una cantidad válida al artículo";
+      }
+  
+      if (currentPromocion.precioPromocional < 0) {
+        newErrors.precioPromocional = "El precio promocional no es válido";
+      }
+  
+      const precioPromocion = currentPromocion.detallesPromocion.reduce(
+        (total, detalle) => total + detalle.cantidad * detalle.articulo.precioVenta,
+        0
+      );
+  
+      if (currentPromocion.precioPromocional >= precioPromocion && !newErrors.promocionDetalles) {
+        newErrors.promocionDetalles = "El precio total de los artículos es menor o igual al precio promocional.";
+      }
+    }
+  
     setErrors(newErrors);
-
     return Object.keys(newErrors).length === 0;
   };
+  
 
   return (
     <Modal show={true} size="lg" backdrop="static" keyboard={false} centered>
