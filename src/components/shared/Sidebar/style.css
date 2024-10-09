@@ -52,6 +52,8 @@
     flex-grow: 1; /* Hace que la lista de navegación ocupe todo el espacio disponible */
 }
 
+
+
 .mt-auto {
     margin-top: auto; /* Alinea los elementos al fondo del sidebar */
 }

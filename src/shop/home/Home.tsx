@@ -14,7 +14,6 @@ import Carrito from "../carrito/carrito";
 import ArticuloInsumoService from "../../services/ArticuloInsumoService";
 import { Articulo } from "../../entities/DTO/Articulo/Articulo";
 import { Cart, CartFill } from "react-bootstrap-icons";
-
 import { Promocion } from "../../entities/DTO/Promocion/Promocion";
 import { PromocionService } from "../../services/PromocionService";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
@@ -25,32 +24,32 @@ const Home: React.FC = () => {
   const [, setLoading] = useState<boolean>(true);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
-  const [, setSelectedEmpresa] = useState<Empresa | null>(null);
-  const [, setShowSucursales] = useState<boolean>(false);
+  const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
+  const [showSucursales, setShowSucursales] = useState<boolean>(false);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
-  const [selectedSucursal, setSelectedSucursal] = useState<Sucursal | null>(
-    null
-  );
+  const [selectedSucursal, setSelectedSucursal] = useState<Sucursal | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [productos, setProductos] = useState<Articulo[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<
-    number | undefined
-  >(undefined);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>(undefined);
   const { isAuthenticated, selectSucursal } = useAuth0Extended();
   const { agregarAlCarrito } = useCart();
-  const [subCategoriaSelected, setSubCategoriaSelected] =
-    useState<boolean>(false);
-
+  const [subCategoriaSelected, setSubCategoriaSelected] = useState<boolean>(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [promociones, setPromociones] = useState<Promocion[]>([]);
   const [showPromociones, setShowPromociones] = useState<boolean>(false);
   const { loginWithRedirect } = useAuth0();
 
-
+  // Fetch inicial de empresas
   useEffect(() => {
     fetchEmpresas();
-    fetchPromociones();
-    fetchProductos()
+  }, []);
+
+  // Fetch de datos cuando se selecciona una sucursal
+  useEffect(() => {
+    if (selectedSucursal) {
+      fetchPromociones();
+      fetchProductos();
+    }
   }, [selectedSucursal]);
 
   const fetchEmpresas = async () => {
@@ -67,9 +66,7 @@ const Home: React.FC = () => {
   const fetchPromociones = async () => {
     if (selectedSucursal) {
       try {
-        const data = await PromocionService.getAllBySucursal(
-          selectedSucursal.id
-        );
+        const data = await PromocionService.getAllBySucursal(selectedSucursal.id);
         setPromociones(data);
       } catch (error) {
         console.error("Error fetching promociones:", error);
@@ -80,9 +77,7 @@ const Home: React.FC = () => {
   const fetchSucursales = async (idEmpresa: number) => {
     try {
       setLoading(true);
-      const data = await SucursalService.fetchSucursalesByActiveEmpresa(
-        idEmpresa
-      );
+      const data = await SucursalService.fetchSucursalesByActiveEmpresa(idEmpresa);
       setSucursales(data);
       setShowSucursales(true);
     } catch (error) {
@@ -96,13 +91,8 @@ const Home: React.FC = () => {
     try {
       setLoading(true);
       setSubCategoriaSelected(false);
-      const data = await CategoriaService.obtenerCategoriasPadre(
-        idSucursal.toString()
-      );
-      setCategorias([
-        ...data,
-        { id: 0, denominacion: "Promociones" } as Categoria,
-      ]);
+      const data = await CategoriaService.obtenerCategoriasPadre(idSucursal.toString());
+      setCategorias([...data, { id: 0, denominacion: "Promociones" } as Categoria]);
     } catch (error) {
       console.error("Error fetching categorias padre:", error);
     } finally {
@@ -128,16 +118,14 @@ const Home: React.FC = () => {
   const fetchProductos = async (idCategoria: number = 0) => {
     if (selectedSucursal) {
       try {
-        const manufacturados =
-          await ProductServices.getProductsByCategoryfromSucursal(
-            String(selectedSucursal.id),
-            idCategoria
-          );
-        const insumos =
-          await ArticuloInsumoService.obtenerArticulosInsumosByCategoriaAndSubCategoria(
-            String(selectedSucursal.id),
-            idCategoria
-          );
+        const manufacturados = await ProductServices.getProductsByCategoryfromSucursal(
+          String(selectedSucursal.id),
+          idCategoria
+        );
+        const insumos = await ArticuloInsumoService.obtenerArticulosInsumosByCategoriaAndSubCategoria(
+          String(selectedSucursal.id),
+          idCategoria
+        );
         setProductos([
           ...manufacturados,
           ...insumos.filter((producto) => !producto.esParaElaborar),
@@ -145,8 +133,6 @@ const Home: React.FC = () => {
       } catch (error) {
         console.error("Error fetching productos:", error);
       }
-    } else {
-      setCurrentStep(2);
     }
   };
 
@@ -159,7 +145,6 @@ const Home: React.FC = () => {
   const seleccionarSucursal = (sucursal: Sucursal) => {
     setSelectedSucursal(sucursal);
     selectSucursal(sucursal.id);
-
     fetchCategoriasPadresBySucursal(sucursal.id);
     setCurrentStep(3);
   };
@@ -205,7 +190,6 @@ const Home: React.FC = () => {
   return (
     <div className="home-container">
       <Container fluid>
-        
         {currentStep === 1 && <h1></h1>}
         {currentStep >= 2 && (
           <Button
@@ -225,17 +209,10 @@ const Home: React.FC = () => {
             <Row>
               {empresas.map((empresa) => (
                 <Col key={empresa.id} sm={12} md={6} lg={4} className="mb-4">
-                  <Card
-                    onClick={() => selectEmpresa(empresa)}
-                    className="empresa-card"
-                  >
+                  <Card onClick={() => selectEmpresa(empresa)} className="empresa-card">
                     <Card.Img
                       variant="top"
-                      src={
-                        empresa.imagenes[0]
-                          ? empresa.imagenes[0].url
-                          : "https://via.placeholder.com/150"
-                      }
+                      src={empresa.imagenes[0] ? empresa.imagenes[0].url : "https://via.placeholder.com/150"}
                     />
                     <Card.Body>
                       <Card.Title>{empresa.nombre}</Card.Title>
@@ -249,7 +226,7 @@ const Home: React.FC = () => {
 
         {currentStep === 2 && (
           <Container>
-            <h2 className="section-title">Seleccionar Sucursal </h2>
+            <h2 className="section-title">Seleccionar Sucursal</h2>
             <Row>
               {sucursales.map((sucursal) => (
                 <Col key={sucursal.id} sm={12} md={6} lg={4} className="mb-4">
@@ -262,11 +239,7 @@ const Home: React.FC = () => {
                   >
                     <Card.Img
                       variant="top"
-                      src={
-                        sucursal.imagenes[0]
-                          ? sucursal.imagenes[0].url
-                          : "https://via.placeholder.com/150"
-                      }
+                      src={sucursal.imagenes[0] ? sucursal.imagenes[0].url : "https://via.placeholder.com/150"}
                     />
                     <Card.Body>
                       <Card.Title>{sucursal.nombre}</Card.Title>
@@ -279,78 +252,63 @@ const Home: React.FC = () => {
         )}
 
         {currentStep === 3 && (
-          
           <>
-          <div className="hero-section">
-      <img
-        src="https://www.restolacuisine.com/restaurants/restaurant-la-cuisine/website/images/Lacuisine_resto.jpg" // Reemplaza con tu URL de imagen
-       
-        className="hero-image"
-      />
-      <div className="hero-content">
-        <h1 className="hero-title">Bienvenido a Buen Sabor</h1>
-        <p className="hero-subtitle">Descubre los mejores sabores de nuestra cocina</p>
-        {!isAuthenticated && (
-          <Button 
-            className="hero-button"
-            onClick={() => loginWithRedirect()}
-          >
-            Comenzá tu pedido
-          </Button>
-        )}
-      </div>
-    </div>
-            {promociones.length > 0 && (
-  <Container className="carousel-container">
-    <Carousel 
-      fade 
-      interval={5000} 
-      indicators={true}
-      controls={true}
-    >
-      {promociones.map((promocion) => (
-        <Carousel.Item key={promocion.id}>
-          <div className="carousel-image-container">
-            <img
-              className="carousel-image"
-              src={
-                promocion.imagenes[0]
-                  ? promocion.imagenes[0].url
-                  : "https://via.placeholder.com/800x400"
-              }
-              alt={promocion.denominacion}
-            />
-            <Carousel.Caption>
-              <h3 className="promocion-titulo">{promocion.denominacion}</h3>
-              <p className="promocion-description">{promocion.descripcionDescuento}</p>
-            
-              <div className="promocion-price">
-              
-                <span className="price-tag">$ {promocion.precioPromocional}</span>
-                <br></br>
-                <br></br>
-                {isAuthenticated ? (
-                  <Button
-                    variant="primary"
-                    className="add-to-cart-btn"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleAgregarPromocionAlCarrito(promocion);
-                    }}
-                  >
-                    Añadir al carrito
+            <div className="hero-section">
+              <img
+                src="https://www.restolacuisine.com/restaurants/restaurant-la-cuisine/website/images/Lacuisine_resto.jpg"
+                className="hero-image"
+              />
+              <div className="hero-content">
+                <h1 className="hero-title">Bienvenido a Buen Sabor</h1>
+                <p className="hero-subtitle">Descubre los mejores sabores de nuestra cocina</p>
+                {!isAuthenticated && (
+                  <Button className="hero-button" onClick={() => loginWithRedirect()}>
+                    Comenzá tu pedido
                   </Button>
-                ) : (
-                  <LoginButton />
                 )}
               </div>
-            </Carousel.Caption>
-          </div>
-        </Carousel.Item>
-      ))}
-    </Carousel>
-  </Container>
-)}
+            </div>
+
+            {promociones.length > 0 && (
+              <Container className="carousel-container">
+                <Carousel fade interval={5000} indicators={true} controls={true}>
+                  {promociones.map((promocion) => (
+                    <Carousel.Item key={promocion.id}>
+                      <div className="carousel-image-container">
+                        <img
+                          className="carousel-image"
+                          src={promocion.imagenes[0] ? promocion.imagenes[0].url : "https://via.placeholder.com/800x400"}
+                          alt={promocion.denominacion}
+                        />
+                        <Carousel.Caption>
+                          <h3 className="promocion-titulo">{promocion.denominacion}</h3>
+                          <p className="promocion-description">{promocion.descripcionDescuento}</p>
+                          <div className="promocion-price">
+                            <span className="price-tag">$ {promocion.precioPromocional}</span>
+                            <br />
+                            <br />
+                            {isAuthenticated ? (
+                              <Button
+                                variant="primary"
+                                className="add-to-cart-btn"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleAgregarPromocionAlCarrito(promocion);
+                                }}
+                              >
+                                Añadir al carrito
+                              </Button>
+                            ) : (
+                              <LoginButton />
+                            )}
+                          </div>
+                        </Carousel.Caption>
+                      </div>
+                    </Carousel.Item>
+                  ))}
+                </Carousel>
+              </Container>
+            )}
 
             <Container>
               <h1 className="section-title">Nuestras Categorias</h1>
@@ -374,9 +332,7 @@ const Home: React.FC = () => {
                 )}
                 <Col>
                   <div
-                    className={`category ${
-                      selectedCategoryId === null ? "selected" : ""
-                    }`}
+                    className={`category ${selectedCategoryId === null ? "selected" : ""}`}
                     onClick={() => selectCategoria(null)}
                   >
                     <img
@@ -390,9 +346,7 @@ const Home: React.FC = () => {
                 {categorias.map((categoria) => (
                   <Col key={categoria.id}>
                     <div
-                      className={`category ${
-                        selectedCategoryId === categoria.id ? "selected" : ""
-                      }`}
+                      className={`category ${selectedCategoryId === categoria.id ? "selected" : ""}`}
                       onClick={() => selectCategoria(categoria)}
                     >
                       <img
@@ -420,27 +374,22 @@ const Home: React.FC = () => {
                             promocion.imagenes && promocion.imagenes[0]
                               ? promocion.imagenes[0].url
                               : "https://via.placeholder.com/80"
-                          }
-                          alt={promocion.denominacion}
+                          }alt={promocion.denominacion}
                           className="product-image"
                         />
                         <h3>{promocion.denominacion}</h3>
                         <p>{promocion.descripcionDescuento}</p>
-                        <p className="price">
-                          Precio: ${promocion.precioPromocional}
-                        </p>
+                        <p className="price">Precio: ${promocion.precioPromocional}</p>
                         {isAuthenticated ? (
                           <Button
                             variant="primary"
                             className="boton_add_cart"
-                            onClick={() =>
-                              handleAgregarPromocionAlCarrito(promocion)
-                            }
+                            onClick={() => handleAgregarPromocionAlCarrito(promocion)}
                           >
                             Añadir al carrito
                           </Button>
                         ) : (
-                          <LoginButton></LoginButton>
+                          <LoginButton />
                         )}
                       </div>
                     ))
@@ -472,15 +421,12 @@ const Home: React.FC = () => {
                             Añadir al carrito
                           </Button>
                         ) : (
-                          <LoginButton></LoginButton>
+                          <LoginButton />
                         )}
                       </div>
                     ))
                   : selectedCategoryId && (
-                      <p>
-                        Lo sentimos! No tenemos productos disponibles para esta
-                        Categoria!
-                      </p>
+                      <p>Lo sentimos! No tenemos productos disponibles para esta Categoria!</p>
                     )}
               </div>
             </Container>
