@@ -205,7 +205,7 @@ const Home: React.FC = () => {
   return (
     <div className="home-container">
       <Container fluid>
-        <h1>Buen Sabor </h1>
+        
         {currentStep === 1 && <h1></h1>}
         {currentStep >= 2 && (
           <Button
@@ -279,38 +279,78 @@ const Home: React.FC = () => {
         )}
 
         {currentStep === 3 && (
+          
           <>
-            {/* <Container className="d-flex justify-content-center align-items-center mb-4">
-              <Carousel style={{ maxWidth: "400px" }}>
-                {promociones.map((promocion) => (
-                  <Carousel.Item key={promocion.id}>
-                    <img
-                      className="carousel-image"
-                      src={
-                        promocion.imagenes[0]
-                          ? promocion.imagenes[0].url
-                          : "https://via.placeholder.com/400x200"
-                      }
-                      alt={promocion.denominacion}
-                    />
-                    <Carousel.Caption>
-                      <p className="price">
-                        Precio: ${promocion.precioPromocional}
-                      </p>
-                      {isAuthenticated ? (
-                        <Button variant="primary" className="boton_add_cart" onClick={() => handleAgregarPromocionAlCarrito(promocion)}>
-                          Añadir promoción al carrito
-                        </Button>
-                      ) : (
-                        <Button variant="primary" onClick={() => navigate("/registro")}>
-                          Login
-                        </Button>
-                      )}
-                    </Carousel.Caption>
-                  </Carousel.Item>
-                ))}
-              </Carousel>
-            </Container> */}
+          <div className="hero-section">
+      <img
+        src="https://www.restolacuisine.com/restaurants/restaurant-la-cuisine/website/images/Lacuisine_resto.jpg" // Reemplaza con tu URL de imagen
+       
+        className="hero-image"
+      />
+      <div className="hero-content">
+        <h1 className="hero-title">Bienvenido a Buen Sabor</h1>
+        <p className="hero-subtitle">Descubre los mejores sabores de nuestra cocina</p>
+        {!isAuthenticated && (
+          <Button 
+            className="hero-button"
+            onClick={() => loginWithRedirect()}
+          >
+            Comenzá tu pedido
+          </Button>
+        )}
+      </div>
+    </div>
+            {promociones.length > 0 && (
+  <Container className="carousel-container">
+    <Carousel 
+      fade 
+      interval={5000} 
+      indicators={true}
+      controls={true}
+    >
+      {promociones.map((promocion) => (
+        <Carousel.Item key={promocion.id}>
+          <div className="carousel-image-container">
+            <img
+              className="carousel-image"
+              src={
+                promocion.imagenes[0]
+                  ? promocion.imagenes[0].url
+                  : "https://via.placeholder.com/800x400"
+              }
+              alt={promocion.denominacion}
+            />
+            <Carousel.Caption>
+              <h3 className="promocion-titulo">{promocion.denominacion}</h3>
+              <p className="promocion-description">{promocion.descripcionDescuento}</p>
+            
+              <div className="promocion-price">
+              
+                <span className="price-tag">$ {promocion.precioPromocional}</span>
+                <br></br>
+                <br></br>
+                {isAuthenticated ? (
+                  <Button
+                    variant="primary"
+                    className="add-to-cart-btn"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleAgregarPromocionAlCarrito(promocion);
+                    }}
+                  >
+                    Añadir al carrito
+                  </Button>
+                ) : (
+                  <LoginButton />
+                )}
+              </div>
+            </Carousel.Caption>
+          </div>
+        </Carousel.Item>
+      ))}
+    </Carousel>
+  </Container>
+)}
 
             <Container>
               <h1 className="section-title">Nuestras Categorias</h1>
@@ -344,7 +384,7 @@ const Home: React.FC = () => {
                       alt="Todos"
                       className="category-image"
                     />
-                    <p>Todos</p>
+                    <p className="categoria-name">Todos</p>
                   </div>
                 </Col>
                 {categorias.map((categoria) => (
@@ -364,7 +404,7 @@ const Home: React.FC = () => {
                         alt={categoria.denominacion}
                         className="category-image"
                       />
-                      <p>{categoria.denominacion}</p>
+                      <p className="categoria-name">{categoria.denominacion}</p>
                     </div>
                   </Col>
                 ))}
