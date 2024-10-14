@@ -31,6 +31,10 @@ function UnidadMedidaModal(props: { show: boolean, onHide: () => void, editing: 
     };
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!unidad.denominacion || unidad.denominacion.trim() === "") {
+            setError("La denominación no puede estar vacía.");
+            return;
+        }
         try {
             if (props.editing) {
                 await UnidadMedidaService.update(props.id, unidad);

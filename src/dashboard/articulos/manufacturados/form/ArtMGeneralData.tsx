@@ -67,7 +67,7 @@ export const ArtMGeneralData = ({
               value={articuloManufacturado.descripcion}
               onChange={(e) => handleChange({ descripcion: e.target.value })}
               isInvalid={!!errors.descripcion}
-              style={{ resize: "none" }} // Prevent resizing
+              style={{ resize: "none" }}
             />
             {errors.descripcion && (
               <Form.Text className="text-danger">
@@ -86,7 +86,7 @@ export const ArtMGeneralData = ({
               value={articuloManufacturado.preparacion}
               onChange={(e) => handleChange({ preparacion: e.target.value })}
               isInvalid={!!errors.preparacion}
-              style={{ resize: "none" }} // Prevent resizing
+              style={{ resize: "none" }} 
             />
             {errors.preparacion && (
               <Form.Text className="text-danger">

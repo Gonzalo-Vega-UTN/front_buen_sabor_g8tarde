@@ -50,7 +50,7 @@ const ArticuloInsumoModal = ({
         );
         updatedArticulo.unidadMedida = unidadSeleccionada || null;
       } else {
-        (updatedArticulo as any)[name] = value; // Cast to 'any' to bypass TypeScript error
+        (updatedArticulo as any)[name] = value;
       }
 
       return updatedArticulo;
@@ -82,6 +82,10 @@ const ArticuloInsumoModal = ({
   };
 
   const validarFormulario = (): boolean => {
+    console.log("entre");
+    console.log(articuloInsumo);
+    
+    
     if (!articuloInsumo.denominacion || !articuloInsumo.denominacion.trim()) {
       setError("La denominación es obligatoria.");
       return false;
@@ -98,7 +102,7 @@ const ArticuloInsumoModal = ({
       setError("El precio de compra no puede ser 0 o negativo.");
       return false;
     }
-    if (articuloInsumo.precioVenta < 0) {
+    if (articuloInsumo.precioVenta <= 0) {
       setError("El precio de venta debe ser mayor o igual que 0.");
       return false;
     }
@@ -110,8 +114,8 @@ const ArticuloInsumoModal = ({
       setError("No puedes tener mas stock del permitido");
       return false;
     }
-    if (articuloInsumo.stockMaximo < 0) {
-      setError("El stock máximo no puede ser negativo.");
+    if (articuloInsumo.stockMaximo <= 0) {
+      setError("El stock máximo debe ser mayor o igual que 0.");
       return false;
     }
 

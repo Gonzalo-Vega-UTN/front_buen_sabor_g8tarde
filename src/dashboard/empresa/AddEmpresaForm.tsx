@@ -112,7 +112,7 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
             name="cuil"
             value={empresa.cuil}
             onChange={handleChange}
-            min="0" // Establecemos el mínimo a cero
+            min="1"
             required
           />
         </Form.Group>
