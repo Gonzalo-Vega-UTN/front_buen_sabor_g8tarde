@@ -100,33 +100,35 @@ const EmpresaList: React.FC<EmpresaListProps> = ({
                   <strong>Razón Social:</strong> {empresa.razonSocial} <br />
                   <strong>CUIL:</strong> {empresa.cuil}
                 </Card.Text>
-                <Button
-                  variant="warning"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEditEmpresa(empresa);
-                  }}
-                >
-                  <FontAwesomeIcon icon={faEdit} />
-                </Button>
-                <DropdownButton
-                  id="dropdown-basic-button"
-                  title={empresa.alta ? "Alta" : "Baja"}
-                  variant={empresa.alta ? "success" : "danger"}
-                  className="ml-2"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Dropdown.Item
-                    onClick={() => handleStatusChange(empresa, true)}
+                <div className="d-flex justify-content-between">
+                  <Button
+                    variant="warning"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditEmpresa(empresa);
+                    }}
                   >
-                    Alta
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => handleStatusChange(empresa, false)}
+                    <FontAwesomeIcon icon={faEdit} />
+                  </Button>
+                  <DropdownButton
+                    id="dropdown-basic-button"
+                    title={empresa.alta ? "Alta" : "Baja"}
+                    variant={empresa.alta ? "success" : "danger"}
+                    className="ml-2"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    Baja
-                  </Dropdown.Item>
-                </DropdownButton>
+                    <Dropdown.Item
+                      onClick={() => handleStatusChange(empresa, true)}
+                    >
+                      Alta
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={() => handleStatusChange(empresa, false)}
+                    >
+                      Baja
+                    </Dropdown.Item>
+                  </DropdownButton>
+                </div>
               </Card.Body>
             </Card>
           </Col>

@@ -44,6 +44,9 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
       setCp(initialDomicilio.cp);
       setLocalidadId(initialDomicilio.localidad.id.toString());
       setProvinciaId(initialDomicilio.localidad.provincia.id.toString());
+      console.log(provinciaId)
+      console.log(initialDomicilio.localidad.provincia.id.toString())
+      console.log(initialDomicilio)
     }
   }, [initialDomicilio]);
 
@@ -134,7 +137,7 @@ const FormularioDomicilio: React.FC<FormularioDomicilioProps> = ({
         <Form.Label>Provincia</Form.Label>
         <Form.Control
           as="select"
-          value={provinciaId}
+          value={initialDomicilio.localidad.provincia.id}
           onChange={(e) => setProvinciaId(e.target.value)}
           required
         >

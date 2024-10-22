@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Carousel from "react-bootstrap/Carousel";
 import { Button, Container } from "react-bootstrap";
 import "./ImageCarousel.css"; // Importa el archivo CSS
@@ -21,7 +21,9 @@ const ImagenCarousel: React.FC<Props> = ({
       fileInputRef.current.click();
     }
   };
-
+  useEffect(() =>{
+    setImagenes(imagenesExistentes)
+  }, [imagenesExistentes])
   const [, setIndex] = useState<number>(0);
   const [imagenes, setImagenes] = useState<Imagen[]>(imagenesExistentes);
   const [imagenAEditar, setImagenAEditar] = useState<number | null>(null);

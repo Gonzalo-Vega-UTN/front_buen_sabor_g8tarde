@@ -160,7 +160,8 @@ export default function ProductTable() {
       console.log(response);
       if (response) {
         console.log(response);
-        await ProductServices.uploadFiles(response.id, files);
+        const imagenes = await ProductServices.uploadFiles(response.id, files);
+        response.imagenes = imagenes;
       }
       setArticulosManufacturados((prev) => {
         // Si el artículo tiene un id, significa que es una actualización
@@ -171,6 +172,7 @@ export default function ProductTable() {
           return [...prev, response];
         }
       });
+      
     } catch (error) {
       console.log("Algo salió mal UPDATE", error);
     }

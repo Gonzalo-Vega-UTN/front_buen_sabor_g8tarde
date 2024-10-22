@@ -65,7 +65,8 @@ export class SucursalService {
     }
   }
 
-  static async createSucursal(sucursal: Sucursal): Promise<Sucursal> {
+  static async create(activeEmpresa: string, sucursal: Sucursal): Promise<Sucursal> {
+    sucursal.empresa.id = Number(activeEmpresa);
     console.log("ANTES DE GUARDAR UNA SUCURSAL" , sucursal)
     try {
       const responseData = await this.request('', {
@@ -83,7 +84,7 @@ export class SucursalService {
     }
   }
 
-  static async updateSucursal(id: number, sucursal: Sucursal): Promise<Sucursal> {
+  static async update(id: number, sucursal: Sucursal): Promise<Sucursal> {
     try {
       const responseData = await this.request(`/${id}`, {
         method: 'PUT',

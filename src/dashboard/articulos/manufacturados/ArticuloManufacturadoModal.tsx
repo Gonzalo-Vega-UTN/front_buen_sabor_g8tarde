@@ -188,9 +188,8 @@ export const ArticuloManufacturadoModal = ({
   function save() {
     if (validateFields()) {
       setIsLoading(true);
-
+      handleSubmit(artManufacturado, files);
       setTimeout(() => {
-        handleSubmit(artManufacturado, files);
         setIsLoading(false);
         onHide();
       }, 2000);

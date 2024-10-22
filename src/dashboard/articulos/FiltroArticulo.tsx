@@ -18,7 +18,7 @@ const FiltroProductos: React.FC<FiltroProductosProps> = ({
   handleChangeUnidadMedida,
 }) => {
   return (
-    <Row>
+    <Row className="my-3 d-flex justify-content-between">
       <Col>
         <Form.Control
           type="text"
@@ -28,7 +28,8 @@ const FiltroProductos: React.FC<FiltroProductosProps> = ({
           }
         />
       </Col>
-      <Col>
+      <Col className="d-flex justify-content-between align-items-center">
+        <label htmlFor="filtro_categoria">Seleccionar Categoría</label>
         <select
           name="filtro_categoria"
           id="filtro_categoria"
@@ -45,7 +46,8 @@ const FiltroProductos: React.FC<FiltroProductosProps> = ({
         </select>
       </Col>
 
-      <Col>
+      <Col className="d-flex justify-content-between align-items-center">
+        <label htmlFor="filtro_categoria">Seleccionar Unidad</label>
         <select
           name="filtro_unidad-medida"
           id="filtro_unidad-medida"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, ListGroup, Button, Collapse } from "react-bootstrap";
+import { Container, ListGroup, Button, Collapse, Modal } from "react-bootstrap";
 import { Categoria } from "../../entities/DTO/Categoria/Categoria";
 import { CategoriaService } from "../../services/CategoriaService";
 import {
@@ -27,6 +27,8 @@ export const CategoriaPage = () => {
   );
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const { activeSucursal, activeEmpresa } = useAuth0Extended();
+  const [showAlertModal, setShowAlertModal] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   const fetchCategorias = async () => {
     if (activeSucursal) {
@@ -42,9 +44,9 @@ export const CategoriaPage = () => {
   };
   const fetchSucursales = async (empresaId: number) => {
     try {
-      const sucursalesData = await SucursalService.fetchSucursalesByActiveEmpresa(empresaId);
+      const sucursalesData =
+        await SucursalService.fetchSucursalesByActiveEmpresa(empresaId);
       setSucursales(sucursalesData);
-      
     } catch (error) {
       console.error("Error al obtener las sucursales:", error);
     }
@@ -73,11 +75,29 @@ export const CategoriaPage = () => {
 
   const handleButtonClickDelete = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    id: number
+    categoria: Categoria
   ) => {
     event.stopPropagation();
     if (activeSucursal) {
-      await CategoriaService.eliminarCategoriaById(activeSucursal, id);
+      if (
+        categoria.subCategorias.filter(
+          (subcategoria) =>
+            subcategoria.alta &&
+            subcategoria.sucursales.some(
+              (sucursal) => sucursal.id === Number(activeSucursal)
+            )
+        ).length > 0
+      ) {
+        setAlertMessage(
+          "No se puede eliminar la categoría porque hay subcategorías asociadas."
+        );
+        setShowAlertModal(true);
+        return; // No procedas con la eliminación
+      }
+      await CategoriaService.eliminarCategoriaById(
+        activeSucursal,
+        categoria.id
+      );
       fetchCategorias();
     }
   };
@@ -129,7 +149,13 @@ export const CategoriaPage = () => {
                 >
                   <div className="d-flex align-items-center">
                     <span className="me-3">{categoria.denominacion}</span>
-                    {categoria.subCategorias.length > 0 &&
+                    {categoria.subCategorias.filter(
+                      (subcategoria) =>
+                        subcategoria.alta &&
+                        subcategoria.sucursales.some(
+                          (sucursal) => sucursal.id === Number(activeSucursal)
+                        )
+                    ).length > 0 &&
                       (isCollapsed ? <BsChevronDown /> : <BsChevronUp />)}
                   </div>
                   <div className="d-flex gap-2">
@@ -143,7 +169,7 @@ export const CategoriaPage = () => {
                       color="#FBC02D"
                       size={20}
                       icon={BsTrash}
-                      onClick={(e) => handleButtonClickDelete(e, categoria.id)}
+                      onClick={(e) => handleButtonClickDelete(e, categoria)}
                     />
                     <GenericButton
                       color="#0080FF"
@@ -157,7 +183,13 @@ export const CategoriaPage = () => {
               <Collapse in={!isCollapsed}>
                 <ListGroup>
                   {categoria.subCategorias
-                    .filter((subcategoria) => subcategoria.alta)
+                    .filter(
+                      (subcategoria) =>
+                        subcategoria.alta &&
+                        subcategoria.sucursales.some(
+                          (sucursal) => sucursal.id === Number(activeSucursal)
+                        )
+                    )
                     .map((subCategoria) => (
                       <ListGroup.Item
                         key={subCategoria.id}
@@ -181,7 +213,7 @@ export const CategoriaPage = () => {
                             size={20}
                             icon={BsTrash}
                             onClick={(e) =>
-                              handleButtonClickDelete(e, subCategoria.id)
+                              handleButtonClickDelete(e, subCategoria)
                             }
                           />
                         </div>
@@ -208,6 +240,18 @@ export const CategoriaPage = () => {
           sucursales={sucursales}
         />
       )}
+
+      <Modal show={showAlertModal} onHide={() => setShowAlertModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Advertencia</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{alertMessage}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowAlertModal(false)}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

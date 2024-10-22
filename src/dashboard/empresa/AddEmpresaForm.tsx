@@ -53,9 +53,10 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
       if (response && files.length > 0) {
         await EmpresaService.uploadFiles(response.id, files);
       }
+      setIsLoading(true);
+
       // Si la empresa se creó o actualizó correctamente, proceder a subir los archivos
       if (response.id) {
-        setIsLoading(true);
         setTimeout(() => {
           setSuccess(true);
           setEmpresa(new Empresa());

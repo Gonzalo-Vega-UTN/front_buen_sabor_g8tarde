@@ -20,8 +20,8 @@ export class CategoriaService {
     try {
       const response = await fetch(`${this.urlServer}${endpoint}`, options);
       const contentType = response.headers.get("content-type");
-      
-      
+
+
       let responseData;
       if (contentType && contentType.includes("application/json")) {
         responseData = await response.json();
@@ -37,7 +37,7 @@ export class CategoriaService {
         };
         throw error;
       }
-      
+
       return responseData;
     } catch (error) {
       console.error('Error completo:', error);
@@ -99,16 +99,32 @@ export class CategoriaService {
     }
   }
 
+  static async validateCategoria(denominacion : string) {
+    try {
+      console.log("VALIDANDO", denominacion)
+      const responseData = await this.request("/validate", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: denominacion,
+        mode: 'cors'
+      });
+      return responseData;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async agregarCategoria(
-    idPadre: number, 
-    activeSucursalId: string, 
-    categoriaRequest: { 
-      categoria: Categoria, 
-      sucursalesIds: number[] 
+    idPadre: number,
+    categoriaRequest: {
+      categoria: Categoria,
+      sucursalesIds: number[]
     }
   ): Promise<Categoria> {
     try {
-      
+
       if (!categoriaRequest.categoria.denominacion?.trim()) {
         throw new Error('La denominación es requerida');
       }
@@ -117,14 +133,9 @@ export class CategoriaService {
         throw new Error('Debe seleccionar al menos una sucursal');
       }
 
-      const params = new URLSearchParams();
-      if (idPadre !== undefined) {
-        params.append("idCategoriaPadre", idPadre.toString());
-      }
-      
-      const endpoint = idPadre !== null && idPadre !== undefined 
-        ? `/${activeSucursalId}?${params}`
-        : `/${activeSucursalId}`;
+      const params = idPadre != null ? new URLSearchParams({ idCategoriaPadre: idPadre.toString() }) : null;
+      const endpoint = params ? `?${params.toString()}` : '';
+
 
       const requestBody = {
         categoria: {
@@ -151,10 +162,10 @@ export class CategoriaService {
   }
 
   static async actualizarCategoria(
-    idCategoria: number, 
-    categoriaRequest: { 
-      categoria: Categoria, 
-      sucursalesIds: number[] 
+    idCategoria: number,
+    categoriaRequest: {
+      categoria: Categoria,
+      sucursalesIds: number[]
     }
   ): Promise<Categoria> {
     try {
@@ -162,7 +173,7 @@ export class CategoriaService {
       if (!idCategoria) {
         throw new Error('ID de categoría es requerido');
       }
-      
+
       if (!categoriaRequest.categoria.denominacion?.trim()) {
         throw new Error('La denominación es requerida');
       }
@@ -182,6 +193,7 @@ export class CategoriaService {
         },
         sucursalesIds: categoriaRequest.sucursalesIds
       };
+      console.log("Request BODY", requestBody)
 
       const responseData = await this.request(`/${idCategoria}`, {
         method: 'PUT',
@@ -195,7 +207,7 @@ export class CategoriaService {
       return responseData;
     } catch (error) {
       console.error('Error al actualizar la Categoria:', error);
-      
+
       if ((error as ApiError).status === 404) {
         throw new Error('Categoría no encontrada');
       } else if ((error as ApiError).status === 400) {
@@ -205,11 +217,11 @@ export class CategoriaService {
       } else if ((error as ApiError).status === 403) {
         throw new Error('No tiene permisos para actualizar esta categoría');
       }
-      
+
       if (error instanceof Error) {
         throw error;
       }
-      
+
       throw new Error('Error al actualizar la categoría. Por favor, intente nuevamente.');
     }
   }

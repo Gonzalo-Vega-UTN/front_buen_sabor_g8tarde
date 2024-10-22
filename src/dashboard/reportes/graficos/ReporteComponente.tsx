@@ -20,8 +20,6 @@ export const ReporteComponente = ({
   startDate,
   endDate,
 }: Props) => {
-  console.log(data);
-
   return (
     <Container className="mt-2">
       <h3>{titulo}</h3>
