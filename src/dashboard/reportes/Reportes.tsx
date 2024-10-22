@@ -1,23 +1,21 @@
 import { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
-
 import ReporteService from "../../services/ReporteService";
 import { ReporteComponente } from "./graficos/ReporteComponente";
-import Col from "react-bootstrap/esm/Col";
-import Row from "react-bootstrap/esm/Row";
-import Modal from "react-bootstrap/esm/Modal";
-import Button from "react-bootstrap/esm/Button";
-import Form from "react-bootstrap/esm/Form";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
-import Tooltip from "react-bootstrap/esm/Tooltip";
-import OverlayTrigger from "react-bootstrap/esm/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
 export const Reportes = () => {
   const [rankingArticulos, setRankingArticulos] = useState<any[]>([]);
   const [movimientos, setMovimietos] = useState<any[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
-
   const [isGenerating, setIsGenerating] = useState(false);
   const { activeSucursal } = useAuth0Extended();
 
@@ -52,6 +50,7 @@ export const Reportes = () => {
       }
     }
   };
+
   const fetchMovimientos = async (desde: string, hasta: string) => {
     try {
       const movimientos = await ReporteService.getMovimientos(
@@ -95,6 +94,7 @@ export const Reportes = () => {
 
     return formattedDate;
   }
+
   const generateExcelMovimientos = async (desde: string, hasta: string) => {
     setIsGenerating(true);
     try {
@@ -110,9 +110,6 @@ export const Reportes = () => {
       generateReportFile("reporte_movimientos", blob);
     } catch (error) {
       console.error("Error al generar el Excel:", error);
-      if (error instanceof Error) {
-        console.log("FALLO");
-      }
     } finally {
       setIsGenerating(false);
     }
@@ -133,9 +130,6 @@ export const Reportes = () => {
       generateReportFile("reporte_top_products", blob);
     } catch (error) {
       console.error("Error al generar el Excel:", error);
-      if (error instanceof Error) {
-        console.log("FALLO");
-      }
     } finally {
       setIsGenerating(false);
     }
@@ -171,13 +165,14 @@ export const Reportes = () => {
       <strong>Genera un reporte de pedidos completo</strong>
     </Tooltip>
   );
+
   return (
     <>
-      <Container>
-        <h1>Reportes</h1>
+      <Container className="mt-4">
+        <h1 className="text-center mb-4">Reportes</h1>
         {activeSucursal ? (
           <div>
-            <div className="d-flex align-items-center">
+            <div className="d-flex align-items-center justify-content-between mb-3">
               <h5>
                 Reportes desde "{formatDate(startDate)}" hasta "
                 {formatDate(endDate)}"
@@ -197,8 +192,9 @@ export const Reportes = () => {
                 {isGenerating ? "Generando..." : "Generar Reporte General"}
               </Button>
             </OverlayTrigger>
-            <Row>
-              <Col>
+
+            <Row className="mb-4">
+              <Col md={6}>
                 <ReporteComponente
                   titulo="Ranking comidas más pedidas"
                   data={rankingArticulos}
@@ -208,7 +204,7 @@ export const Reportes = () => {
                   endDate={endDate}
                 />
               </Col>
-              <Col>
+              <Col md={6}>
                 <ReporteComponente
                   titulo="Movimientos Monetarios"
                   data={movimientos}
@@ -221,9 +217,11 @@ export const Reportes = () => {
             </Row>
           </div>
         ) : (
-          <p>Debes seleccionar una sucursal</p>
+          <p className="text-center">Debes seleccionar una sucursal</p>
         )}
       </Container>
+
+      {/* Modal para seleccionar fechas */}
       {showModal && (
         <Modal
           show={showModal}
@@ -266,9 +264,7 @@ export const Reportes = () => {
             <Button
               size="lg"
               variant="primary"
-              onClick={() => {
-                setShowModal(false);
-              }}
+              onClick={() => setShowModal(false)}
             >
               Seleccionar
             </Button>
@@ -276,27 +272,28 @@ export const Reportes = () => {
         </Modal>
       )}
 
-        <Modal
-          show={showErrorModal}
-          size="lg"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Header closeButton>
-            <Modal.Title id="contained-modal-title-vcenter">
-              Hubo un Error!
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>
-              No hay datos encontrados ente {startDate} y {endDate} para generar
-              el reporte completo
-            </p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={() => setShowErrorModal(false)}>Cerrar</Button>
-          </Modal.Footer>
-        </Modal>
+      {/* Modal de error */}
+      <Modal
+        show={showErrorModal}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Hubo un Error!
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            No hay datos encontrados entre {startDate} y {endDate} para generar
+            el reporte completo.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setShowErrorModal(false)}>Cerrar</Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
