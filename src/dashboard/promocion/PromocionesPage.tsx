@@ -62,18 +62,14 @@ export default function PromotionTable() {
 
   const handleSubmit = async (promocion: Promocion, files: File[]) => {
     try {
-      //quitar blobs
-      promocion.imagenes = promocion.imagenes.filter(
-        (imagen) => !imagen.url.includes("blob")
-      );
       let response: Promocion;
       if (promocion.id !== 0) {
-        response = await PromocionService.update(promocion.id, promocion);
+        response = await PromocionService.update(promocion.id, {...promocion, imagenes: []});
       } else {
-        response = await PromocionService.create(activeSucursal, promocion);
+        response = await PromocionService.create(activeSucursal, {...promocion, imagenes: []});
       }
       if (response) {
-        await PromocionService.uploadFiles(response.id, files);
+        const imagenes = await PromocionService.uploadFiles(response.id, files);
       }
 
       setPromociones((prev) => {
@@ -85,6 +81,7 @@ export default function PromotionTable() {
           return [...prev, response];
         }
       });
+      fetchPromotions();
     } catch (error) {
       console.error("Error guardando la promoción:", error);
     }

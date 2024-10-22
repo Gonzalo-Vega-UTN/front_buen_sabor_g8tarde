@@ -138,30 +138,25 @@ export default function ProductTable() {
     files: File[]
   ) => {
     try {
-      //quitar blobs
-      newArticuloManufacturado.imagenes =
-        newArticuloManufacturado.imagenes.filter(
-          (imagen) => !imagen.url.includes("blob")
-        );
       let response: ArticuloManufacturado;
       if (newArticuloManufacturado.id === 0) {
         // Crear un nuevo ArticuloManufacturado
         response = await ProductServices.create(
-          newArticuloManufacturado,
+          {...newArticuloManufacturado, imagenes: []},
           activeSucursal
         );
       } else {
         // Actualizar el ArticuloManufacturado existente
         response = await ProductServices.update(
           newArticuloManufacturado.id,
-          newArticuloManufacturado
+          {...newArticuloManufacturado, imagenes: []}
         );
       }
       console.log(response);
       if (response) {
         console.log(response);
         const imagenes = await ProductServices.uploadFiles(response.id, files);
-        response.imagenes = imagenes;
+        //response.imagenes = imagenes;
       }
       setArticulosManufacturados((prev) => {
         // Si el artículo tiene un id, significa que es una actualización
@@ -174,7 +169,7 @@ export default function ProductTable() {
       });
       
     } catch (error) {
-      console.log("Algo salió mal UPDATE", error);
+      console.log("Algo salió mal", error);
     }
   };
 

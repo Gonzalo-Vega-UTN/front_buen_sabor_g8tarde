@@ -93,9 +93,11 @@ export const SucursalFormModal = ({
   };
 
   useEffect(() =>{
+    console.log("ASD")
     fetchProvincias();
     fetchLocalidades();
-  })
+  }, [])
+
   function onSubmit(e: FormEvent) {
     e.preventDefault();
     console.log(currentSucursal);

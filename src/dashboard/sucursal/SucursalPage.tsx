@@ -39,15 +39,17 @@ const SucursalesPage: React.FC = () => {
 
   const handleSubmit = async (sucursal: Sucursal, files: File[]) => {
     try {
-      //quitar blobs
-      sucursal.imagenes = sucursal.imagenes.filter(
-        (imagen) => !imagen.url.includes("blob")
-      );
       let response: Sucursal;
       if (sucursal.id !== 0) {
-        response = await SucursalService.update(sucursal.id, sucursal);
+        response = await SucursalService.update(sucursal.id, {
+          ...sucursal,
+          imagenes: [],
+        });
       } else {
-        response = await SucursalService.create(activeEmpresa, sucursal);
+        response = await SucursalService.create(activeEmpresa, {
+          ...sucursal,
+          imagenes: [],
+        });
       }
       if (response && files.length > 0) {
         const responseImagenes = await SucursalService.uploadFiles(
@@ -59,7 +61,6 @@ const SucursalesPage: React.FC = () => {
           response.imagenes = responseImagenes;
         }
       }
-      console.log(response);
       setSucursales((prev) => {
         if (prev.some((s) => s.id === response.id)) {
           return prev.map((s) => (s.id === response.id ? response : s));

@@ -141,7 +141,6 @@ export class CategoriaService {
         categoria: {
           denominacion: categoriaRequest.categoria.denominacion.trim(),
           alta: true,
-          imagenes: categoriaRequest.categoria.imagenes || []
         },
         sucursalesIds: categoriaRequest.sucursalesIds
       };
@@ -187,14 +186,11 @@ export class CategoriaService {
           id: categoriaRequest.categoria.id,
           denominacion: categoriaRequest.categoria.denominacion.trim(),
           alta: true,
-          sucursales: categoriaRequest.categoria.sucursales || [],
-          imagenes: categoriaRequest.categoria.imagenes || [],
-          subCategorias: categoriaRequest.categoria.subCategorias || []
         },
         sucursalesIds: categoriaRequest.sucursalesIds
       };
       console.log("Request BODY", requestBody)
-
+      console.log("IDCATEGORIA", idCategoria)
       const responseData = await this.request(`/${idCategoria}`, {
         method: 'PUT',
         headers: {

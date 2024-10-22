@@ -77,21 +77,18 @@ export default function ArticuloInsumoPage() {
   const handleSaveUpdate = async (art: ArticuloInsumo, files: File[]) => {
     try {
       let response: ArticuloInsumo;
-      //quitar blobs
-      art.imagenes = art.imagenes.filter(
-        (imagen) => !imagen.url.includes("blob")
-      );
+     
       if (art.id === 0) {
         // Artículo nuevo
         response = await ArticuloInsumoService.crearArticuloInsumo(
-          art,
+          {...art, imagenes: []},
           activeSucursal
         );
       } else {
         // Actualizar artículo
         response = await ArticuloInsumoService.actualizarArticuloInsumo(
           art.id,
-          art
+          {...art, imagenes:[]}
         );
       }
 

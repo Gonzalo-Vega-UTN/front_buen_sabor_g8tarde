@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import { Domicilio } from "../../../entities/DTO/Domicilio/Domicilio";
 import { Provincia } from "../../../entities/DTO/Domicilio/Provincia";
@@ -20,14 +20,19 @@ export const SucursalDomicilio: React.FC<FormularioDomicilioProps> = ({
   localidades,
   provincias,
 }) => {
-  
-    return (
+  const [currentDomicilio, setCurrentDomicilio] = useState<Domicilio>(domicilio);
+ 
+  useEffect(()=>{
+    setCurrentDomicilio(domicilio)
+  }, [domicilio])
+  console.log("DOMICILIO", domicilio);
+  return (
     <div>
       <Form.Group controlId="calle">
         <Form.Label>Calle</Form.Label>
         <Form.Control
           type="text"
-          value={domicilio.calle}
+          value={currentDomicilio.calle}
           onChange={(e) => handleChange({ calle: e.target.value })}
           required
         />
@@ -38,7 +43,7 @@ export const SucursalDomicilio: React.FC<FormularioDomicilioProps> = ({
         <Form.Label>Número</Form.Label>
         <Form.Control
           type="number"
-          value={domicilio.numero}
+          value={currentDomicilio.numero}
           min={1}
           onChange={(e) => handleChange({ numero: Number(e.target.value) })}
           required
@@ -52,7 +57,7 @@ export const SucursalDomicilio: React.FC<FormularioDomicilioProps> = ({
         <Form.Label>Código Postal</Form.Label>
         <Form.Control
           type="number"
-          value={domicilio.cp}
+          value={currentDomicilio.cp}
           min={1}
           onChange={(e) => handleChange({ cp: Number(e.target.value) })}
           required
@@ -64,14 +69,14 @@ export const SucursalDomicilio: React.FC<FormularioDomicilioProps> = ({
         <Form.Label>Provincia</Form.Label>
         <Form.Control
           as="select"
-          value={domicilio.localidad.provincia.id}
+          value={currentDomicilio.localidad?.provincia?.id || ""}
           onChange={(e) => {
             handleChange({
               localidad: {
-                ...domicilio.localidad,
+                ...currentDomicilio.localidad,
                 provincia:
                   provincias.find((p) => p.id === Number(e.target.value)) ||
-                  domicilio.localidad.provincia,
+                  currentDomicilio.localidad.provincia,
               },
             });
           }}
@@ -93,25 +98,25 @@ export const SucursalDomicilio: React.FC<FormularioDomicilioProps> = ({
         <Form.Label>Localidad</Form.Label>
         <Form.Control
           as="select"
-          value={domicilio.localidad.id}
+          value={currentDomicilio.localidad.id || ""}
           onChange={(e) =>
             handleChange({
               localidad: localidades.find(
                 (l) => l.id === Number(e.target.value)
               ) ||
-                domicilio.localidad || {
+                currentDomicilio.localidad || {
                   provincia: { id: 0, nombre: "" },
                   nombre: "",
                 },
             })
           }
           required
-          disabled={!domicilio.localidad.provincia.id}
+          disabled={!currentDomicilio.localidad.provincia.id}
         >
           <option value="">Selecciona una localidad</option>
           {localidades
             .filter(
-              (loc) => loc.provincia.id == domicilio.localidad.provincia.id
+              (loc) => loc.provincia.id == currentDomicilio.localidad.provincia.id
             )
             .map((loc) => (
               <option key={loc.id} value={loc.id}>

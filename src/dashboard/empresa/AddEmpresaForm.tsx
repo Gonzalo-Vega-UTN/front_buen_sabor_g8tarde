@@ -39,21 +39,17 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsLoading(true);
     let response: Empresa;
-    //quitar blobs
-    empresa.imagenes = empresa.imagenes.filter(
-      (imagen) => !imagen.url.includes("blob")
-    );
     try {
       if (empresaEditando && empresaEditando.id) {
-        response = await EmpresaService.update(empresaEditando.id, empresa);
+        response = await EmpresaService.update(empresaEditando.id, {...empresa, imagenes: []});
       } else {
-        response = await EmpresaService.create(empresa);
+        response = await EmpresaService.create({...empresa, imagenes: []});
       }
       if (response && files.length > 0) {
         await EmpresaService.uploadFiles(response.id, files);
       }
-      setIsLoading(true);
 
       // Si la empresa se creó o actualizó correctamente, proceder a subir los archivos
       if (response.id) {

@@ -119,7 +119,7 @@ export const PromocionFormModal = ({
         handleSubmit(currentPromocion, files);
         setIsLoading(false);
         onHide();
-      }, 2000);
+      }, 2500);
     }
   }
 
@@ -135,9 +135,9 @@ export const PromocionFormModal = ({
     promocionDetalles?: string;
     precioPromocional?: string;
   }
-  
-  const isEmpty = (value: any): boolean => value == null || value === '';
-  
+
+  const isEmpty = (value: any): boolean => value == null || value === "";
+
   const validateDateTime = (
     fechaDesde: Date,
     fechaHasta: Date,
@@ -146,34 +146,34 @@ export const PromocionFormModal = ({
   ): boolean => {
     const fechaHoraDesde = new Date(fechaDesde);
     const fechaHoraHasta = new Date(fechaHasta);
-  
+
     if (horaDesde && horaHasta) {
       const [horaDesdeNum, minutosDesde] = horaDesde.split(":").map(Number);
       const [horaHastaNum, minutosHasta] = horaHasta.split(":").map(Number);
       fechaHoraDesde.setHours(horaDesdeNum, minutosDesde);
       fechaHoraHasta.setHours(horaHastaNum, minutosHasta);
     }
-  
+
     return fechaHoraDesde <= fechaHoraHasta;
   };
-  
+
   const validateFields = (): boolean => {
     const newErrors: ValidationErrors = {};
-    
+
     if (currentStepIndex === 0) {
       if (isEmpty(currentPromocion.denominacion)) {
         newErrors.denominacion = "La denominación es requerida";
       }
-  
+
       if (isEmpty(currentPromocion.descripcionDescuento)) {
         newErrors.descripcionDescuento = "La descripción es requerida";
       }
-  
+
       if (isEmpty(currentPromocion.tipoPromocion)) {
         newErrors.tipoPromocion = "Debe seleccionar un tipo de promoción";
       }
     }
-  
+
     if (currentStepIndex === 1) {
       if (isEmpty(currentPromocion.fechaDesde)) {
         newErrors.fechaDesde = "La fecha desde es requerida";
@@ -187,46 +187,59 @@ export const PromocionFormModal = ({
       if (isEmpty(currentPromocion.horaHasta)) {
         newErrors.horaHasta = "La hora hasta es requerida";
       }
-  
+
       if (
         currentPromocion.fechaDesde &&
         currentPromocion.fechaHasta &&
         currentPromocion.horaDesde &&
         currentPromocion.horaHasta &&
-        !validateDateTime(currentPromocion.fechaDesde, currentPromocion.fechaHasta, currentPromocion.horaDesde, currentPromocion.horaHasta)
+        !validateDateTime(
+          currentPromocion.fechaDesde,
+          currentPromocion.fechaHasta,
+          currentPromocion.horaDesde,
+          currentPromocion.horaHasta
+        )
       ) {
-        newErrors.validez = "La fecha y hora de inicio deben ser anteriores a la fecha y hora de finalización.";
+        newErrors.validez =
+          "La fecha y hora de inicio deben ser anteriores a la fecha y hora de finalización.";
       }
     }
-  
+
     if (currentStepIndex === 2) {
       if (currentPromocion.detallesPromocion.length === 0) {
         newErrors.promocionDetalles = "Debes cargar artículos";
       }
-  
-      const invalidCantidad = currentPromocion.detallesPromocion.some(detalle => detalle.cantidad <= 0);
+
+      const invalidCantidad = currentPromocion.detallesPromocion.some(
+        (detalle) => detalle.cantidad <= 0
+      );
       if (invalidCantidad) {
-        newErrors.promocionDetalles = "Debes cargarle una cantidad válida al artículo";
+        newErrors.promocionDetalles =
+          "Debes cargarle una cantidad válida al artículo";
       }
-  
+
       if (currentPromocion.precioPromocional < 0) {
         newErrors.precioPromocional = "El precio promocional no es válido";
       }
-  
+
       const precioPromocion = currentPromocion.detallesPromocion.reduce(
-        (total, detalle) => total + detalle.cantidad * detalle.articulo.precioVenta,
+        (total, detalle) =>
+          total + detalle.cantidad * detalle.articulo.precioVenta,
         0
       );
-  
-      if (currentPromocion.precioPromocional >= precioPromocion && !newErrors.promocionDetalles) {
-        newErrors.promocionDetalles = "El precio total de los artículos es menor o igual al precio promocional.";
+
+      if (
+        currentPromocion.precioPromocional >= precioPromocion &&
+        !newErrors.promocionDetalles
+      ) {
+        newErrors.promocionDetalles =
+          "El precio total de los artículos es menor o igual al precio promocional.";
       }
     }
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
 
   return (
     <Modal show={true} size="lg" backdrop="static" keyboard={false} centered>

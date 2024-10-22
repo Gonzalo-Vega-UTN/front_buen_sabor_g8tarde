@@ -94,6 +94,7 @@ export class ProductServices {
 
   static async create(ArticuloManufacturado: ArticuloManufacturado, idSucursal: string): Promise<ArticuloManufacturado> {
     try {
+      console.log(ArticuloManufacturado)
       const responseData = await this.request(`/${idSucursal}`, {
         method: 'POST',
         headers: {

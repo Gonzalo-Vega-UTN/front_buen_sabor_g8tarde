@@ -65,9 +65,10 @@ const CategoriaModal = ({
         },
         sucursalesIds: selectedSucursales,
       };
-      let categoriaExistenteResponse = editMode || categoriaExistente
-        ? null
-        : await CategoriaService.validateCategoria(categoria.denominacion);
+      let categoriaExistenteResponse =
+        editMode || categoriaExistente
+          ? null
+          : await CategoriaService.validateCategoria(categoria.denominacion);
       if (categoriaExistenteResponse) {
         setCategoriaExistente(categoriaExistenteResponse);
         setMostrarConfirmacion(true);
@@ -92,11 +93,14 @@ const CategoriaModal = ({
   const saveCategoria = async (categoriaRequest: any) => {
     let data;
     if (editMode || categoria.id !== 0) {
+      console.log("VOY AL UPDATE");
+      
       data = await CategoriaService.actualizarCategoria(
         categoria.id,
         categoriaRequest
       );
     } else {
+      console.log("VOY AL CREATE");
       const idPadreAsNumber = Number(idpadre);
       data = await CategoriaService.agregarCategoria(
         idPadreAsNumber,
@@ -135,6 +139,14 @@ const CategoriaModal = ({
     );
     setMostrarConfirmacion(false); // Cerrar el modal de confirmación
   };
+
+  useEffect(() => {
+    if (categoriaExistente) {
+      console.log("ASD");
+
+      setCategoria(categoriaExistente);
+    }
+  }, [categoriaExistente]);
   const handleConfirmacion = async (usarExistente: boolean) => {
     if (usarExistente && categoriaExistente) {
       setCategoria(categoriaExistente);
