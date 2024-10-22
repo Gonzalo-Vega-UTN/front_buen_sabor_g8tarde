@@ -1,4 +1,4 @@
-import { act, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { Accordion, Button, ListGroup, Alert, Spinner } from "react-bootstrap";
 import PedidoFull from "../../../entities/DTO/Pedido/PedidoFull";
 import PedidoService from "../../../services/PedidoService";

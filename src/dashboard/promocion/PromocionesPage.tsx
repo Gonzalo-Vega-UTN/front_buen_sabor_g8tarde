@@ -60,7 +60,7 @@ export default function PromotionTable() {
     fetchPromotions();
   }, [activeSucursal]);
 
-  const handleSubmit = async (promocion: Promocion, files: File[]) => {
+  const handleSubmit = async (promocion: Promocion) => {
     try {
       let response: Promocion;
       if (promocion.id !== 0) {
@@ -69,7 +69,6 @@ export default function PromotionTable() {
         response = await PromocionService.create(activeSucursal, {...promocion, imagenes: []});
       }
       if (response) {
-        const imagenes = await PromocionService.uploadFiles(response.id, files);
       }
 
       setPromociones((prev) => {

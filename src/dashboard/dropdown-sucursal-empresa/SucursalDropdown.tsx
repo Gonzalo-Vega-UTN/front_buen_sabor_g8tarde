@@ -10,8 +10,8 @@ interface SucursalDropdownProps {
 const SucursalDropdown: React.FC<SucursalDropdownProps> = ({ sucursales }) => {
   const location = useLocation();
   const { activeSucursal, selectSucursal } = useAuth0Extended();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, ] = useState(false);
+  const [error, ] = useState<string | null>(null);
 
   const handleSucursalChange = (sucursalId: number) => {
     selectSucursal(sucursalId);

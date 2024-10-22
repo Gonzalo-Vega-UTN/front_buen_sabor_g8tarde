@@ -39,7 +39,7 @@ const CategoriaModal = ({
       ? selectedCategoria.sucursales.map((sucursal: Sucursal) => sucursal.id)
       : []
   );
-  const { activeSucursal } = useAuth0Extended();
+  useAuth0Extended();
 
   const resetForm = () => {
     setCategoria(new Categoria());

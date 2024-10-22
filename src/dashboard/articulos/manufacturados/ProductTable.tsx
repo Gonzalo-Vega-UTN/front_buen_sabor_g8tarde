@@ -16,7 +16,7 @@ import { FaSave } from "react-icons/fa";
 import "./tableProdict.css";
 import { useAuth0Extended } from "../../../Auth/Auth0ProviderWithNavigate";
 import { ArticuloManufacturadoModal } from "./ArticuloManufacturadoModal";
-import { useNavigate } from "react-router-dom";
+
 
 export default function ProductTable() {
   //Producto seleccionado que se va a pasar como prop al modal
@@ -134,9 +134,7 @@ export default function ProductTable() {
   };
 
   const handleSubmit = async (
-    newArticuloManufacturado: ArticuloManufacturado,
-    files: File[]
-  ) => {
+    newArticuloManufacturado: ArticuloManufacturado  ) => {
     try {
       let response: ArticuloManufacturado;
       if (newArticuloManufacturado.id === 0) {
@@ -155,7 +153,6 @@ export default function ProductTable() {
       console.log(response);
       if (response) {
         console.log(response);
-        const imagenes = await ProductServices.uploadFiles(response.id, files);
         //response.imagenes = imagenes;
       }
       setArticulosManufacturados((prev) => {

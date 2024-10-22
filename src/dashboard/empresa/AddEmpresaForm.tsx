@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Form, Button, Alert, Spinner } from "react-bootstrap";
 import { EmpresaService } from "../../services/EmpresaService";
 import { Empresa } from "../../entities/DTO/Empresa/Empresa";

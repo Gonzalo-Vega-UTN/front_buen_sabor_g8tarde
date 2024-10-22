@@ -24,8 +24,8 @@ const Home: React.FC = () => {
   const [, setLoading] = useState<boolean>(true);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
-  const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
-  const [showSucursales, setShowSucursales] = useState<boolean>(false);
+  const [, setSelectedEmpresa] = useState<Empresa | null>(null);
+  const [, setShowSucursales] = useState<boolean>(false);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [selectedSucursal, setSelectedSucursal] = useState<Sucursal | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);

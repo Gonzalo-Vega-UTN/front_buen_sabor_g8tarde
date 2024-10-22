@@ -27,7 +27,7 @@ interface Props {
 export const ArticuloManufacturadoModal = ({
   categorias,
   unidadesMedida,
-  readOnly,
+  
   articuloManufacturado,
   onHide,
   handleSubmit,
