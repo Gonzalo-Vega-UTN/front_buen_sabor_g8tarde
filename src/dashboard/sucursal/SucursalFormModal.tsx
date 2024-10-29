@@ -92,11 +92,31 @@ export const SucursalFormModal = ({
     }
   };
 
-  useEffect(() =>{
-    console.log("ASD")
-    fetchProvincias();
-    fetchLocalidades();
-  }, [])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await fetchProvincias();
+        await fetchLocalidades();
+  
+        // Establece la provincia seleccionada
+        if (sucursal.domicilio.localidad.provincia) {
+          setCurrentSucursal((prev) => ({
+            ...prev,
+            domicilio: {
+              ...prev.domicilio,
+              provincia: sucursal.domicilio.localidad.provincia,
+            },
+          }));
+        }
+      } catch (error) {
+        console.error(
+          error instanceof Error ? error.message : "Error inesperado"
+        );
+      }
+    };
+  
+    fetchData();
+  }, []);
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -107,17 +127,25 @@ export const SucursalFormModal = ({
   async function save() {
     if (validateFields()) {
       setIsLoading(true);
-
+  
       try {
         await handleSubmit(currentSucursal, files);
         onHide();
       } catch (error) {
-        console.error("Error durante el guardado:", error);
+        if (error instanceof Error && error.message.includes("Ya existe una sucursal")) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            nombre: error.message, // Muestra el mensaje de error en el campo de nombre
+          }));
+        } else {
+          console.error("Error durante el guardado:", error);
+        }
       } finally {
         setIsLoading(false);
       }
     }
   }
+  
 
   interface ValidationErrors {
     nombre?: string;

@@ -67,7 +67,16 @@ export class SucursalService {
 
   static async create(activeEmpresa: string, sucursal: Sucursal): Promise<Sucursal> {
     sucursal.empresa.id = Number(activeEmpresa);
-    console.log("ANTES DE GUARDAR UNA SUCURSAL" , sucursal)
+    console.log("ANTES DE GUARDAR UNA SUCURSAL", sucursal);
+  
+    // Verificar si el nombre ya existe
+    const sucursales = await this.fetchSucursales();
+    const nombreExiste = sucursales.some((s) => s.nombre === sucursal.nombre);
+  
+    if (nombreExiste) {
+      throw new Error(`Ya existe una sucursal con el nombre '${sucursal.nombre}'.`);
+    }
+  
     try {
       const responseData = await this.request('', {
         method: 'POST',
@@ -83,7 +92,6 @@ export class SucursalService {
       throw error;
     }
   }
-
   static async update(id: number, sucursal: Sucursal): Promise<Sucursal> {
     try {
       const responseData = await this.request(`/${id}`, {
