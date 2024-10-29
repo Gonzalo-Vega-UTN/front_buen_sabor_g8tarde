@@ -96,7 +96,7 @@ const EmpresaList: React.FC<EmpresaListProps> = ({
               <Card.Body>
                 <Card.Title>{empresa.nombre}</Card.Title>
                 <Card.Text>
-                  <strong>ID:</strong> {empresa.id} <br />
+                
                   <strong>Razón Social:</strong> {empresa.razonSocial} <br />
                   <strong>CUIL:</strong> {empresa.cuil}
                 </Card.Text>

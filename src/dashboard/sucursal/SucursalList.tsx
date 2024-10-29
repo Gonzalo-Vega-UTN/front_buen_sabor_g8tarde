@@ -58,7 +58,7 @@ const SucursalList: React.FC<SucursalListProps> = ({
               <Card.Body>
                 <Card.Title>{sucursal.nombre}</Card.Title>
                 <Card.Text>
-                  <strong>ID:</strong> {sucursal.id} <br />
+                 
                   <strong>Horario Apertura:</strong> {sucursal.horarioApertura}{" "}
                   <br />
                   <strong>Horario Cierre:</strong> {sucursal.horarioCierre}

@@ -37,35 +37,52 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsLoading(true);
-    let response: Empresa;
-    try {
-      if (empresaEditando && empresaEditando.id) {
-        response = await EmpresaService.update(empresaEditando.id, {...empresa, imagenes: []});
-      } else {
-        response = await EmpresaService.create({...empresa, imagenes: []});
-      }
-      if (response && files.length > 0) {
-        await EmpresaService.uploadFiles(response.id, files);
-      }
 
-      // Si la empresa se creó o actualizó correctamente, proceder a subir los archivos
-      if (response.id) {
-        setTimeout(() => {
-          setSuccess(true);
-          setEmpresa(new Empresa());
-          setError(null);
-          setIsLoading(false);
-          onAddEmpresa();
-        }, 1500);
-      }
-    } catch (err) {
-      setError("Error al crear o actualizar la empresa");
-      setSuccess(false);
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+  setIsLoading(true);
+  setError(null);
+
+  try {
+    // Obtener todas las empresas y verificar si el nombre ya existe
+    const empresas = await EmpresaService.getAll();
+    const nombreExiste = empresas.some(
+      (emp) => emp.nombre.toLowerCase() === empresa.nombre.toLowerCase()
+    );
+
+    if (nombreExiste && (!empresaEditando || empresa.nombre !== empresaEditando.nombre)) {
+      setError("El nombre de la empresa ya existe. Por favor, elija otro nombre.");
+      setIsLoading(false);
+      return;
     }
-  };
+
+    let response: Empresa;
+    if (empresaEditando && empresaEditando.id) {
+      response = await EmpresaService.update(empresaEditando.id, {...empresa, imagenes: []});
+    } else {
+      response = await EmpresaService.create({...empresa, imagenes: []});
+    }
+
+    if (response && files.length > 0) {
+      await EmpresaService.uploadFiles(response.id, files);
+    }
+
+    if (response.id) {
+      setTimeout(() => {
+        setSuccess(true);
+        setEmpresa(new Empresa());
+        setError(null);
+        setIsLoading(false);
+        onAddEmpresa();
+      }, 1500);
+    }
+  } catch (err) {
+    setError("Error al crear o actualizar la empresa");
+    setSuccess(false);
+    setIsLoading(false);
+  }
+};
+
 
   const handleFileChange = (newFiles: File[]) => {
     setFiles(newFiles);
