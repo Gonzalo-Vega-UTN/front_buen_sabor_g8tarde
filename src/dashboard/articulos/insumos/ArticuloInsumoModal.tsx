@@ -6,6 +6,7 @@ import { UnidadMedida } from "../../../entities/DTO/UnidadMedida/UnidadMedida";
 import { Categoria } from "../../../entities/DTO/Categoria/Categoria";
 import ImagenCarousel from "../../../components/generic/carousel/ImagenCarousel";
 import { Imagen } from "../../../entities/DTO/Imagen";
+import { useSnackbar } from "../../../hooks/SnackBarProvider";
 
 interface ArticuloInsumoModalProps {
   articulo: ArticuloInsumo | undefined;
@@ -34,6 +35,7 @@ const ArticuloInsumoModal = ({
   const [error, setError] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
+  const { showError, showSuccess } = useSnackbar();
 
   const handleChange = (name: string, value: string | number | boolean) => {
     setArticuloInsumo((prev) => {
@@ -82,10 +84,6 @@ const ArticuloInsumoModal = ({
   };
 
   const validarFormulario = (): boolean => {
-    console.log("entre");
-    console.log(articuloInsumo);
-    
-    
     if (!articuloInsumo.denominacion || !articuloInsumo.denominacion.trim()) {
       setError("La denominación es obligatoria.");
       return false;
@@ -130,12 +128,29 @@ const ArticuloInsumoModal = ({
       try {
         await handleSubmit(articuloInsumo, files);
         onHide(); // Ocultar el modal después de guardar
+        showSuccess("Artículo guardado exitosamente");
       } catch (error) {
-        console.error("Error al guardar el artículo insumo:", error);
-        setError("Error al guardar el artículo insumo. Intente nuevamente.");
+        if (error instanceof Error) {
+          showError(error.message);
+        }
       } finally {
         setLoading(false);
       }
+    }
+  };
+
+  const handleDeleteButtonClick = async () => {
+    setLoading(true); // Activar indicador de carga
+    try {
+      await handleDelete(articuloInsumo.id);
+      onHide(); // Ocultar el modal después de eliminar
+      showSuccess("Estado cambiado exitosamente");
+    } catch (error) {
+      if (error instanceof Error) {
+        showError(error.message);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -173,20 +188,7 @@ const ArticuloInsumoModal = ({
             ) : (
               <Button
                 variant={articuloInsumo.alta ? "danger" : "success"}
-                onClick={async () => {
-                  setLoading(true); // Activar indicador de carga
-                  try {
-                    await handleDelete(articuloInsumo.id);
-                    onHide(); // Ocultar el modal después de eliminar
-                  } catch (error) {
-                    console.error(
-                      "Error al dar de baja/alta el artículo insumo:",
-                      error
-                    );
-                  } finally {
-                    setLoading(false);
-                  }
-                }}
+                onClick={handleDeleteButtonClick}
               >
                 {articuloInsumo.alta ? "Dar de Baja" : "Dar de Alta"}
               </Button>

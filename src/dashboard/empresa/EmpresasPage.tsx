@@ -7,22 +7,21 @@ import { Empresa } from "../../entities/DTO/Empresa/Empresa";
 const EmpresasPage: React.FC = () => {
   const [refreshEmpresas, setRefreshEmpresas] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [empresaEditando, setEmpresaEditando] = useState<Empresa | null>(null);
+  const [empresaEditando, setEmpresaEditando] = useState<Empresa>(new Empresa());
 
   const handleAddEmpresa = () => {
     setRefreshEmpresas(!refreshEmpresas);
     setShowModal(false); // Ocultar el modal después de agregar o editar una empresa
-    setEmpresaEditando(null); // Limpiar el estado de edición
+    setEmpresaEditando(new Empresa()); // Limpiar el estado de edición
   };
 
-  const handleShowModal = (empresa: Empresa | null) => {
+  const handleShowModal = (empresa: Empresa) => {
     setEmpresaEditando(empresa);
     setShowModal(true); // Mostrar el modal
   };
 
   const handleCloseModal = () => {
     setShowModal(false); // Ocultar el modal
-    setEmpresaEditando(null); // Limpiar el estado de edición al cerrar el modal
   };
 
   return (
@@ -30,7 +29,7 @@ const EmpresasPage: React.FC = () => {
       <h1>Gestión de Empresas</h1>
       <Row className="mb-3">
         <Col>
-          <Button onClick={() => handleShowModal(null)}>Agregar Empresa</Button>
+          <Button onClick={() => handleShowModal(new Empresa())}>Agregar Empresa</Button>
         </Col>
       </Row>
       <Row>
@@ -50,7 +49,7 @@ const EmpresasPage: React.FC = () => {
         <Modal.Body>
           <AddEmpresaForm
             onAddEmpresa={handleAddEmpresa}
-            empresaEditando={empresaEditando}
+            empresa={empresaEditando}
           />
         </Modal.Body>
       </Modal>

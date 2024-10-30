@@ -9,3 +9,9 @@
     align-items: center;
     text-align: center; /* Centra el contenido dentro del ítem */
 }
+
+.button {
+    position: relative;
+    z-index: 10;
+    transform: translatey(-100px);
+}

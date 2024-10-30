@@ -1,28 +1,24 @@
 import React, { useState } from "react";
-import { Form, Button, Alert, Spinner } from "react-bootstrap";
+import { Form, Button, Spinner } from "react-bootstrap";
 import { EmpresaService } from "../../services/EmpresaService";
 import { Empresa } from "../../entities/DTO/Empresa/Empresa";
 import ImagenCarousel from "../../components/generic/carousel/ImagenCarousel";
 import { Imagen } from "../../entities/DTO/Imagen";
+import { useSnackbar } from "../../hooks/SnackBarProvider";
 
 interface AddEmpresaFormProps {
   onAddEmpresa: () => void;
-  empresaEditando: Empresa | null;
+  empresa: Empresa;
 }
 
 const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
   onAddEmpresa,
-  empresaEditando,
+  empresa,
 }) => {
-  const [empresa, setEmpresa] = useState<Empresa>(
-    !empresaEditando || empresaEditando == null
-      ? new Empresa()
-      : empresaEditando
-  );
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
+  const [currentEmpresa, setCurrentEmpresa] = useState<Empresa>(empresa);
   const [files, setFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { showError, showSuccess } = useSnackbar();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -30,66 +26,62 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
       // Validamos que el valor sea mayor o igual a cero antes de actualizar
       const newValue = parseInt(value, 10);
       if (!isNaN(newValue) && newValue >= 0) {
-        setEmpresa({ ...empresa, [name]: newValue.toString() });
+        setCurrentEmpresa({ ...currentEmpresa, [name]: newValue.toString() });
       }
     } else {
-      setEmpresa({ ...empresa, [name]: value });
+      setCurrentEmpresa({ ...currentEmpresa, [name]: value });
     }
   };
 
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
-  setIsLoading(true);
-  setError(null);
+    event.preventDefault();
+    setIsLoading(true);
 
-  try {
-    // Obtener todas las empresas y verificar si el nombre ya existe
-    const empresas = await EmpresaService.getAll();
-    const nombreExiste = empresas.some(
-      (emp) => emp.nombre.toLowerCase() === empresa.nombre.toLowerCase()
-    );
+    try {
+      let response: Empresa;
+      if (currentEmpresa && currentEmpresa.id) {
+        response = await EmpresaService.update(currentEmpresa.id, {
+          ...currentEmpresa,
+          imagenes: currentEmpresa.imagenes.filter(
+            (imagen) => !imagen.url.includes("blob")
+          ),
+        });
+      } else {
+        response = await EmpresaService.create({
+          ...currentEmpresa,
+          imagenes: currentEmpresa.imagenes.filter(
+            (imagen) => !imagen.url.includes("blob")
+          ),
+        });
+      }
 
-    if (nombreExiste && (!empresaEditando || empresa.nombre !== empresaEditando.nombre)) {
-      setError("El nombre de la empresa ya existe. Por favor, elija otro nombre.");
-      setIsLoading(false);
-      return;
-    }
-
-    let response: Empresa;
-    if (empresaEditando && empresaEditando.id) {
-      response = await EmpresaService.update(empresaEditando.id, {...empresa, imagenes: []});
-    } else {
-      response = await EmpresaService.create({...empresa, imagenes: []});
-    }
-
-    if (response && files.length > 0) {
-      await EmpresaService.uploadFiles(response.id, files);
-    }
-
-    if (response.id) {
-      setTimeout(() => {
-        setSuccess(true);
-        setEmpresa(new Empresa());
-        setError(null);
+      if (response && files.length > 0) {
+        await EmpresaService.uploadFiles(response.id, files);
+      }
+      console.log(response);
+      if (response) {
+        showSuccess("Empresa guardada exitosamente");
+        setTimeout(() => {
+          setIsLoading(false);
+          onAddEmpresa();
+        }, 1500);
+      } else {
+        showError("No se pudo guardar la empresa");
         setIsLoading(false);
-        onAddEmpresa();
-      }, 1500);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        showError(error.message);
+      }
+      setIsLoading(false);
     }
-  } catch (err) {
-    setError("Error al crear o actualizar la empresa");
-    setSuccess(false);
-    setIsLoading(false);
-  }
-};
-
-
+  };
   const handleFileChange = (newFiles: File[]) => {
     setFiles(newFiles);
   };
 
   const handleImagenesChange = (newImages: Imagen[]) => {
-    setEmpresa((prev) => ({
+    setCurrentEmpresa((prev) => ({
       ...prev,
       imagenes: newImages,
     }));
@@ -97,14 +89,14 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
 
   return (
     <div>
-      <h2>{empresaEditando ? "Editar Empresa" : "Agregar Empresa"}</h2>
+      <h2>{currentEmpresa ? "Editar Empresa" : "Agregar Empresa"}</h2>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="nombre">
           <Form.Label>Nombre</Form.Label>
           <Form.Control
             type="text"
             name="nombre"
-            value={empresa.nombre}
+            value={currentEmpresa.nombre}
             onChange={handleChange}
             required
           />
@@ -114,7 +106,7 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
           <Form.Control
             type="text"
             name="razonSocial"
-            value={empresa.razonSocial}
+            value={currentEmpresa.razonSocial}
             onChange={handleChange}
             required
           />
@@ -124,7 +116,7 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
           <Form.Control
             type="number"
             name="cuil"
-            value={empresa.cuil}
+            value={currentEmpresa.cuil}
             onChange={handleChange}
             min="1"
             required
@@ -132,7 +124,7 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
         </Form.Group>
         <br></br>
         <ImagenCarousel
-          imagenesExistentes={empresa.imagenes}
+          imagenesExistentes={currentEmpresa.imagenes}
           onFilesChange={handleFileChange}
           onImagenesChange={handleImagenesChange}
         />
@@ -140,23 +132,15 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
           {isLoading ? (
             <>
               <Spinner size="sm" />
-              {empresaEditando ? " Actualizando..." : " Agregando..."}
+              {currentEmpresa ? " Actualizando..." : " Agregando..."}
             </>
-          ) : empresaEditando ? (
+          ) : currentEmpresa ? (
             "Actualizar"
           ) : (
             "Agregar"
           )}
         </Button>
       </Form>
-      {success && (
-        <Alert variant="success">
-          {empresaEditando
-            ? "Empresa actualizada con éxito"
-            : "Empresa creada con éxito"}
-        </Alert>
-      )}
-      {error && <Alert variant="danger">{error}</Alert>}
     </div>
   );
 };

@@ -43,12 +43,16 @@ const SucursalesPage: React.FC = () => {
       if (sucursal.id !== 0) {
         response = await SucursalService.update(sucursal.id, {
           ...sucursal,
-          imagenes: [],
+          imagenes: sucursal.imagenes.filter(
+            (imagen) => !imagen.url.includes("blob")
+          ),
         });
       } else {
         response = await SucursalService.create(activeEmpresa, {
           ...sucursal,
-          imagenes: [],
+          imagenes: sucursal.imagenes.filter(
+            (imagen) => !imagen.url.includes("blob")
+          ),
         });
       }
       if (response && files.length > 0) {
@@ -56,7 +60,6 @@ const SucursalesPage: React.FC = () => {
           response.id,
           files
         );
-        console.log(responseImagenes);
         if (responseImagenes) {
           response.imagenes = responseImagenes;
         }

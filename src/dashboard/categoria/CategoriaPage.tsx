@@ -14,6 +14,7 @@ import CategoriaModal from "./CategoriaModal";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 import { Sucursal } from "../../entities/DTO/Sucursal/Sucursal";
 import SucursalService from "../../services/SucursalService";
+import { useSnackbar } from "../../hooks/SnackBarProvider";
 
 export const CategoriaPage = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -29,6 +30,7 @@ export const CategoriaPage = () => {
   const { activeSucursal, activeEmpresa } = useAuth0Extended();
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const { showError, showSuccess } = useSnackbar();
 
   const fetchCategorias = async () => {
     if (activeSucursal) {
@@ -94,11 +96,18 @@ export const CategoriaPage = () => {
         setShowAlertModal(true);
         return; // No procedas con la eliminación
       }
-      await CategoriaService.eliminarCategoriaById(
-        activeSucursal,
-        categoria.id
-      );
-      fetchCategorias();
+      try {
+        await CategoriaService.eliminarCategoriaById(
+          activeSucursal,
+          categoria.id
+        );
+        fetchCategorias();
+        showSuccess("Categoria eliminada con exito");
+      } catch (error) {
+        if (error instanceof Error) {
+          showError(error.message);
+        }
+      }
     }
   };
 

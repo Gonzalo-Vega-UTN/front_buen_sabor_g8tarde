@@ -6,9 +6,10 @@ interface ModalConfirmProps {
   text: string;
   onConfirm: () => void;
   onCancel: () => void;
+  variant?  : 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'dark' | 'light' | 'link';
 }
 
-const ModalConfirm: React.FC<ModalConfirmProps> = ({ show, title, text, onConfirm, onCancel }) => {
+const ModalConfirm: React.FC<ModalConfirmProps> = ({ show, title, text, onConfirm, onCancel, variant = "primary" }) => {
   return (
     <Modal show={show} onHide={onCancel}>
       <Modal.Header closeButton>
@@ -19,7 +20,7 @@ const ModalConfirm: React.FC<ModalConfirmProps> = ({ show, title, text, onConfir
         <Button variant="secondary" onClick={onCancel}>
           Cancelar
         </Button>
-        <Button variant="primary" onClick={onConfirm}>
+        <Button variant={variant} onClick={onConfirm}>
           Confirmar
         </Button>
       </Modal.Footer>

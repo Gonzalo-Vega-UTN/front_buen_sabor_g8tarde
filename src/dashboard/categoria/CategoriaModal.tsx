@@ -8,6 +8,7 @@ import { CategoriaService } from "../../services/CategoriaService";
 import ImagenCarousel from "../../components/generic/carousel/ImagenCarousel";
 import { Sucursal } from "../../entities/DTO/Sucursal/Sucursal";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
+import { useSnackbar } from "../../hooks/SnackBarProvider";
 
 interface ModalProps {
   show: boolean;
@@ -26,8 +27,8 @@ const CategoriaModal = ({
   selectedCategoria,
   sucursales,
 }: ModalProps) => {
-  const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { showError, showSuccess } = useSnackbar();
   const [categoria, setCategoria] = useState<Categoria>(selectedCategoria);
   const [mostrarConfirmacion, setMostrarConfirmacion] =
     useState<boolean>(false);
@@ -45,12 +46,10 @@ const CategoriaModal = ({
     setCategoria(new Categoria());
     setFiles([]);
     setSelectedSucursales([]);
-    setError("");
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setIsLoading(true);
     try {
       if (!categoria.denominacion?.trim()) {
@@ -78,13 +77,11 @@ const CategoriaModal = ({
         }
         await saveCategoria(categoriaRequest);
       }
+      showSuccess("Categoría guardada exitosamente");
     } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Error inesperado al guardar la categoría"
-      );
-      console.error("Error detallado:", error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +91,7 @@ const CategoriaModal = ({
     let data;
     if (editMode || categoria.id !== 0) {
       console.log("VOY AL UPDATE");
-      
+
       data = await CategoriaService.actualizarCategoria(
         categoria.id,
         categoriaRequest
@@ -176,11 +173,6 @@ const CategoriaModal = ({
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {error && (
-            <Alert variant="danger" onClose={() => setError("")} dismissible>
-              {error}
-            </Alert>
-          )}
           <Form onSubmit={handleSave}>
             <Form.Group className="mb-3" controlId="denominacion">
               <Form.Label>Denominación</Form.Label>

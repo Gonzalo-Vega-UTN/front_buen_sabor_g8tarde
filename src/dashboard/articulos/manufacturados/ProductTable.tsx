@@ -16,7 +16,7 @@ import { FaSave } from "react-icons/fa";
 import "./tableProdict.css";
 import { useAuth0Extended } from "../../../Auth/Auth0ProviderWithNavigate";
 import { ArticuloManufacturadoModal } from "./ArticuloManufacturadoModal";
-
+import { useSnackbar } from "../../../hooks/SnackBarProvider";
 
 export default function ProductTable() {
   //Producto seleccionado que se va a pasar como prop al modal
@@ -44,6 +44,7 @@ export default function ProductTable() {
     useState<ArticuloManufacturado>(new ArticuloManufacturado());
 
   const { activeSucursal } = useAuth0Extended();
+  const {showError, showSuccess} = useSnackbar();
 
   //Logica del modal
   const handleClick = (id: number) => {
@@ -128,32 +129,43 @@ export default function ProductTable() {
       await ProductServices.delete(id);
       setShowDeleteModal(false);
       fetchProducts();
+      showSuccess("Estado cambiado correctamente");
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     }
   };
 
   const handleSubmit = async (
-    newArticuloManufacturado: ArticuloManufacturado  ) => {
+    newArticuloManufacturado: ArticuloManufacturado,
+    files: File[]
+  ) => {
     try {
       let response: ArticuloManufacturado;
       if (newArticuloManufacturado.id === 0) {
         // Crear un nuevo ArticuloManufacturado
         response = await ProductServices.create(
-          {...newArticuloManufacturado, imagenes: []},
+          {
+            ...newArticuloManufacturado,
+            imagenes: newArticuloManufacturado.imagenes.filter(
+              (imagen) => !imagen.url.includes("blob")
+            ),
+          },
           activeSucursal
         );
       } else {
         // Actualizar el ArticuloManufacturado existente
-        response = await ProductServices.update(
-          newArticuloManufacturado.id,
-          {...newArticuloManufacturado, imagenes: []}
-        );
+        response = await ProductServices.update(newArticuloManufacturado.id, {
+          ...newArticuloManufacturado,
+          imagenes: newArticuloManufacturado.imagenes.filter(
+            (imagen) => !imagen.url.includes("blob")
+          ),
+        });
       }
-      console.log(response);
       if (response) {
-        console.log(response);
-        //response.imagenes = imagenes;
+        const imagenes = await ProductServices.uploadFiles(response.id, files);
+        response.imagenes = imagenes;
       }
       setArticulosManufacturados((prev) => {
         // Si el artículo tiene un id, significa que es una actualización
@@ -164,9 +176,9 @@ export default function ProductTable() {
           return [...prev, response];
         }
       });
-      
     } catch (error) {
-      console.log("Algo salió mal", error);
+      console.log(error);
+      throw error;
     }
   };
 

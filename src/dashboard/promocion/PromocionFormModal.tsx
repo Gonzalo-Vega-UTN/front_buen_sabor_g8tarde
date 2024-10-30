@@ -14,9 +14,10 @@ import { Articulo } from "../../entities/DTO/Articulo/Articulo";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 import { ProductServices } from "../../services/ProductServices";
 import ArticuloInsumoService from "../../services/ArticuloInsumoService";
+import { useSnackbar } from "../../hooks/SnackBarProvider";
 interface PromocionModalProps {
   promocion: Promocion;
-  handleSubmit: (promocion: Promocion, files: File[]) => void;
+  handleSubmit: (promocion: Promocion, files: File[]) => Promise<void>;
   onHide: () => void;
 }
 export const PromocionFormModal = ({
@@ -32,6 +33,7 @@ export const PromocionFormModal = ({
   const [files, setFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [availableArticulos, setAvailableArticulos] = useState<Articulo[]>([]);
+  const {showError, showSuccess} = useSnackbar();
 
   const fetchArticulos = async () => {
     try {
@@ -111,15 +113,21 @@ export const PromocionFormModal = ({
     if (!isLastStep && validateFields()) return next();
   }
 
-  function save() {
+  async function save() {
     if (validateFields()) {
       setIsLoading(true);
 
-      setTimeout(() => {
-        handleSubmit(currentPromocion, files);
-        setIsLoading(false);
+      try {
+        await handleSubmit(currentPromocion, files);
         onHide();
-      }, 2500);
+        showSuccess("Sucursal guardada exitosamente");
+      } catch (error) {
+        if (error instanceof Error) {
+          showError(error.message);
+        }
+      } finally {
+        setIsLoading(false);
+      }
     }
   }
 

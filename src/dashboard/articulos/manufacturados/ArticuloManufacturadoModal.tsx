@@ -12,6 +12,7 @@ import ImagenCarousel from "../../../components/generic/carousel/ImagenCarousel"
 import { Imagen } from "../../../entities/DTO/Imagen";
 import { ArtMDetails } from "./form/ArtMDetails";
 import { Spinner } from "react-bootstrap";
+import { useSnackbar } from "../../../hooks/SnackBarProvider";
 
 interface Props {
   categorias: Categoria[];
@@ -22,12 +23,12 @@ interface Props {
   handleSubmit: (
     articuloManufacturado: ArticuloManufacturado,
     files: File[]
-  ) => void;
+  ) => Promise<void>;
 }
 export const ArticuloManufacturadoModal = ({
   categorias,
   unidadesMedida,
-  
+
   articuloManufacturado,
   onHide,
   handleSubmit,
@@ -40,6 +41,7 @@ export const ArticuloManufacturadoModal = ({
     Partial<Record<keyof ArticuloManufacturado, string>>
   >({});
   const [files, setFiles] = useState<File[]>([]);
+  const { showError, showSuccess } = useSnackbar();
 
   const handleChange = (field: Partial<ArticuloManufacturado>) => {
     setArtManufacturado((prev) => ({
@@ -143,6 +145,8 @@ export const ArticuloManufacturadoModal = ({
   };
 
   const handleImagenesChange = (newImages: Imagen[]) => {
+    console.log("NEW", newImages)
+    console.log("OLD", artManufacturado.imagenes)
     setArtManufacturado((prev) => {
       return {
         ...prev,
@@ -185,17 +189,23 @@ export const ArticuloManufacturadoModal = ({
     if (!isLastStep && validateFields()) return next();
   }
 
-  function save() {
+  async function save() {
     if (validateFields()) {
       setIsLoading(true);
-      handleSubmit(artManufacturado, files);
-      setTimeout(() => {
-        setIsLoading(false);
+
+      try {
+        await handleSubmit(artManufacturado, files);
         onHide();
-      }, 2000);
+        showSuccess("Articulo guardado exitosamente");
+      } catch (error) {
+        if (error instanceof Error) {
+          showError(error.message);
+        }
+      } finally {
+        setIsLoading(false);
+      }
     }
   }
-
   return (
     <Modal show={true} size="lg" backdrop="static" keyboard={false} centered>
       <Modal.Header>

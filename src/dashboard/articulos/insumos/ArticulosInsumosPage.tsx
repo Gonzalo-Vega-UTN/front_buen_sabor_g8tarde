@@ -15,7 +15,6 @@ import { useAuth0Extended } from "../../../Auth/Auth0ProviderWithNavigate";
 export default function ArticuloInsumoPage() {
   //Estados
   const [showModalCrear, setShowModalCrear] = useState<boolean>(false);
-  const [, setError] = useState<string>("");
   const { activeSucursal } = useAuth0Extended();
 
   //Estados Listas Entidades
@@ -77,18 +76,28 @@ export default function ArticuloInsumoPage() {
   const handleSaveUpdate = async (art: ArticuloInsumo, files: File[]) => {
     try {
       let response: ArticuloInsumo;
-     
+
       if (art.id === 0) {
         // Artículo nuevo
         response = await ArticuloInsumoService.crearArticuloInsumo(
-          {...art, imagenes: []},
+          {
+            ...art,
+            imagenes: art.imagenes.filter(
+              (imagen) => !imagen.url.includes("blob")
+            ),
+          },
           activeSucursal
         );
       } else {
         // Actualizar artículo
         response = await ArticuloInsumoService.actualizarArticuloInsumo(
           art.id,
-          {...art, imagenes:[]}
+          {
+            ...art,
+            imagenes: art.imagenes.filter(
+              (imagen) => !imagen.url.includes("blob")
+            ),
+          }
         );
       }
 
@@ -97,7 +106,6 @@ export default function ArticuloInsumoPage() {
           ...prevArticulos.filter((a) => a.id !== art.id),
           response,
         ]);
-        setError("");
         fetchDataArticulosInsumo();
       }
       // Si el artículo se creó o actualizó correctamente, proceder a subir los archivos
@@ -106,10 +114,7 @@ export default function ArticuloInsumoPage() {
         fetchDataArticulosInsumo();
       }
     } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-        setError(error.message);
-      }
+      throw error;
     }
   };
 
@@ -123,13 +128,11 @@ export default function ArticuloInsumoPage() {
         setArticuloInsumo((prevArticulos) =>
           prevArticulos.filter((a) => a.id !== artId)
         ); // Filtra el articulo eliminado
-        setError("");
         fetchDataArticulosInsumo(); // Llama a fetchDataArticulosInsumo después de actualizar el estado
       }
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);
-        setError(error.message);
       }
     }
   };

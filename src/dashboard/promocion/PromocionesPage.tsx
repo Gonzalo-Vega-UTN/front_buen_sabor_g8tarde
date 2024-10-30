@@ -11,6 +11,7 @@ import { FaSave } from "react-icons/fa";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 import { PromocionFormModal } from "./PromocionFormModal";
 import DeleteModalPromocion from "./DeleteModalPromocion";
+import { useSnackbar } from "../../hooks/SnackBarProvider";
 
 export default function PromotionTable() {
   const [currentPromocion, setCurrentPromocion] = useState<Promocion>(
@@ -20,6 +21,7 @@ export default function PromotionTable() {
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [title, setTitle] = useState("");
+  const {showError, showSuccess} = useSnackbar();
 
   const { activeSucursal } = useAuth0Extended();
 
@@ -44,8 +46,11 @@ export default function PromotionTable() {
       await PromocionService.delete(Number(activeSucursal), id);
       setShowDeleteModal(false);
       fetchPromotions();
+      showSuccess("Promocion eliminada con exito");
     } catch (error) {
-      console.error(error);
+      if(error instanceof Error) {
+        showError(error.message);
+      }
     }
   };
 
@@ -60,15 +65,35 @@ export default function PromotionTable() {
     fetchPromotions();
   }, [activeSucursal]);
 
-  const handleSubmit = async (promocion: Promocion) => {
+  const handleSubmit = async (
+    promocion: Promocion,
+    files: File[]
+  ): Promise<void> => {
     try {
       let response: Promocion;
       if (promocion.id !== 0) {
-        response = await PromocionService.update(promocion.id, {...promocion, imagenes: []});
+        response = await PromocionService.update(promocion.id, {
+          ...promocion,
+          imagenes: promocion.imagenes.filter(
+            (imagen) => !imagen.url.includes("blob")
+          ),
+        });
       } else {
-        response = await PromocionService.create(activeSucursal, {...promocion, imagenes: []});
+        response = await PromocionService.create(activeSucursal, {
+          ...promocion,
+          imagenes: promocion.imagenes.filter(
+            (imagen) => !imagen.url.includes("blob")
+          ),
+        });
       }
-      if (response) {
+      if (response && files.length > 0) {
+        const responseImagenes = await PromocionService.uploadFiles(
+          response.id,
+          files
+        );
+        if (responseImagenes) {
+          response.imagenes = responseImagenes;
+        }
       }
 
       setPromociones((prev) => {
@@ -82,7 +107,7 @@ export default function PromotionTable() {
       });
       fetchPromotions();
     } catch (error) {
-      console.error("Error guardando la promoción:", error);
+      throw error;
     }
   };
   return (

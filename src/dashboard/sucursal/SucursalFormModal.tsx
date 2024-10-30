@@ -12,6 +12,7 @@ import Form from "react-bootstrap/esm/Form";
 import DomicilioService from "../../services/DomicilioService";
 import { Provincia } from "../../entities/DTO/Domicilio/Provincia";
 import { Localidad } from "../../entities/DTO/Domicilio/Localidad";
+import { useSnackbar } from "../../hooks/SnackBarProvider";
 
 export interface ValidationErrors {
   calle?: string;
@@ -35,9 +36,9 @@ export const SucursalFormModal = ({
   const [errors, setErrors] = useState<Partial<Record<keyof Sucursal, string>>>(
     {}
   );
-  const [provincias, setProvincias] = useState<Provincia[]>([])
-  const [localidades, setLocalidades] = useState<Localidad[]>([])
-
+  const [provincias, setProvincias] = useState<Provincia[]>([]);
+  const [localidades, setLocalidades] = useState<Localidad[]>([]);
+  const { showError, showSuccess } = useSnackbar();
   const [errorsDomicilio] = useState<
     Partial<Record<keyof ValidationErrors, string>>
   >({});
@@ -97,7 +98,7 @@ export const SucursalFormModal = ({
       try {
         await fetchProvincias();
         await fetchLocalidades();
-  
+
         // Establece la provincia seleccionada
         if (sucursal.domicilio.localidad.provincia) {
           setCurrentSucursal((prev) => ({
@@ -114,7 +115,7 @@ export const SucursalFormModal = ({
         );
       }
     };
-  
+
     fetchData();
   }, []);
 
@@ -127,25 +128,20 @@ export const SucursalFormModal = ({
   async function save() {
     if (validateFields()) {
       setIsLoading(true);
-  
+
       try {
         await handleSubmit(currentSucursal, files);
         onHide();
+        showSuccess("Sucursal guardada exitosamente");
       } catch (error) {
-        if (error instanceof Error && error.message.includes("Ya existe una sucursal")) {
-          setErrors((prevErrors) => ({
-            ...prevErrors,
-            nombre: error.message, // Muestra el mensaje de error en el campo de nombre
-          }));
-        } else {
-          console.error("Error durante el guardado:", error);
+        if (error instanceof Error) {
+          showError(error.message);
         }
       } finally {
         setIsLoading(false);
       }
     }
   }
-  
 
   interface ValidationErrors {
     nombre?: string;
