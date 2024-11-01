@@ -121,7 +121,6 @@ export const SucursalFormModal = ({
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
-    console.log(currentSucursal);
     if (!isLastStep && validateFields()) return next();
   }
 

@@ -145,8 +145,6 @@ export const ArticuloManufacturadoModal = ({
   };
 
   const handleImagenesChange = (newImages: Imagen[]) => {
-    console.log("NEW", newImages)
-    console.log("OLD", artManufacturado.imagenes)
     setArtManufacturado((prev) => {
       return {
         ...prev,

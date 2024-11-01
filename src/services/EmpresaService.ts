@@ -81,7 +81,6 @@ export class EmpresaService {
         body: JSON.stringify(empresa),
         mode: 'cors'
       });
-      console.log(responseData)
       return responseData;
     } catch (error) {
       console.error('Error al actualizar la empresa:', error);

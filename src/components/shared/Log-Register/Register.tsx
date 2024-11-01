@@ -51,7 +51,7 @@ const Register: React.FC<RegisterProps> = ({ closeModal }) => {
   };
 
   const handleGoogleLoginSuccess = (credentialResponse: any) => {
-    // Aquí deberías manejar la respuesta de Google
+
     console.log(credentialResponse);
     closeModal();
   };

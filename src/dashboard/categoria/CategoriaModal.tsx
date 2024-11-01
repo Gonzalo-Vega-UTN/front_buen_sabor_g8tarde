@@ -90,14 +90,12 @@ const CategoriaModal = ({
   const saveCategoria = async (categoriaRequest: any) => {
     let data;
     if (editMode || categoria.id !== 0) {
-      console.log("VOY AL UPDATE");
 
       data = await CategoriaService.actualizarCategoria(
         categoria.id,
         categoriaRequest
       );
     } else {
-      console.log("VOY AL CREATE");
       const idPadreAsNumber = Number(idpadre);
       data = await CategoriaService.agregarCategoria(
         idPadreAsNumber,
@@ -139,7 +137,6 @@ const CategoriaModal = ({
 
   useEffect(() => {
     if (categoriaExistente) {
-      console.log("ASD");
 
       setCategoria(categoriaExistente);
     }

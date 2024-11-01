@@ -177,7 +177,6 @@ export default function ProductTable() {
         }
       });
     } catch (error) {
-      console.log(error);
       throw error;
     }
   };

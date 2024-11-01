@@ -15,7 +15,6 @@ class PedidoService {
 
     static async agregarPedido(pedido: PedidoFull): Promise<number> {
         try {
-            console.log(pedido);
             const responseData = await this.request('', {
                 method: 'POST',
                 headers: {

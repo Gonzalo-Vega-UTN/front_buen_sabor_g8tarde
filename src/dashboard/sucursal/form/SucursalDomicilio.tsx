@@ -20,7 +20,6 @@ export const SucursalDomicilio: React.FC<FormularioDomicilioProps> = ({
   localidades,
   provincias,
 }) => {
-  console.log("DOMICILIO", domicilio);
   return (
     <div>
       <Form.Group controlId="calle">

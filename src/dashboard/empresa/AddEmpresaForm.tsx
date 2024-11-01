@@ -58,7 +58,6 @@ const AddEmpresaForm: React.FC<AddEmpresaFormProps> = ({
       if (response && files.length > 0) {
         await EmpresaService.uploadFiles(response.id, files);
       }
-      console.log(response);
       if (response) {
         showSuccess("Empresa guardada exitosamente");
         setTimeout(() => {

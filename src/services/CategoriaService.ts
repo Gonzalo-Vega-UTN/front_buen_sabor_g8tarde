@@ -101,7 +101,6 @@ export class CategoriaService {
 
   static async validateCategoria(denominacion : string) {
     try {
-      console.log("VALIDANDO", denominacion)
       const responseData = await this.request("/validate", {
         method: 'POST',
         headers: {
@@ -189,8 +188,6 @@ export class CategoriaService {
         },
         sucursalesIds: categoriaRequest.sucursalesIds
       };
-      console.log("Request BODY", requestBody)
-      console.log("IDCATEGORIA", idCategoria)
       const responseData = await this.request(`/${idCategoria}`, {
         method: 'PUT',
         headers: {

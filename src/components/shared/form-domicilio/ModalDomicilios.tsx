@@ -98,7 +98,6 @@ const ModalDomicilios = ({ show, onHide, onSelectDomicilio }: Props) => {
           cliente
         );
         if (clienteGuardado) {
-          console.log(clienteGuardado.domicilios);
           onSelectDomicilio(
             clienteGuardado.domicilios.filter(
               (domicilio) =>
@@ -106,7 +105,7 @@ const ModalDomicilios = ({ show, onHide, onSelectDomicilio }: Props) => {
                 domicilio.cp == domicilioNuevo.cp &&
                 domicilio.numero == domicilioNuevo.numero
             )[0]
-          ); //TODO: Verificar si el ultimo de la lista siempre va a ser el mas reciente creado
+          );
         }
       }
       setShowForm(false);

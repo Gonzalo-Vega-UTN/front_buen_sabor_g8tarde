@@ -28,7 +28,6 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
     try {
       setLoading(true);
       const data = await UsuarioService.login(username);
-      console.log("data del back", data);
       if (data && data.rol) {
         setTimeout(() => {
           setLoading(false);
@@ -101,7 +100,6 @@ const Login: React.FC<LoginProps> = ({ closeModal }) => {
           }
         }}
         onError={() => {
-          console.log("Login Failed");
           setMensaje("Hubo un error con tu login con google");
         }}
       />

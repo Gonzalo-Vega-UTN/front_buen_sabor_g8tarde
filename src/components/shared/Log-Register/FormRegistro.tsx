@@ -53,7 +53,6 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
 
   const handleSubmitUsuario = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("ANTES DE GUARDAR");
 
     setUsuarioData((prev) => ({
       ...prev,
@@ -84,7 +83,6 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
         setError(error.message);
       }
     }
-    console.log("DESPUES DE GUARDAR");
   };
 
   const handleSubmitCliente = async (e: React.FormEvent) => {
@@ -107,7 +105,6 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
 
     try {
       const cliente = await ClienteService.agregarCliente(clienteCompleto);
-      console.log(cliente.domicilios);
       if (cliente) {
         setSuccess("Registro Exitoso");
         setTimeout(() => {
@@ -143,7 +140,6 @@ const RegistroUsuarioCliente: React.FC<RegistroUsuarioClienteProps> = ({
   };
 
   const handleDomicilioSubmit = (domicilio: any) => {
-    console.log(domicilio);
     handleSubmitDomicilio(domicilio);
   };
 

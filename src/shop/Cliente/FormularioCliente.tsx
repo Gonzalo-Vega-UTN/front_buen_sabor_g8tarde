@@ -31,7 +31,6 @@ const FormularioCliente = () => {
   }
   const handleSubmitDomicilio = async (domicilio: Domicilio) => {
     if (user && user.email) {
-      console.log(user);
       setDomicilioData(domicilio);
       const usuario = new Usuario();
       usuario.username = user.email.split("@")[0];
@@ -42,7 +41,6 @@ const FormularioCliente = () => {
         domicilios: [domicilio],
       };
       ClienteCompleto.usuario.rol = selectedRole;
-      console.log(ClienteCompleto);
 
       try {
         const response = await ClienteService.agregarCliente(ClienteCompleto);

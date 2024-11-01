@@ -10,20 +10,16 @@ const BotonLogout: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    console.log("Botón de logout presionado");
     setShowModal(true);
-    console.log("showModal should be true now:", showModal);
   };
 
   const handleConfirmLogout = () => {
-    console.log("Confirmación de logout");
     logout();
     navigate("/");
     setShowModal(false);
   };
 
   const handleCancelLogout = () => {
-    console.log("Cancelación de logout");
     setShowModal(false);
   };
 

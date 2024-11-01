@@ -21,9 +21,7 @@ const RegisterPage: React.FC<RegisterProps> = ({}) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submit button clicked"); // Verificar que se detecta el clic en el botón de submit
-
-    // Validar la longitud de la clave
+    
     if (auth0Id.length < 4) {
       setMensaje("La clave debe tener al menos 4 caracteres");
       return;
@@ -34,7 +32,7 @@ const RegisterPage: React.FC<RegisterProps> = ({}) => {
         username,
         auth0Id,
         rol,
-        email: "", // Asegúrate de que email esté correctamente definido o asignado
+        email: "", 
       };
 
       // Asumir que se necesita un token para la autorización, reemplazar por el token real

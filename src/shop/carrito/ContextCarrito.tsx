@@ -171,13 +171,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         0
       );
 
-      console.log("TOTAL PEDIDO", totalPedido);
-      console.log("precioProductosPromoNormal", precioProductosPromoNormal);
-      console.log("precioPromocional", promo.precioPromocional);
       let total =
         totalPedido - precioProductosPromoNormal + promo.precioPromocional;
       totalPedido = total;
-      console.log("TOTAL", total);
       actualizarTotal(total);
 
       restarProductos(promo, pedidoConPromo.detallePedidos);

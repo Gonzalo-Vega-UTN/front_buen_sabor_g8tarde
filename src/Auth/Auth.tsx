@@ -89,15 +89,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const decoded: any = jwtDecode(response.credential);
         const email = decoded.email;
         const username = email.split("@")[0];
-        console.log(username);
   
         const validacion = await UsuarioService.validarExistenciaUsuario(username);
-        console.log("existe en el back??????", validacion);
   
         if (validacion) {
-          // Login with username or email directly
+      
           const loggedUser = await UsuarioService.login(username);
-          console.log("usuario logeado, ", loggedUser);
   
           login(loggedUser.email, loggedUser.username, loggedUser.rol || Rol.Cliente);
         } else {
@@ -126,14 +123,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       usuario.email = email;
       usuario.rol = Rol.Cliente;
       
-      // const loggedUser = await UsuarioService.register(usuario);
-      // login(loggedUser.email, loggedUser.email, loggedUser.rol || Rol.Cliente);
       return usuario;
     } else {
       throw new Error("Usuario ya existe");
     }
   } catch (error) {
-    console.error('Error en el registro de Google:', error);
     throw new Error("Error en el registro de Google");
   }
 };

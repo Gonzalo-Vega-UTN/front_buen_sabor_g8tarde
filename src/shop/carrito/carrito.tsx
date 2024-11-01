@@ -107,7 +107,6 @@ const Carrito: React.FC<CarritoProps> = ({ actualizarLista, isOpen }) => {
 
   useEffect(() => {
     if (tipoEnvio === TipoEnvio.TakeAway && sucursal && sucursal.domicilio) {
-      console.log("domicilio ", sucursal.domicilio);
       setDomicilioEntrega(sucursal.domicilio);
     }
   }, [tipoEnvio, sucursal]);
