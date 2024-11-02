@@ -99,25 +99,23 @@ export class SucursalService {
     }
   }
 
-  static async bajaSucursal(id: number, activo: boolean): Promise<void> {
+  static async bajaSucursal(id: number, status: boolean): Promise<Sucursal> {
     try {
-      const response = await fetch(`${this.urlServer}/baja/${id}?activo=${activo}`, {
-        method: 'PUT',
+      const response = await this.request(`/${id}?status=${status}`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         mode: 'cors',
       });
-  
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
+
+      return response;
     } catch (error) {
       console.error(`Error actualizando sucursal con ID ${id}:`, error);
       throw error;
     }
   }
-  
+
   static async uploadFiles(id: number, files: File[]): Promise<Imagen[]> {
     const uploadPromises = files.map(file => {
       const formData = new FormData();

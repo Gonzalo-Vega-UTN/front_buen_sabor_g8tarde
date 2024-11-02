@@ -15,6 +15,7 @@ import { Empresa } from "../../entities/DTO/Empresa/Empresa";
 import { EmpresaService } from "../../services/EmpresaService";
 import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 import "./styles.css";
+import { useSnackbar } from "../../hooks/SnackBarProvider";
 interface EmpresaListProps {
   refresh: boolean;
   onEditEmpresa: (empresa: Empresa) => void;
@@ -28,6 +29,7 @@ const EmpresaList: React.FC<EmpresaListProps> = ({
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { activeEmpresa, selectEmpresa } = useAuth0Extended();
+  const { showError, showSuccess} = useSnackbar();
 
   const fetchEmpresas = async () => {
     try {
@@ -51,18 +53,16 @@ const EmpresaList: React.FC<EmpresaListProps> = ({
 
   const handleStatusChange = async (empresa: Empresa, alta: boolean) => {
     try {
-      if (empresa) {
-        const updatedEmpresa = await EmpresaService.update(empresa.id, {
-          ...empresa,
-          alta,
-        });
+      if (empresa && empresa.alta != alta) {
+        const updatedEmpresa = await EmpresaService.changeStatus(empresa.id, alta);
         setEmpresas(
           empresas.map((emp) => (emp.id === empresa.id ? updatedEmpresa : emp))
         );
+        showSuccess("Se ha cambiado el estado de la empresa correctamente");
       }
     } catch (error) {
       if (error instanceof Error) {
-        setError(error.message);
+        showError(error.message);
       }
     }
   };

@@ -19,7 +19,7 @@ interface SucursalListProps {
   sucursales: Sucursal[];
   handleSubmit: (sucursal: Sucursal, files: File[]) => Promise<void>;
   onHide: (show: boolean) => void;
-  handleStatusChange: (sucursalId: number, activo: boolean) => void;
+  handleStatusChange: (sucursal: Sucursal, activo: boolean) => void;
   handleClickModal: (sucursal: Sucursal) => void;
 }
 
@@ -80,12 +80,12 @@ const SucursalList: React.FC<SucursalListProps> = ({
                     onClick={(e) => e.stopPropagation()}
                   >
                     <Dropdown.Item
-                      onClick={() => handleStatusChange(sucursal.id, true)}
+                      onClick={() => handleStatusChange(sucursal, true)}
                     >
                       Alta
                     </Dropdown.Item>
                     <Dropdown.Item
-                      onClick={() => handleStatusChange(sucursal.id, false)}
+                      onClick={() => handleStatusChange(sucursal, false)}
                     >
                       Baja
                     </Dropdown.Item>

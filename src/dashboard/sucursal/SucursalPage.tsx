@@ -6,6 +6,7 @@ import { useAuth0Extended } from "../../Auth/Auth0ProviderWithNavigate";
 import { SucursalFormModal } from "./SucursalFormModal";
 import { Sucursal } from "../../entities/DTO/Sucursal/Sucursal";
 import SucursalService from "../../services/SucursalService";
+import { useSnackbar } from "../../hooks/SnackBarProvider";
 
 const SucursalesPage: React.FC = () => {
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
@@ -15,6 +16,7 @@ const SucursalesPage: React.FC = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const { activeEmpresa } = useAuth0Extended();
   const navigate = useNavigate();
+  const { showSuccess, showError } = useSnackbar();
 
   if (!activeEmpresa) {
     navigate("/empresas");
@@ -83,25 +85,24 @@ const SucursalesPage: React.FC = () => {
     setCurrentSucursal(sucursal);
   };
 
-  const handleStatusChange = async (sucursalId: number, activo: boolean) => {
+  const handleStatusChange = async (sucursal: Sucursal, status: boolean) => {
     try {
-      const sucursalIndex = sucursales.findIndex(
-        (suc) => suc.id === sucursalId
-      );
-      if (sucursalIndex !== -1) {
-        await SucursalService.bajaSucursal(
-          sucursales[sucursalIndex].id,
-          activo
+      if (sucursal && status != sucursal.alta) {
+        const updatedSucursal = await SucursalService.bajaSucursal(
+          sucursal.id,
+          status
         );
-        const updatedSucursales = [...sucursales];
-        updatedSucursales[sucursalIndex] = {
-          ...sucursales[sucursalIndex],
-          alta: activo,
-        };
-        setSucursales(updatedSucursales);
+        if (updatedSucursal) {
+          setSucursales(
+            sucursales.map((s) => (s.id === sucursal.id ? updatedSucursal : s))
+          );
+          showSuccess("Se ha cambiado el estado de la sucursal correctamente");
+        }
       }
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        showError(error.message)
+      }
     }
   };
   return (

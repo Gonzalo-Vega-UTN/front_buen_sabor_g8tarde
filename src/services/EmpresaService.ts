@@ -88,10 +88,10 @@ export class EmpresaService {
     }
   }
 
-  static async delete(id: number): Promise<Empresa> {
+  static async changeStatus(id: number, status: boolean): Promise<Empresa> {
     try {
-      return await this.request(`/${id}`, {
-        method: 'DELETE',
+      return await this.request(`/${id}?status=${status}`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
