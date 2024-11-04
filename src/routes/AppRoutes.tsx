@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import { CartProvider } from "../shop/carrito/ContextCarrito";
+//import { CartProvider } from "../shop/carrito/ContextCarrito";
 import Home from "../shop/home/Home";
 import PrivateRoute from "./PrivateRoute";
 import { Rol } from "../entities/enums/Rol";
@@ -31,9 +31,9 @@ export default function AppRoutes() {
       <Route
         path="/"
         element={
-          <CartProvider>
+          //<CartProvider>
             <Home />
-          </CartProvider>
+        //  </CartProvider>
         }
       />
 
