@@ -7,6 +7,7 @@ import Table from "react-bootstrap/esm/Table";
 
 const UserList: React.FC = () => {
   const [users, setUsers] = useState<Usuario[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const { getAccessTokenSilently } = useAuth0Extended();
 
   useEffect(() => {
@@ -18,9 +19,10 @@ const UserList: React.FC = () => {
       const token = await getAccessTokenSilently();
       const fetchedUsers = await UsuarioService.getAllUsuarios(token);
       setUsers(fetchedUsers);
+      setError(null);
     } catch (error) {
       console.error("Error fetching users:", error);
-      // Podrías mostrar un mensaje de error en la interfaz si lo necesitas
+      setError("Error al cargar usuarios");
     }
   };
 
@@ -28,16 +30,18 @@ const UserList: React.FC = () => {
     try {
       const token = await getAccessTokenSilently();
       await UsuarioService.updateUsuarioRol(userId, newRole, token);
-      fetchUsers(); // Refetch users to update the list
+      await fetchUsers();
+      setError(null);
     } catch (error) {
       console.error("Error updating user role:", error);
-      // Podrías mostrar un mensaje de error en la interfaz si lo necesitas
+      setError("Error al actualizar el rol del usuario");
     }
   };
 
   return (
     <div>
       <h2>Lista de Usuarios</h2>
+      {error && <div className="alert alert-danger">{error}</div>}
       <div className="col-md-10">
         <Table hover variant="dark">
           <thead>
@@ -57,9 +61,8 @@ const UserList: React.FC = () => {
                 <td>
                   <select
                     value={user.rol}
-                    onChange={(e) =>
-                      handleRoleChange(user.id!, e.target.value as Rol)
-                    }
+                    onChange={(e) => handleRoleChange(user.id!, e.target.value as Rol)}
+                    className="form-select form-select-sm"
                   >
                     {Object.values(Rol).map((role) => (
                       <option key={role} value={role}>
