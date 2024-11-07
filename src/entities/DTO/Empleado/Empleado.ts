@@ -1,6 +1,6 @@
 import { Base } from "../Base";
 
-import { Imagen } from "../Imagen";
+//import { Imagen } from "../Imagen";
 import Usuario from "../Usuario/Usuario";
 export class Empleado extends Base {
     nombre: string = '';
@@ -8,6 +8,6 @@ export class Empleado extends Base {
     telefono: string = '';
     email: string = '';
     fechaNacimiento: string | null = '';
-    imagenes: Imagen[] = [];
+   // imagenes: Imagen[] = [];
     usuario: Usuario = new Usuario();
 }
