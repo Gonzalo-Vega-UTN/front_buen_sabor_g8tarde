@@ -1,4 +1,5 @@
-import Usuario from "../entities/DTO/Usuario/Usuario";
+import { Empleado } from "../entities/DTO/Empleado/Empleado";
+import Usuario, { UsuarioDto } from "../entities/DTO/Usuario/Usuario";
 import { Rol } from "../entities/enums/Rol";
 
 class UsuarioService {
@@ -41,6 +42,23 @@ class UsuarioService {
       return responseData as Usuario;
     } catch (error) {
       console.error('Error al registrar:', error);
+      throw error;
+    }
+  }
+
+  static async createUser(usuario: UsuarioDto, token: string): Promise<Usuario> {
+    try {
+      const responseData = await this.request('/create', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(usuario),
+      });
+      return responseData as Usuario;
+    } catch (error) {
+      console.error('Error al crear usuario:', error);
       throw error;
     }
   }
