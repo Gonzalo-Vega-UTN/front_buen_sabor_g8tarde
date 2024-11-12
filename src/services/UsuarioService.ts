@@ -1,4 +1,4 @@
-import { Empleado } from "../entities/DTO/Empleado/Empleado";
+
 import Usuario, { UsuarioDto } from "../entities/DTO/Usuario/Usuario";
 import { Rol } from "../entities/enums/Rol";
 
