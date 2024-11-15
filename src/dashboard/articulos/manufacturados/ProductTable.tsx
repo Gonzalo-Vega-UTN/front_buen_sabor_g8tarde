@@ -140,9 +140,12 @@ export default function ProductTable() {
   const handleSubmit = async (
     newArticuloManufacturado: ArticuloManufacturado,
     files: File[]
+    
   ) => {
     try {
       let response: ArticuloManufacturado;
+      newArticuloManufacturado.categoria.subCategorias=[]
+
       if (newArticuloManufacturado.id === 0) {
         // Crear un nuevo ArticuloManufacturado
         response = await ProductServices.create(
