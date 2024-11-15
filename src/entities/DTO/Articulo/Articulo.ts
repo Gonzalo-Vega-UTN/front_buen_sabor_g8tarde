@@ -9,6 +9,6 @@ export class Articulo extends Base {
     unidadMedida: UnidadMedida | null = null;
     imagenes: Imagen[] = [];
     categoria: Categoria  = new Categoria();
-    subCategorias: Categoria[] = [];
+   // subCategorias: Categoria[] = [];
     //promocionDetalle: PromocionDetalle[] | null = null;
 }
