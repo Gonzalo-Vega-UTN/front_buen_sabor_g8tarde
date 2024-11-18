@@ -86,7 +86,7 @@ const Sidebar: React.FC = () => {
   
   const location = useLocation();
   const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
-
+//Autenficacion
   useEffect(() => {
     const fetchUserInfo = async () => {
       if (isAuthenticated && user) {
@@ -96,21 +96,7 @@ const Sidebar: React.FC = () => {
           const userData = await UsuarioService.login(token);
            
             setUserInfo(userData);
-        /*  
-          const exists = await UsuarioService.validarExistenciaUsuario(token);
-         
-          if (exists) {
-            const userData = await UsuarioService.login(token);
-           
-            setUserInfo(userData);
-            console.log("Rol de usuario:", userData.rol);  
-          } else {
-            
-            
-        //    const registeredUser = await UsuarioService.register(newUser, token);
-           // setUserInfo(registeredUser);
-          }
-         */ 
+      
           setError(null);
         } catch (err) {
           setError('Error al cargar la información del usuario');
